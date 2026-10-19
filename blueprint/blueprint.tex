@@ -1,0 +1,1929 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}\usepackage{amsmath,amsthm,amssymb,amsfonts,mathtools,aliascnt,etoolbox,xcolor,seqsplit,hyperref}\usepackage[capitalise]{cleveref}
+\numberwithin{equation}{section}
+\theoremstyle{plain}\newtheorem{theorem}{Theorem}[section]\newaliascnt{proposition}{theorem}\newtheorem{proposition}[proposition]{Proposition}\aliascntresetthe{proposition}\newaliascnt{lemma}{theorem}\newtheorem{lemma}[lemma]{Lemma}\aliascntresetthe{lemma}
+\theoremstyle{definition}\newaliascnt{definition}{theorem}\newtheorem{definition}[definition]{Definition}\aliascntresetthe{definition}\newaliascnt{notation}{theorem}\newtheorem{notation}[notation]{Notation}\aliascntresetthe{notation}
+\crefname{theorem}{Theorem}{Theorems}\crefname{proposition}{Propositions}{Propositions}\crefname{lemma}{Lemma}{Lemmas}\crefname{definition}{Definition}{Definitions}
+\definecolor{usesblue}{HTML}{1D4ED8}\newenvironment{uses-statement}{\par\smallskip\noindent{\color{usesblue}\textbf{Uses (statement):}}\space\ignorespaces}{\par\smallskip}\newenvironment{uses-proof}{\par\smallskip\noindent{\color{usesblue}\textbf{Uses (proof):}}\space\ignorespaces}{\par\smallskip}\newenvironment{uses-notation}{\par\smallskip\noindent{\color{usesblue}\textbf{Uses (notation):}}\space\ignorespaces}{\par\smallskip}
+\providecommand{\lean}[1]{}\providecommand{\leanok}{}
+\newcommand{\spt}{\operatorname{spt}}\newcommand{\Can}{\operatorname{Can}}\newcommand{\Wr}{\operatorname{Wr}}\newcommand{\Adm}{\operatorname{Adm}}\newcommand{\CT}{\operatorname{CT}}\newcommand{\F}{\mathbb F}\newcommand{\Z}{\mathbb Z}\newcommand{\Q}{\mathbb Q}
+\title{Blueprint for the Completion of the Rolen SPT Formalization}\author{Assembled by AxiomProver}\date{\today}
+\begin{document}\maketitle
+
+\section{Scope, target, and trust boundary}
+This blueprint supersedes the earlier conditional plan and follows the full Completion Target and Issue Register.  The unique target is Rolen's classification of canonical congruence primes.  The only black boxes are the source-faithful general results E1--E11 below.  Every Rolen-specific construction or specialization is an internal node, including all repairs I01--I25.  In particular, no node may assume a normalized Borcherds identity, grid support, an \texttt{InfiniteProductObstructionData} package, or a common-root collision package.
+
+The principal representation choices are: coefficients indexed by numerators of exponents in $\frac1{24}\Z$; the Hauptmodul as a Laurent series $q^{-1}-5+O(q)$; class polynomials first over $\Z[1/6]$ and then reduced coefficientwise; and roots taken in an algebraic closure of $\F_\ell$.  General literature inputs are separated from their paper-specific hypotheses.
+
+Atlas searches of Mathlib, Batteries, and the Lean standard library were attempted for algebraic-closure common-root criteria, transcendental evaluation, monic products, and squarefreeness; the batch service timed out.  Existing local Mathlib-backed bridges remain classified [B], while the modular and CM specializations are [N].
+
+\section{Permitted external inputs E1--E11}
+
+\begin{definition}[E1: Andrews congruence at 5]\label{def_andrews_5}\lean{SptCM.RolenLiterature.Andrews5}\leanok
+% Lean: def Andrews5 : Prop := forall k, 5 ∣ spt (5*k+4)
+$\mathsf{Andrews}_5$ is the proposition $5\mid\spt(5k+4)$ for every $k\ge0$.
+\end{definition}
+\begin{definition}[E1: Andrews congruence at 7]\label{def_andrews_7}\lean{SptCM.RolenLiterature.Andrews7}\leanok
+% Lean: def Andrews7 : Prop := forall k, 7 ∣ spt (7*k+5)
+$\mathsf{Andrews}_7$ is the proposition $7\mid\spt(7k+5)$ for every $k\ge0$.
+\end{definition}
+\begin{definition}[E1: Andrews congruence at 13]\label{def_andrews_13}\lean{SptCM.RolenLiterature.Andrews13}\leanok
+% Lean: def Andrews13 : Prop := forall k, 13 ∣ spt (13*k+6)
+$\mathsf{Andrews}_{13}$ is the proposition $13\mid\spt(13k+6)$ for every $k\ge0$.
+\end{definition}
+\begin{definition}[E2: Ahlgren--Kim finite exclusion]\label{def_ext_ak_finite}\lean{SptCM.RolenLiterature.E2AhlgrenKimFiniteExclusion}\leanok
+% Lean: def AKFinite : Prop := forall ell, Canonical ell -> ell < 10^11 -> ell=5 ∨ ell=7 ∨ ell=13
+$\mathsf{AK}_{\rm fin}$ is Ahlgren--Kim Theorem 3 with its published range and normalizations.
+\end{definition}
+\begin{definition}[E2: Ahlgren--Kim theta-cycle theorem]\label{def_ext_ak_theta}\lean{SptCM.RolenLiterature.E2AhlgrenKimThetaCycle}\leanok
+% Lean: def AKTheta : Prop := the correctly normalized implication of Proposition 6
+$\mathsf{AK}_{\Theta}$ is the correctly normalized implication of Ahlgren--Kim Proposition 6, before eta cancellation or coefficient extraction.
+\end{definition}
+\begin{definition}[E3: Bringmann completion and shadow]\label{def_ext_bringmann}\lean{SptCM.RolenLiterature.BringmannCompletion}\leanok
+% Lean: def BringmannCompletion : Prop := exists F, holomorphicPart F = f ∧ shadow F = publishedNormalization eta
+$\mathsf{Bringmann}$ is the exact published existence theorem for the harmonic Maass completion of $f$, including its holomorphic part and normalized eta shadow.
+\end{definition}
+\begin{definition}[E3: Hecke--shadow intertwining]\label{def_ext_hecke_shadow}\lean{SptCM.RolenLiterature.HeckeShadowIntertwining}\leanok
+% Lean: def HeckeShadowIntertwining : Prop := forall m F, shadow (TthreeHalves m F) = shadowScale m (ToneHalf m (shadow F))
+$\mathsf{ShadowHecke}$ is the general dual-weight Hecke/shadow identity from the cited harmonic-Maass-form theory, including its scalar factors.
+\end{definition}
+
+\begin{definition}[E4: Dedekind eta foundations]\label{def_ext_modular_forms}\lean{SptCM.RolenLiterature.DedekindEtaFoundations}\leanok
+% Lean: def DedekindEtaFoundations : Prop := exact eta transformation, nonvanishing, and integral product expansion
+$\mathsf{EtaFoundations}$ is the standard transformation law, nonvanishing on the upper half-plane, and integral unit product expansion of Dedekind's eta function, with the exact multiplier convention.
+\end{definition}
+\begin{definition}[E4: Euler eta component-theta identity]\label{def_ext_eta_component_theta}\lean{SptCM.Analytic.Repaired.EtaComponentThetaIdentity}\leanok
+% Lean: def EtaComponentThetaIdentity (theta : Fin 12 -> V) (eta : V) : Prop := sum r, chi12(r) • theta r = 2 • eta
+$\mathsf{EtaTheta}$ is Euler's standard componentwise theta identity
+$\sum_{r\bmod 12}\chi_{12}(r)\theta_r=2\eta$ in a complex series
+realization.  It contains no Atkin--Lehner, cusp-pairing, or Weyl-vector
+conclusion.
+\end{definition}
+\begin{definition}[E4: modular invariant foundations]\label{def_ext_j_foundations}\lean{SptCM.RolenLiterature.ModularInvariantFoundations}\leanok
+% Lean: def ModularInvariantFoundations : Prop := exact modularity and integral q-expansion of j
+$\mathsf{JFoundations}$ is the standard modularity and integral Fourier expansion $j=q^{-1}+744+\cdots$ of the modular invariant.
+\end{definition}
+\begin{definition}[E4: Eisenstein-series foundations]\label{def_ext_eisenstein_foundations}\lean{SptCM.RolenLiterature.EisensteinFoundations}\leanok
+% Lean: def EisensteinFoundations : Prop := exact transformation laws and integral expansions of E4 and E6
+$\mathsf{EisensteinFoundations}$ gives the exact weights, transformation laws, and integral Fourier expansions of $E_4$ and $E_6$.
+\end{definition}
+\begin{definition}[E4: principal-part integrality]\label{def_ext_principal_integrality}\lean{SptCM.RolenLiterature.PrincipalPartIntegrality}\leanok
+% Lean: def PrincipalPartIntegrality : Prop := forall F, WeaklyHolomorphic F -> IntegralPrincipalPart F -> IntegralExpansion F
+$\mathsf{PrincipalIntegral}$ is the standard theorem that a qualified weakly holomorphic form with integral principal part has integral Fourier expansion in the stated lattice.
+\end{definition}
+\begin{definition}[E4: general modular Hecke laws]\label{def_ext_modular_hecke}\lean{SptCM.RolenLiterature.GeneralModularHeckeLaws}\leanok
+% Lean: def GeneralModularHeckeLaws : Prop := forall m F, WeaklyHolomorphic F -> PublishedHeckeLaw m F
+$\mathsf{ModHecke}$ is the general Hecke law for the relevant weakly holomorphic weights and multipliers, with no Rolen-specific identity as its conclusion.
+\end{definition}
+\begin{definition}[E3/E4: source Hecke qualifications]\label{def_ext_i05_source_qualification}\lean{SptCM.Analytic.Repaired.SourceI05Qualification}\leanok
+% Lean: structure SourceI05Qualification (G : PublishedMockModularGrid K) : Prop := qualification of the two concrete normalized left sides
+$\mathsf{I05Qual}(G)$ is the exact citation-level assertion, obtained from the
+published completion/shadow and general modular Hecke laws, that the concrete
+normalized left side of the $f$ identity qualifies in the grid space at index
+$p$, and that the concrete normalized left side of the grid recurrence
+qualifies at index $mp$, throughout the source-valid range.  It contains no
+principal-part assertion and neither desired Hecke identity.
+\end{definition}
+\begin{definition}[E4: weight-two residue theorem]\label{def_ext_weight_two_residue}\lean{SptCM.RolenLiterature.WeightTwoResidueTheorem}\leanok
+% Lean: def WeightTwoResidueTheorem : Prop := forall F, WeaklyHolomorphic F -> WeightTwo F -> constantTerm F = 0
+$\mathsf{Residue}_2$ is the standard theorem that a weakly holomorphic weight-two form on the relevant compact modular curve has zero constant term.
+\end{definition}
+\begin{definition}[E4: published mock modular grid theorem]\label{def_ext_published_grid}\lean{SptCM.RolenLiterature.PublishedMockModularGrid}\leanok
+% Lean: def PublishedMockModularGrid : Prop := exact Ahlgren--Kim grid theorem with its published multiplier, principal parts, range, and uniqueness
+$\mathsf{AKGrid}$ is the exact Ahlgren--Kim mock modular grid theorem, only if its published multiplier, normalization, coprime range, principal parts, and uniqueness statement match the grid used here.  It contains no theta-support or coefficient-duality conclusion.
+\end{definition}
+
+\begin{definition}[E5: Bruinier--Ono general lift]\label{def_ext_borcherds}\lean{SptCM.RolenLiterature.E5BruinierOno}\leanok
+% Lean: def BruinierOnoGeneral : Prop := forall F, AdmissibleInput F -> GeneralLiftConclusions F
+$\mathsf{BO}$ is Bruinier--Ono Theorem 6.1 with its original hypotheses and its general product-expansion, character, and Heegner-divisor conclusions; it says nothing about Rolen's particular vector input or class-polynomial quotient.
+\end{definition}
+\begin{definition}[E6: Bruinier--Schwagenscheidt Weyl formula]\label{def_ext_weyl}\lean{SptCM.RolenLiterature.E6BruinierSchwagenscheidt}\leanok
+% Lean: def BruinierSchwagenscheidtWeyl : Prop := forall F c, Admissible F -> weyl F c = normalization (regularizedPairing F (cuspTheta c))
+$\mathsf{BS}$ is the general Weyl-vector formula of Bruinier--Schwagenscheidt, equation (11), with the exact cusp and normalization conventions.
+\end{definition}
+
+\begin{definition}[E7: Ligozat eta-quotient theorem]\label{def_ext_ligozat_curve}\lean{SptCM.RolenLiterature.LigozatEtaQuotients}\leanok
+% Lean: def LigozatEtaQuotients : Prop := forall e, LigozatConditions e -> modularity, character, and cusp-order formula
+$\mathsf{Ligozat}$ is the general eta-quotient modularity, character, and cusp-order theorem.  It contains no specialized degree-one conclusion for Rolen's $t$.
+\end{definition}
+\begin{definition}[E7: good integral model of $X_0(6)$]\label{def_ext_x0_six_integral}\lean{SptCM.RolenLiterature.X0SixGoodIntegralModel}\leanok
+% Lean: def X0SixGoodIntegralModel : Prop := smooth proper geometrically connected model away from 6
+$\mathsf{IntegralCurve}_6$ is the standard theorem that the compactified $X_0(6)$ has a smooth proper geometrically connected integral model away from $6$.
+\end{definition}
+\begin{definition}[E7: genus-zero fibers of $X_0(6)$]\label{def_ext_x0_six_genus_zero}\lean{SptCM.RolenLiterature.X0SixGenusZeroFibers}\leanok
+% Lean: def X0SixGenusZeroFibers : Prop := every geometric fiber away from 6 is smooth irreducible genus zero
+$\mathsf{GenusZero}_6$ is the standard theorem that every geometric fiber away from $6$ is a smooth irreducible curve of genus zero.
+\end{definition}
+\begin{definition}[E7: disjoint cusp sections]\label{def_ext_x0_six_cusps}\lean{SptCM.RolenLiterature.X0SixDisjointCusps}\leanok
+% Lean: def X0SixDisjointCusps : Prop := the four cusp sections 0,1/2,1/3,infinity are disjoint away from 6
+$\mathsf{Cusps}_6$ is the standard theorem that the four cusp sections $0,1/2,1/3,\infty$ are disjoint on the integral model away from $6$.
+\end{definition}
+\begin{definition}[E4/E11: squarefree-level cusp classification]\label{def_ext_squarefree_cusps}\lean{SptCM.RolenLiterature.SquarefreeGammaZeroCuspClassification}\leanok
+% Lean: def SquarefreeGammaZeroCuspClassification : Prop := forall N != 0, Squarefree N -> Bijective (standardDivisorCuspRepresentative N)
+$\mathsf{SquarefreeCusps}$ is the standard general theorem that, for every
+nonzero squarefree level $N$, the $\Gamma_0(N)$-orbits on
+$\mathbb P^1(\mathbb Q)$ are in bijection with the positive divisors $d\mid
+N$, using the conventional representatives $0$ for $d=1$, $1/d$ for the
+intermediate divisors, and $\infty$ for $d=N$.
+\end{definition}
+\begin{definition}[E8: CM ideal-class action]\label{def_ext_cm}\lean{SptCM.RolenLiterature.CMClassAction}\leanok
+% Lean: def CMClassAction : Prop := forall O, SimplyTransitive (idealClassAction O)
+$\mathsf{CMClassAction}$ is the standard simply transitive proper ideal-class action on CM points of a fixed order and orientation.
+\end{definition}
+\begin{definition}[E8: CM class counts]\label{def_ext_cm_class_count}\lean{SptCM.RolenLiterature.CMClassCount}\leanok
+% Lean: def CMClassCount : Prop := forall O, card (properIdealClasses O) = classNumber O
+$\mathsf{CMClassCount}$ is the standard equality between the number of proper ideal classes of the order and its class number.
+\end{definition}
+\begin{definition}[E8/E11: quadratic order is a domain]\label{def_ext_quadratic_order_domain}\lean{SptCM.RolenLiterature.E8NegativeQuadraticOrderDomain}\leanok
+% Lean: def E8NegativeQuadraticOrderDomain (n : Nat) : Prop := IsNegativeFundamentalDiscriminant n -> Nonempty (IsDomain (NegativeQuadraticOrder n))
+$\mathsf{QuadraticOrderDomain}(n)$ is the standard fact that
+$\mathbf Z[(1+\sqrt{-n})/2]$, presented as the concrete quadratic
+\texttt{AdjoinRoot}, is a domain when $-n$ is a negative fundamental
+discriminant.  It contains no class action or cardinality conclusion.
+\end{definition}
+\begin{definition}[E8/E11: reduced forms and proper ideal classes]\label{def_ext_reduced_form_classification}\lean{SptCM.RolenLiterature.E8ReducedFormClassification}\leanok
+% Lean: def E8ReducedFormClassification (n : Nat) : Prop := IsNegativeFundamentalDiscriminant n -> Nonempty (ClassGroup (NegativeQuadraticOrder n) ≃ ReducedFormClasses n)
+$\mathsf{ReducedFormClassification}(n)$ is the standard equivalence, for a
+negative fundamental discriminant, between the concrete reduced primitive
+positive form classes (with the stated boundary convention) and proper ideal
+classes of $\mathbf Z[(1+\sqrt{-n})/2]$.
+\end{definition}
+\begin{definition}[E8/E11: fixed-orientation form classification]\label{def_ext_oriented_form_classification}\lean{SptCM.RolenLiterature.E8FourOrientedFormClassification}\leanok
+% Lean: def E8FourOrientedFormClassification (n : Nat) : Prop := IsNegativeFundamentalDiscriminant n -> n % 24 = 23 -> Nonempty (FourOrientedClassEquivalences n)
+$\mathsf{OrientedFormClassification}(n)$ is the standard refinement of the
+form--ideal-class correspondence for $n\equiv23\pmod{24}$, after choosing
+one prime above each of $2$ and $3$: the proper ideal-class group is equivalent to each of the four
+concrete quotients $\mathcal Q_{n,1},\mathcal Q_{n,11},
+\mathcal Q_{n,5},\mathcal Q_{n,7}$.  This external input contains no action
+and no cardinality conclusion.
+\end{definition}
+\begin{definition}[E8: potential good reduction with level]\label{def_ext_cm_good_reduction}\lean{SptCM.RolenLiterature.CMPotentialGoodReduction}\leanok
+% Lean: def CMPotentialGoodReduction : Prop := forall P, primeToLevel P -> HasPotentiallyGoodReduction P
+$\mathsf{CMGoodReduction}$ is the standard potential-good-reduction theorem for CM elliptic curves with prime-to-$\ell$ level structure.
+\end{definition}
+\begin{definition}[E8: Deuring inert reduction]\label{def_ext_deuring}\lean{SptCM.RolenLiterature.DeuringInertSupersingular}\leanok
+% Lean: def DeuringInertSupersingular : Prop := forall ell P, InertAt ell P -> Supersingular (reduction P)
+$\mathsf{Deuring}$ is the theorem that inert reduction of a CM elliptic curve is supersingular.
+\end{definition}
+\begin{definition}[E8: injectivity of specialized CM action]\label{def_ext_cm_specialization_injective}\lean{SptCM.RolenLiterature.CMSpecializationInjective}\leanok
+% Lean: def CMSpecializationInjective : Prop := forall P, SpecializedCMActionInjective P
+$\mathsf{CMSpecialization}$ is injectivity of the relevant CM-order action after the chosen good specialization.
+\end{definition}
+
+\begin{definition}[E9: Arpin level-six Eichler order]\label{def_ext_arpin}\lean{SptCM.RolenLiterature.ArpinLevelSix}\leanok
+% Lean: def ArpinLevelSix : Prop := forall E C, supersingular E -> cyclicOfOrderSix C -> preservingOrderIsEichlerLevelSix E C
+$\mathsf{Arpin}_6$ is Arpin's theorem identifying the order preserving a cyclic subgroup of order six as the required level-six Eichler order.
+\end{definition}
+\begin{definition}[E9: Goren--Lauter Hadamard bound]\label{def_ext_goren_lauter}\lean{SptCM.RolenLiterature.GorenLauterHadamard}\leanok
+% Lean: def GorenLauterHadamard : Prop := forall a b c d, independent a b c d -> covolume(span a b c d)^2 <= norm a * norm b * norm c * norm d
+$\mathsf{GL}$ is the general Goren--Lauter covolume/Hadamard inequality for four independent quaternionic vectors.
+\end{definition}
+
+\begin{definition}[E10: corrected Treviño bound]\label{def_ext_trevino}\lean{SptCM.RolenLiterature.E10TrevinoCorrected}\leanok
+% Lean: def TrevinoCorrected : Prop := forall eligible odd prime characters, H <= 3.38*ell^(1/4)*log ell
+$\mathsf{Trevino}$ is the corrected all-prime bound $H\le3.38\ell^{1/4}\log\ell$ for a nonprincipal character constant on $H$ consecutive integers.
+\end{definition}
+
+\begin{definition}[E11: binary quadratic-form reduction]\label{def_ext_elementary}\lean{SptCM.RolenLiterature.BinaryQuadraticFormReduction}\leanok
+% Lean: def BinaryQuadraticFormReduction : Prop := forall Q, PositiveDefinite Q -> exists Q', Reduced Q' ∧ Equivalent Q Q'
+$\mathsf{BQFReduction}$ is the standard reduction theorem for positive definite integral binary quadratic forms, including the boundary convention used in the class count.
+\end{definition}
+\begin{definition}[E11: quadratic reciprocity]\label{def_ext_reciprocity}\lean{SptCM.RolenLiterature.QuadraticReciprocityInput}\leanok
+% Lean: def QuadraticReciprocityInput : Prop := the standard reciprocity theorem for the Legendre/Kronecker symbols used here
+$\mathsf{Reciprocity}$ is quadratic reciprocity with the exact sign and congruence conventions used for the progression $1-24k$.
+\end{definition}
+\begin{definition}[E11: Euler criterion]\label{def_ext_euler_criterion}\lean{SptCM.RolenLiterature.EulerCriterionInput}\leanok
+% Lean: def EulerCriterionInput : Prop := the standard Euler criterion over odd prime fields
+$\mathsf{EulerCriterion}$ is Euler's criterion and multiplicativity for the Legendre symbol over odd prime fields.
+\end{definition}
+\begin{definition}[E11: finite-height Stokes theorem]\label{def_ext_stokes}\lean{SptCM.RolenLiterature.FiniteHeightStokesTheorem}\leanok
+% Lean: def FiniteHeightStokesTheorem : Prop := the general truncated-domain Stokes identity with its stated boundary terms and convergence hypotheses
+$\mathsf{Stokes}$ is the general finite-height Stokes identity and limiting theorem for qualified modular inputs.  It contains no value of Rolen's constant term or pairing.
+\end{definition}
+\begin{definition}[Permitted literature record]\label{def_rolen_literature}\lean{SptCM.RolenLiterature.Repair.UniformRolenLiterature}\leanok
+% Lean: structure RolenLiterature where fields are proofs of exactly E1--E11
+$\mathsf{RolenLiterature}$ is the record whose proof fields are exactly the propositions in E1--E11 above, with their ambient objects and source metadata.
+\end{definition}
+\begin{uses-statement}\ref{def_andrews_5}, \ref{def_andrews_7}, \ref{def_andrews_13}, \ref{def_ext_ak_finite}, \ref{def_ext_ak_theta}, \ref{def_ext_bringmann}, \ref{def_ext_hecke_shadow}, \ref{def_ext_modular_forms}, \ref{def_ext_j_foundations}, \ref{def_ext_eisenstein_foundations}, \ref{def_ext_principal_integrality}, \ref{def_ext_modular_hecke}, \ref{def_ext_i05_source_qualification}, \ref{def_ext_weight_two_residue}, \ref{def_ext_published_grid}, \ref{def_ext_borcherds}, \ref{def_ext_weyl}, \ref{def_ext_ligozat_curve}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_genus_zero}, \ref{def_ext_x0_six_cusps}, \ref{def_ext_squarefree_cusps}, \ref{def_ext_cm}, \ref{def_ext_cm_class_count}, \ref{def_ext_quadratic_order_domain}, \ref{def_ext_reduced_form_classification}, \ref{def_ext_oriented_form_classification}, \ref{def_ext_cm_good_reduction}, \ref{def_ext_deuring}, \ref{def_ext_cm_specialization_injective}, \ref{def_ext_arpin}, \ref{def_ext_goren_lauter}, \ref{def_ext_trevino}, \ref{def_ext_elementary}, \ref{def_ext_reciprocity}, \ref{def_ext_euler_criterion}, \ref{def_ext_stokes}\end{uses-statement}
+
+\section{Arithmetic and series objects}
+\begin{definition}[Multiplicity of the smallest part [B]]\label{def_smallest_multiplicity}\lean{SptCM.smallestPartMultiplicity}\leanok
+% Lean: def smallestPartMultiplicity {n} (pi : Nat.Partition n) : Nat
+For a partition $\pi$, $\mu(\pi)$ is the multiplicity of its least part, and is zero for the empty partition.
+\end{definition}
+\begin{definition}[Smallest-parts function [B]]\label{def_spt}\lean{SptCM.spt}\leanok
+% Lean: def spt (n : Nat) : Nat := sum pi : Nat.Partition n, smallestPartMultiplicity pi
+$\spt(n):=\sum_{\pi\vdash n}\mu(\pi)$.
+\end{definition}
+\begin{uses-statement}\ref{def_smallest_multiplicity}\end{uses-statement}
+\begin{definition}[Canonical residue]\label{def_canonical_shift}\lean{SptCM.canonicalResidue}\leanok
+% Lean: def canonicalResidue (ell : Nat) : Nat := Nat.modInv 24 ell
+For prime $\ell\ge5$, $b_\ell$ is the unique integer in $[1,\ell)$ satisfying $24b_\ell\equiv1\pmod\ell$.
+\end{definition}
+\begin{definition}[Canonical congruence prime]\label{def_canonical}\lean{SptCM.CanonicalCongruencePrime}\leanok
+% Lean: def CanonicalCongruencePrime (ell : Nat) : Prop := ell.Prime ∧ 5 <= ell ∧ forall k, ell ∣ spt (ell*k + canonicalResidue ell)
+$\Can(\ell)$ means that $\ell$ is prime, $\ell\ge5$, and $\ell\mid\spt(\ell k+b_\ell)$ for every $k\ge0$.
+\end{definition}
+\begin{uses-statement}\ref{def_spt}, \ref{def_canonical_shift}\end{uses-statement}
+\begin{definition}[Mock coefficient series]\label{def_series_f}\lean{SptCM.Analytic.fSeries}\leanok
+% Lean: def fSeries : QSeries Int
+Let $a(r)$ be the normalized coefficients of $f(\tau)=\sum_r a(r)q^{r/24}$ used by Rolen.
+\end{definition}
+\begin{definition}[$U_\ell$ on numerator-indexed series]\label{def_u_operator}\lean{SptCM.Analytic.uSeriesOp}\leanok
+% Lean: def uSeriesOp (ell : Nat) (g : QSeries R) : QSeries R := fun r => g (ell*r)
+For a numerator-indexed series $g$, $(g|U_\ell)(r):=g(\ell r)$.
+\end{definition}
+\begin{definition}[Correct analytic range]\label{def_prime_analytic_data}\lean{SptCM.Repair.AnalyticAdmissible}\leanok
+% Lean: def AnalyticAdmissible (ell n : Nat) : Prop := ell.Prime ∧ 5 <= ell ∧ Admissible ell n
+$\mathsf{AnalyticAdmissible}(\ell,n)$ means that $\ell$ is prime,
+$5\le\ell$, and $\Adm(\ell,n)$ holds.  All characteristic-dependent analytic
+data below are indexed by a proof of this predicate.
+\end{definition}
+\begin{definition}[Canonical grid form]\label{def_grid_form}\lean{SptCM.Analytic.Repaired.gridForm}\leanok
+% Lean: def gridForm (m : Nat) : WeaklyHolomorphicForm := the unique genuine G_m
+For $m>1$ with $(m,6)=1$, $G_m$ denotes the genuine integral weakly holomorphic form with principal part $q^{-m^2/24}-\chi_{12}(m)q^{-1/24}$; put $G_1=0$.
+\end{definition}
+\begin{definition}[Auxiliary form]\label{def_Hn}\lean{SptCM.Analytic.Repaired.auxiliaryHn}\leanok
+% Lean: def Hn (n : Nat) : WeaklyHolomorphicForm := eta * P_n j
+For $n=24k-1>0$, $H_n:=\eta P_n(j)$, where the monic polynomial $P_n$ is fixed by the triangular principal-part condition.
+\end{definition}
+\begin{definition}[Admissible pair]\label{def_admissible}\lean{SptCM.Admissible}\leanok
+% Lean: def Admissible (ell n : Nat) : Prop := Squarefree n ∧ n % 24 = 23 ∧ ¬ IsSquare (-(n : ZMod ell))
+$\Adm(\ell,n)$ means that $n$ is squarefree, $n\equiv23\pmod{24}$, and
+$-n$ is not a square in $\mathbf Z/\ell\mathbf Z$.  For the prime range used
+below this is equivalent to $\left(\frac{-n}{\ell}\right)=-1$.
+\end{definition}
+\begin{definition}[Level-six Hauptmodul]\label{def_hauptmodul}\lean{SptCM.hauptmodul}\leanok
+% Lean: def hauptmodul (tau : UpperHalfPlane) : Complex := eta tau ^ 5 * eta (3*tau) / (eta (2*tau) * eta (6*tau)^5)
+$t(\tau):=\eta(\tau)^5\eta(3\tau)/(\eta(2\tau)\eta(6\tau)^5)$.
+\end{definition}
+\begin{definition}[Actual analytic level-six Hauptmodul]\label{def_analytic_hauptmodul}\lean{SptCM.CM.Repaired.analyticHauptmodul}\leanok
+% Lean: def analyticHauptmodul (tau : UpperHalfPlane) : Complex := SptCM.hauptmodul ModularForm.eta tau
+Let $t_{\rm an}$ be the level-six eta quotient formed with Mathlib's actual Dedekind eta function on the upper half-plane.
+\end{definition}
+\begin{uses-statement}\ref{def_hauptmodul}\end{uses-statement}
+\begin{definition}[Dedekind eta Euler unit]\label{def_eta_euler_unit}\lean{SptCM.Repair.etaEulerUnit}\leanok
+% Lean: noncomputable def etaEulerUnit (z : Complex) : Complex := ∏' n : Nat, (1 - ModularForm.eta_q n z)
+For $z\in\C$, put
+\[
+E_\eta(z):=\prod_{n\ge0}\bigl(1-q(z)^{n+1}\bigr),
+\]
+using Mathlib's convergent infinite product from the definition of Dedekind
+eta.
+\end{definition}
+\begin{definition}[Level-six Hauptmodul Euler unit]\label{def_hauptmodul_euler_unit}\lean{SptCM.Repair.hauptmodulEulerUnit}\leanok
+% Lean: noncomputable def hauptmodulEulerUnit (tau : UpperHalfPlane) : Complex := etaEulerUnit tau ^ 5 * etaEulerUnit (3*tau) / (etaEulerUnit (2*tau) * etaEulerUnit (6*tau)^5)
+For $\tau$ in the upper half-plane, put
+\[
+E_t(\tau):=\frac{E_\eta(\tau)^5E_\eta(3\tau)}
+ {E_\eta(2\tau)E_\eta(6\tau)^5}.
+\]
+\end{definition}
+\begin{uses-statement}\ref{def_eta_euler_unit}\end{uses-statement}
+\begin{proposition}[I21: analytic Euler-product bridge]\label{prop_i21_analytic_euler_bridge}\lean{SptCM.Repair.analyticHauptmodul_eq_qParam_inv_mul_eulerUnit}\leanok
+For every $\tau$ in the upper half-plane,
+\[
+t_{\rm an}(\tau)=q(\tau)^{-1}E_t(\tau).
+\]
+\end{proposition}
+\begin{uses-statement}\ref{def_analytic_hauptmodul}, \ref{def_hauptmodul_euler_unit}\end{uses-statement}
+\begin{proof}
+Unfold Mathlib's definition
+$\eta(z)=q_{24}(z)\prod_{n\ge0}(1-q(z)^{n+1})$.  The four fractional
+prefactors have net exponent
+$5+3-2-30=-24$, hence combine exactly to $q(\tau)^{-1}$.
+\end{proof}
+\begin{definition}[One level-six formal Euler factor]\label{def_hauptmodul_formal_euler_factor}\lean{SptCM.Repair.hauptmodulFormalEulerFactor}\leanok
+% Lean: noncomputable def hauptmodulFormalEulerFactor (m : Nat) : PowerSeries Int := ...
+For $m\ge1$, let
+\[
+F_m(X):=(1-X^m)^5(1-X^{3m})(1-X^{2m})^{-1}(1-X^{6m})^{-5}
+\in\Z[[X]],
+\]
+where the negative powers are Mathlib's integral formal geometric-series
+units after substitution.
+\end{definition}
+\begin{definition}[Stabilized formal Hauptmodul Euler unit]\label{def_hauptmodul_formal_euler_unit}\lean{SptCM.Repair.hauptmodulFormalEulerUnit}\leanok
+% Lean: noncomputable def hauptmodulFormalEulerUnit : PowerSeries Int := PowerSeries.mk fun d => coeff d (prod i in range (d+2), hauptmodulFormalEulerFactor (i+1))
+Define $E_t^{\rm form}\in\Z[[X]]$ coefficientwise: its coefficient in
+degree $d$ is the degree-$d$ coefficient of
+$\prod_{m=1}^{d+2}F_m(X)$.
+\end{definition}
+\begin{uses-statement}\ref{def_hauptmodul_formal_euler_factor}\end{uses-statement}
+\begin{lemma}[Formal Hauptmodul unit constant coefficient]\label{lem_i21_formal_euler_constant}\lean{SptCM.Repair.hauptmodulFormalEulerUnit_coeff_zero}\leanok
+The constant coefficient of $E_t^{\rm form}$ is $1$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_formal_euler_unit}\end{uses-statement}
+\begin{proof}
+Every numerator factor and every substituted geometric-series denominator
+factor has constant coefficient one, so their finite stabilized product does
+as well.
+\end{proof}
+\begin{lemma}[Formal Hauptmodul unit linear coefficient]\label{lem_i21_formal_euler_linear}\lean{SptCM.Repair.hauptmodulFormalEulerUnit_coeff_one}\leanok
+The coefficient of $X$ in $E_t^{\rm form}$ is $-5$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_formal_euler_unit}\end{uses-statement}
+\begin{proof}
+All factors except $(1-X)^5$ have their first nonconstant term in degree at
+least two.  Thus the linear coefficient is the linear coefficient of
+$(1-X)^5$, namely $-5$.
+\end{proof}
+\begin{definition}[Hauptmodul Laurent series]\label{def_hauptmodul_laurent}\lean{SptCM.Repair.hauptmodulFormalLaurent}\leanok
+% Lean: noncomputable def hauptmodulFormalLaurent : LaurentSeries Int := HahnSeries.single (-1) 1 * hauptmodulFormalEulerUnit
+Let $t_q^{\rm form}:=X^{-1}E_t^{\rm form}\in\Z((X))$.  This is the
+independently constructed formal Euler-product candidate; no analytic
+identification is included in the definition.
+\end{definition}
+\begin{uses-statement}\ref{def_hauptmodul_formal_euler_unit}\end{uses-statement}
+\begin{proposition}[I21: formal principal part]\label{prop_i21_formal_principal_part}\lean{SptCM.Repair.hauptmodulFormalLaurent_principalPart}\leanok
+The formal Euler-product candidate $t_q^{\rm form}$ has principal part
+$X^{-1}-5+O(X)$: its coefficient at $-1$ is one, its coefficient at zero is
+$-5$, and all coefficients below $-1$ vanish.
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul_laurent}\end{uses-statement}
+\begin{proof}
+Shift the coefficients of $E_t^{\rm form}$ down by one and use its verified
+constant and linear coefficients.
+\end{proof}
+\begin{uses-proof}\ref{lem_i21_formal_euler_constant}, \ref{lem_i21_formal_euler_linear}\end{uses-proof}
+\begin{proposition}[I21: analytic/formal identification]\label{prop_i21_analytic_formal_identification}\lean{SptCM.Repair.analyticHauptmodul_eq_integral_formal_expansion}\leanok
+The analytic Euler unit $E_t(\tau)$ is represented on the punctured unit
+disk by the coefficientwise stabilized integral series
+$E_t^{\rm form}$; consequently $t_{\rm an}$ has Laurent expansion
+$t_q^{\rm form}$.
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul_euler_unit}, \ref{def_hauptmodul_laurent}\end{uses-statement}
+\begin{proof}
+This is the remaining analytic/formal bridge: justify convergence of the
+substituted formal factors on the unit disk, identify their finite products
+with the analytic products, and pass coefficientwise stabilization through
+the locally uniform limit.
+\end{proof}
+\begin{uses-proof}\ref{prop_i21_analytic_euler_bridge}\end{uses-proof}
+\begin{definition}[Oriented form classes]\label{def_oriented_forms}\lean{SptCM.orientedForms}\leanok
+% Lean: def orientedForms (n r : Nat) := Quotient of primitive positive forms by Gamma0(6)
+$\mathcal Q_{n,r}$ is the set of primitive positive binary quadratic forms of discriminant $-n$, modulo $\Gamma_0(6)$, with middle coefficient congruent to $r\pmod{12}$.
+\end{definition}
+\begin{definition}[Canonical raw CM point]\label{def_raw_cm_point}\lean{SptCM.CM.Repaired.rawCMUpperHalfPlane}\leanok
+% Lean: def rawCMUpperHalfPlane (hn : 0 < n) (Q : RawOrientedForm n r) : UpperHalfPlane
+For a raw positive form $Q=[a,b,c]$ of discriminant $-n$ with $n>0$, let
+$\tau_Q:=(-b+i\sqrt n)/(2a)\in\mathbb H$.
+\end{definition}
+\begin{uses-statement}\ref{def_oriented_forms}\end{uses-statement}
+\begin{definition}[Actual oriented Hauptmodul value]\label{def_actual_oriented_cm_value}\lean{SptCM.CM.Repaired.actualOrientedHauptmodulValue}\leanok
+% Lean: def actualOrientedHauptmodulValue (hInv : RawCMValueInvariant analyticHauptmodul) (hn : 0 < n) : orientedForms n r -> Complex
+Given the transformation-law proof that the actual eta quotient is invariant
+under the concrete $\Gamma_0(6)$ relation, $Q\mapsto t(\tau_Q)$ descends along
+the equivalence closure to a function on the actual quotient
+$\mathcal Q_{n,r}$.
+\end{definition}
+\begin{uses-statement}\ref{def_raw_cm_point}, \ref{def_analytic_hauptmodul}, \ref{def_oriented_forms}\end{uses-statement}
+\begin{definition}[Numerator class polynomial]\label{def_class_poly_a}\lean{SptCM.CM.Repaired.ActualOrientedCMCoordinates.actualNumeratorPolynomial}\leanok
+% Lean: def actualNumeratorPolynomial (n : Nat) : Polynomial Complex
+$A_n^{\C}(X):=\prod_{r\in\{1,11\}}\prod_{Q\in\mathcal Q_{n,r}}(X-t(\tau_Q))$ is the actual complex numerator root product.  No individual CM root is asserted to lie in $\Z[1/6]$.
+\end{definition}
+\begin{uses-statement}\ref{def_actual_oriented_cm_value}, \ref{def_oriented_forms}\end{uses-statement}
+\begin{definition}[Denominator class polynomial]\label{def_class_poly_b}\lean{SptCM.CM.Repaired.ActualOrientedCMCoordinates.actualDenominatorPolynomial}\leanok
+% Lean: def actualDenominatorPolynomial (n : Nat) : Polynomial Complex
+$B_n^{\C}(X):=\prod_{r\in\{5,7\}}\prod_{Q\in\mathcal Q_{n,r}}(X-t(\tau_Q))$ is the actual complex denominator root product.  No individual CM root is asserted to lie in $\Z[1/6]$.
+\end{definition}
+\begin{uses-statement}\ref{def_actual_oriented_cm_value}, \ref{def_oriented_forms}\end{uses-statement}
+\begin{definition}[Coefficientwise reduction]\label{def_reduced_class_polys}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actualReducedClassPolynomials}\leanok
+% Lean: def reducedClassPolys (P : ActualClassPolynomialSpec n) (ell : Nat) : Polynomial (ZMod ell) × Polynomial (ZMod ell)
+For $\ell>3$ and a proved $\Z[1/6]$-descent $P$ of the two actual complex root products, $(\bar A_{\ell,n},\bar B_{\ell,n})$ is obtained by reducing the descended coefficients modulo $\ell$.
+\end{definition}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}\end{uses-statement}
+\begin{definition}[Wronskian obstruction]\label{def_wronskian}\lean{SptCM.wronskianObstruction}\leanok
+% Lean: def wronskianObstruction (A B : Polynomial R) := derivative A * B - A * derivative B
+$\Wr(A,B):=A'B-AB'$.
+\end{definition}
+\begin{definition}[Signed Borcherds exponent]\label{def_signed_exponent}\lean{SptCM.Repair.signedEulerExponent}\leanok
+% Lean: def signedExponent (n m : Nat) : Int := chi12 m * hCoeff n (m^2)
+$e_n(m):=\chi_{12}(m)h_n(m^2)\in\Z$.
+\end{definition}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+\begin{definition}[Positive Euler product]\label{def_euler_product_plus}\lean{SptCM.Repair.eulerProductPlus}\leanok
+% Lean: def eulerProductPlus (n : Nat) : PowerSeries R := stabilized product over m of (1-X^m)^(max (e_n m) 0)
+$P_n^+(q)$ is the coefficientwise stabilized product $\prod_{m\ge1}(1-q^m)^{\max(e_n(m),0)}$.
+\end{definition}
+\begin{uses-statement}\ref{def_signed_exponent}\end{uses-statement}
+\begin{definition}[Negative Euler product]\label{def_euler_product_minus}\lean{SptCM.Repair.eulerProductMinus}\leanok
+% Lean: def eulerProductMinus (n : Nat) : PowerSeries R := stabilized product over m of (1-X^m)^(max (-(e_n m)) 0)
+$P_n^-(q)$ is the coefficientwise stabilized product $\prod_{m\ge1}(1-q^m)^{\max(-e_n(m),0)}$.
+\end{definition}
+\begin{uses-statement}\ref{def_signed_exponent}\end{uses-statement}
+\begin{definition}[Reduced auxiliary coefficient form]\label{def_reduced_auxiliary_form}\lean{SptCM.Repair.reducedAuxiliaryForm}\leanok
+% Lean: def reducedAuxiliaryForm (ell : Nat) (H : Int -> Int) : HForm (ZMod ell) := fun r => H r
+For an integral auxiliary coefficient function $H$, let $\bar H_\ell$ be its coefficientwise reduction to $\F_\ell$.
+\end{definition}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+\begin{definition}[Reduced-form class number]\label{def_negative_class_number}\lean{SptCM.negativeClassNumber}\leanok
+% Lean: def negativeClassNumber (n : Nat) : Nat := Fintype.card (ReducedForm n)
+$h_{\rm red}(-n)$ is the cardinality of the finite type of primitive reduced positive forms of discriminant $-n$.
+\end{definition}
+
+
+\section{Specification predicates for repaired objects}
+\begin{definition}[Genuine-grid specification]\label{def_grid_spec}\lean{SptCM.Analytic.Repaired.AhlgrenKimGridTheorem}\leanok
+% Lean: structure AhlgrenKimGridTheorem (K : Type*) [Field K] where chi : Nat -> K; grid : Nat -> QSeries K; Qualifies : Nat -> QSeries K -> Prop; ...
+$\mathsf{GenuineGridSpec}$ consists of the published grid family, its exact
+modular qualification predicate, the convention $G_1=0$, its normalized
+principal parts for $m>1$ coprime to $6$, and uniqueness with those data.
+\end{definition}
+\begin{uses-statement}\ref{def_grid_form}\end{uses-statement}
+\begin{definition}[Hecke-identity specification]\label{def_hecke_spec}\lean{SptCM.Analytic.Repaired.HeckeIdentitySpec}\leanok
+% Lean: def HeckeIdentitySpec (G : PublishedMockModularGrid K) (D : HeckeQualificationData G) : Prop := ...
+For a fixed published grid and concrete qualification data $D$ naming the
+two sides, $\mathsf{HeckeSpec}(G,D)$ is the property that those sides obey
+Rolen's two source-normalized Hecke formulas in their exact valid ranges.
+\end{definition}
+\begin{uses-statement}\ref{def_series_f}, \ref{def_grid_form}\end{uses-statement}
+\begin{definition}[Auxiliary-form specification]\label{def_hn_spec}\lean{SptCM.Analytic.Repaired.AuxiliaryFormSpec}\leanok
+% Lean: def HnSpec (n : Nat) (H : WeaklyHolomorphicForm) : Prop := ...
+$\mathsf{HnSpec}(n,H)$ records the exact weight, multiplier, integrality, and Fourier normalization required of $H_n$.
+\end{definition}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+\begin{definition}[Signed-exponent specification]\label{def_signed_exponent_spec}\lean{SptCM.Repair.SignedExponentSpec}\leanok
+% Lean: def SignedExponentSpec (H : Int -> Int) (m : Nat) : Prop := ...
+$\mathsf{SignedExponentSpec}(H,m)$ records that the natural positive and
+negative parts of $e(m)=\chi_{12}(m)H(m^2)$ have difference $e(m)$, are
+one-sided, and vanish when $(m,6)>1$.
+\end{definition}
+\begin{uses-statement}\ref{def_signed_exponent}\end{uses-statement}
+\begin{definition}[Laurent Hauptmodul specification]\label{def_laurent_spec}\lean{SptCM.Repair.LaurentHauptmodulData}\leanok
+% Lean: structure LaurentHauptmodulData (ell n : Nat) (hrange : AnalyticAdmissible ell n) where t : LaurentSeries (ZMod ell); principalPart : HasHauptmodulPrincipalPart t
+$\mathsf{LaurentSpec}(\ell,n,h)$ consists of a Laurent series $t_q$ with
+principal part $q^{-1}-5+O(q)$.  In the intended range $h$, the pole proves
+transcendence over $\F_\ell$, hence injective polynomial substitution; it also
+proves that the formal derivative is nonzero.  These consequences are derived
+from the principal part rather than stored as extra fields.
+\end{definition}
+\begin{uses-statement}\ref{def_hauptmodul_laurent}\end{uses-statement}
+\begin{definition}[Vector-valued input specification]\label{def_vector_input_spec}\lean{SptCM.Analytic.Repaired.VectorInputSpec}\leanok
+% Lean: def VectorInputSpec (n : Nat) (Hvec : VectorForm) : Prop := ...
+$\mathsf{VectorInputSpec}(n,\mathbf H_n)$ records the exact Weil transformation law, zero constant term, and integral principal part required by Bruinier--Ono.
+\end{definition}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+\begin{definition}[Stabilized-product specification]\label{def_euler_product_spec}\lean{SptCM.Repair.EulerProductSpec}\leanok
+% Lean: def EulerProductSpec (n : Nat) (Pplus Pminus : PowerSeries R) : Prop := ...
+$\mathsf{EulerProductSpec}(H,P^+,P^-)$ records coefficientwise stabilization of the two canonical products, unit constant terms, invertibility, and the pointwise positive-minus-negative signed-exponent decomposition.  It contains no Borcherds quotient identity.
+\end{definition}
+\begin{uses-statement}\ref{def_euler_product_plus}, \ref{def_euler_product_minus}\end{uses-statement}
+\begin{definition}[Class-polynomial arithmetic specification]\label{def_class_poly_spec}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec}\leanok
+% Lean: structure ActualClassPolynomialSpec (n : Nat) where A B : Polynomial ZOneSixth; mapA : A.map toComplex = actualNumeratorPolynomial n; mapB : B.map toComplex = actualDenominatorPolynomial n; monicA : A.Monic; monicB : B.Monic
+$\mathsf{ClassPolySpec}(n,P)$ is a descent of the two actual complex root products to polynomials $A_n,B_n\in\Z[1/6][X]$, with literal coefficient-map equalities and monicity.  It records no lift of any individual CM root to $\Z[1/6]$.
+\end{definition}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}\end{uses-statement}
+\begin{definition}[Algebraic-closure reduction specification]\label{def_root_reduction_spec}\lean{SptCM.Repair.RootReductionSpec}\leanok
+% Lean: def RootReductionSpec (P : IntegralOrientedClassPolynomials n) (h6 : IsUnit (6 : ZMod ell)) : Prop := ...
+$\mathsf{RootReductionSpec}(P,h_6)$ records coefficientwise reduction of
+the integral pair $P$ to $\F_\ell[X]$ and the common-root criterion over an
+algebraic closure, where $h_6$ certifies that $6$ is invertible.
+\end{definition}
+\begin{uses-statement}\ref{def_reduced_class_polys}\end{uses-statement}
+\begin{definition}[Class-count specification]\label{def_class_count_spec}\lean{SptCM.Arithmetic.Repaired.ClassCountSpec}\leanok
+% Lean: def ClassCountSpec (n : Nat) : Prop := exists domain : IsDomain (NegativeQuadraticOrder n), ...
+$\mathsf{ClassCountSpec}(n)$ packages a domain instance for the concrete
+quadratic order, equality of the reduced-form count with its ordinary
+ideal-class number $h(-n)$, and the cardinality $h(-n)$ of every one of the
+four oriented form sets.
+\end{definition}
+\begin{uses-statement}\ref{def_negative_class_number}, \ref{def_oriented_forms}\end{uses-statement}
+\begin{definition}[Specialized-action specification]\label{def_action_spec}\lean{SptCM.Repair.OrientedSpecializedActions}\leanok
+% Lean: structure OrientedSpecializedActions (CM : CMTheoryModel ...) (S : GeometricCMSpecialization CM) where ...
+For a specialized CM pair $S$, $\mathsf{ActionSpec}(S)$ records the two
+orientation residues and their scalar actions on the level-six subgroup,
+the two trace-one identities, and equality of the two reduced norms.
+Noncommutation is not a field of this specification.
+\end{definition}
+\begin{definition}[Common-root specialization specification]\label{def_collision_spec}\lean{SptCM.Repair.GeometricCMSpecialization}\leanok
+% Lean: structure GeometricCMSpecialization (CM : CMTheoryModel ...) where ...
+For a standard CM model, $\mathsf{CollisionSpec}$ consists of two CM points
+with the same reduction, potentially good reduction for both points,
+supersingularity of the common reduction, and injectivity of both specialized
+CM actions.
+\end{definition}
+\begin{uses-statement}\ref{def_reduced_class_polys}\end{uses-statement}
+\begin{definition}[Small-discriminant specification]\label{def_small_discriminant_spec}\lean{SptCM.SmallDiscriminantSpec}\leanok
+% Lean: def SmallDiscriminantSpec (ell n : Nat) : Prop := Admissible ell n ∧ (n+1)^2 < 24*ell ∧ 0 < 2*h(-n) ∧ 2*h(-n) < ell
+$\mathsf{SmallDisc}(\ell,n)$ records admissibility, the collision inequality, and the positive degree bound below $\ell$.
+\end{definition}
+\begin{uses-statement}\ref{def_admissible}\end{uses-statement}
+\section{Sound analytic interfaces and the grid: I01--I08, I13, I21}
+\begin{proposition}[I01: intended-range analytic data are consistent]\label{prop_i01_prime_range}\lean{SptCM.Repair.analyticAdmissible_sound_range}\leanok
+If $\mathsf{AnalyticAdmissible}(\ell,n)$, then
+$\ell\ne1$, $\ell\ne3$, and $24\ne0$ in $\F_\ell$.
+\end{proposition}
+\begin{uses-statement}\ref{def_admissible}, \ref{def_prime_analytic_data}\end{uses-statement}
+\begin{proof}
+The prime and lower-bound witnesses exclude $\ell=1,3$.  A prime
+$\ell\ge5$ cannot divide $24$, so its image in $\F_\ell$ is nonzero.
+\end{proof}
+
+\begin{lemma}[I03: Euler mismatch in the correct range]\label{lem_i03_euler_mismatch}\lean{SptCM.Repair.eulerInertMismatch_of_five_le}\leanok
+If $\ell\ge5$ is prime and $\left(\frac{-r}{\ell}\right)=-1$, then the theta diagonal eigenvalue at $r$ differs from $\left(\frac{-24}{\ell}\right)$.
+\end{lemma}
+\begin{proof}
+Invert $24$ in $\F_\ell$ and apply Euler's criterion and multiplicativity of the Legendre symbol.  The inert hypothesis changes exactly one of the two signs.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_euler_criterion}\end{uses-proof}
+
+\begin{proposition}[I04: identify the published grid normalization]\label{prop_i04_grid_identification}\lean{SptCM.Analytic.Repaired.published_grid_normalization_agreement}\leanok
+The fixed published family has $G_1=0$.  For every $m>1$ coprime to $6$,
+$G_m$ satisfies the published qualification predicate (and hence its
+multiplier convention), and for every negative numerator index $r$ its
+coefficient is
+\[
+ [q^{r/24}]G_m=
+ \begin{cases}
+ 1&r=-m^2,\\
+ -\chi_{12}(m)&r=-1,\\
+ 0&\text{otherwise}.
+ \end{cases}
+\]
+Thus the numerator-indexed exponents, character, coprime range, and both
+principal-part signs agree with the fixed convention used here.
+\end{proposition}
+\begin{uses-statement}\ref{def_grid_form}, \ref{def_grid_spec}\end{uses-statement}
+\begin{proof}Unfold the paper-facing family as the grid carried by the exact
+data-bearing Ahlgren--Kim theorem.  Project its $G_1$ field, qualification
+field, and principal-part field.  No Hecke, grid-support, or duality
+conclusion is imported.</end{proof}
+\begin{uses-proof}\ref{def_ext_published_grid}, \ref{def_ext_modular_forms}, \ref{def_ext_j_foundations}\end{uses-proof}
+
+\begin{proposition}[I04: genuine grid construction]\label{prop_i04_grid_exists}\lean{SptCM.Analytic.Repaired.AhlgrenKimGridTheorem.existsUnique}\leanok
+Given the exact published grid theorem, for every $m>1$ coprime to $6$ there
+exists a unique qualified series with principal part
+$q^{-m^2/24}-\chi_{12}(m)q^{-1/24}$.
+\end{proposition}
+\begin{uses-statement}\ref{def_grid_form}, \ref{def_grid_spec}\end{uses-statement}
+\begin{proof}
+Use the exact published modular-grid theorem when its multiplier and normalization match; otherwise start from $-\Theta j/\eta$ and eliminate successive principal parts by monic polynomials in $j$.  The absence of a holomorphic difference with zero principal part gives uniqueness.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_published_grid}, \ref{prop_i04_grid_identification}\end{uses-proof}
+
+\begin{definition}[Mock-form negative principal part]\label{def_i05_mock_principal_part}\lean{SptCM.Analytic.Repaired.HasMockPrincipalPart}\leanok
+% Lean: def HasMockPrincipalPart (f : QSeries K) : Prop := forall r < 0, f r = if r = -1 then 1 else 0
+A coefficient series has the mock-form negative principal part if its
+coefficient at index $-1$ is one and all its other negative-index
+coefficients vanish.
+\end{definition}
+\begin{uses-statement}\ref{def_series_f}\end{uses-statement}
+
+\begin{lemma}[I05: the actual mock series has its stated principal part]\label{lem_i05_actual_f_principal_part}\lean{SptCM.Analytic.Repaired.fSeries_hasMockPrincipalPart}\leanok
+The integral coefficient series \(f\) has coefficient one at index \(-1\)
+and has zero coefficient at every other negative index.
+\end{lemma}
+\begin{uses-statement}\ref{def_i05_mock_principal_part}\end{uses-statement}
+\begin{proof}
+Unfold the coefficient definition.  The exceptional branch is precisely
+\(r=-1\), while the only other support branch requires \(r\ge0\).
+\end{proof}
+\begin{uses-proof}\ref{def_series_f}\end{uses-proof}
+
+\begin{lemma}[I05: exact \(f\)-Hecke principal-part calculation]\label{lem_i05_f_hecke_principal_part}\lean{SptCM.Analytic.Repaired.fHeckeDifference_hasGridPrincipalPart}\leanok
+Let \(p\) be prime and nonzero in the coefficient field.  If \(f\) has the
+mock-form negative principal part and the quadratic symbol satisfies
+\((1/p)=1\), then
+\[
+ p^{-1}\bigl(f\mid T(p^2)-\chi_{12}(p)(1+p)f\bigr)
+\]
+has grid principal part
+\(q^{-p^2/24}-\chi_{12}(p)q^{-1/24}\).
+\end{lemma}
+\begin{uses-statement}\ref{def_i05_mock_principal_part}, \ref{def_grid_spec}\end{uses-statement}
+\begin{proof}
+Compute coefficientwise.  At index \(-p^2\), only the divided-index term
+contributes; at index \(-1\), the middle Hecke term and the subtracted scalar
+term combine to \(-p\chi_{12}(p)\); all other negative coefficients vanish.
+\end{proof}
+\begin{uses-proof}\ref{lem_i05_actual_f_principal_part}\end{uses-proof}
+
+\begin{lemma}[I05: exact Legendre-square values]\label{lem_i05_legendre_square_values}\lean{SptCM.Analytic.Repaired.heckeLegendreCast_square}\leanok
+For every prime \(p\) and integer \(a\), the Legendre symbol satisfies
+\[
+ \left(\frac{a^2}{p}\right)=
+ \begin{cases}0,&p\mid a,\\1,&p\nmid a.\end{cases}
+\]
+The same identity holds after casting into any coefficient field.
+\end{lemma}
+\begin{proof}
+If \(p\mid a\), use the vanishing criterion for the Legendre symbol.  If
+not, apply the standard theorem that the character of a nonzero square is
+one.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_euler_criterion}\end{uses-proof}
+
+\begin{lemma}[I05: actual \(f\)-Hecke principal part]\label{lem_i05_actual_f_hecke_principal_part}\lean{SptCM.Analytic.Repaired.actualFHeckeDifference_legendre_hasGridPrincipalPart}\leanok
+After embedding the actual integral mock series into a characteristic-zero
+coefficient field, for every prime \(p\), using the actual Legendre symbol,
+the normalized series
+\[
+ p^{-1}\bigl(f\mid T(p^2)-\chi_{12}(p)(1+p)f\bigr)
+\]
+has the published grid principal part at index \(p\).
+\end{lemma}
+\begin{uses-statement}\ref{def_series_f}, \ref{def_grid_spec}\end{uses-statement}
+\begin{proof}
+Casting preserves the actual mock principal part.  A prime is nonzero in a
+characteristic-zero field, so apply the exact coefficient calculation.
+\end{proof}
+\begin{uses-proof}\ref{lem_i05_actual_f_principal_part}, \ref{lem_i05_f_hecke_principal_part}\end{uses-proof}
+
+\begin{proposition}[I05: Hecke qualification and principal parts]\label{prop_i05_hecke_qualifications}\lean{SptCM.Analytic.Repaired.actualHeckeQualificationData_exists}\leanok
+Given the exact citation-level qualification $\mathsf{I05Qual}(G)$, the
+concrete normalized left and right sides form a value of the source-faithful
+Hecke qualification package: all four sides qualify in the correct grid
+spaces and both pairs have the internally computed common principal parts.
+\end{proposition}
+\begin{uses-statement}\ref{def_series_f}, \ref{def_grid_form}, \ref{def_ext_i05_source_qualification}\end{uses-statement}
+\begin{proof}
+Use the cited qualification for the two concrete left sides and the published
+grid theorem for the right sides.  Compute the $f$ principal part directly.
+For the grid side, split according to $p\mid m$, including the collision
+$m=p$ and the convention $G_1=0$; multiplicativity and the square-one values
+of $\chi_{12}$ and the Legendre symbol give exactly the principal part of
+$G_{mp}$.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_i05_source_qualification}, \ref{prop_i04_grid_exists}, \ref{lem_i05_actual_f_hecke_principal_part}, \ref{lem_i05_legendre_square_values}\end{uses-proof}
+
+\begin{proposition}[I05: identities from qualification data]\label{prop_i05_hecke_identities}\lean{SptCM.Analytic.Repaired.published_hecke_identities}\leanok
+Given concrete Hecke data whose two sides have the verified modular
+qualifications and principal parts, uniqueness of the published grid proves
+$\mathsf{HeckeSpec}(G,D)$.
+\end{proposition}
+\begin{uses-statement}\ref{def_hecke_spec}\end{uses-statement}
+\begin{proof}
+Apply the completion and shadow identity to the weight-$3/2$ Hecke image, use the eta Hecke eigenvalue, and compare the explicitly computed principal parts.  The uniqueness in the grid construction identifies both sides coefficientwise.
+\end{proof}
+\begin{uses-proof}\ref{prop_i04_grid_exists}\end{uses-proof}
+
+\begin{proposition}[I05: actual source-faithful Hecke identities]\label{prop_i05_actual_hecke_identities}\lean{SptCM.Analytic.Repaired.actual_source_hecke_identities_displayed}\leanok
+The actual $f$ and published grid family, with the weight-$3/2$ Hecke operator
+and source normalizations, satisfy the two Hecke identities in their valid
+ranges.
+\end{proposition}
+\begin{uses-statement}\ref{def_series_f}, \ref{def_grid_form}, \ref{def_hecke_spec}\end{uses-statement}
+\begin{proof}
+Construct the concrete qualification data from the completion/shadow and
+principal-part calculations, then apply uniqueness of the published grid.
+\end{proof}
+\begin{uses-proof}\ref{prop_i05_hecke_qualifications}, \ref{prop_i05_hecke_identities}\end{uses-proof}
+
+\begin{lemma}[I02: corrected grid recursion]\label{lem_i02_grid_recursion}\lean{SptCM.Analytic.Repaired.actual_modGrid_theta_recursion}\leanok
+Let $\ell\ge5$ be prime.  Suppose $(m,6\ell)=1$ and $p\nmid6\ell$ with $p$ prime.  If $G_m$, $G_p$, and, when $p\mid m$, the earlier divided-index term $G_{m/p}$ lie in the required theta eigenspace modulo $\ell$, then $G_{mp}$ lies in that eigenspace modulo $\ell$.
+\end{lemma}
+\begin{uses-statement}\ref{def_grid_form}\end{uses-statement}
+\begin{proof}
+Use the integral Fourier realization of the published grid to transport the characteristic-zero I05 identity first to an integral coefficient identity and then coefficientwise to $\mathbf F_\ell$.  Since $p\ne\ell$, Fermat's theorem makes the theta-cycle diagonal weight invariant under multiplication and division by $p^2$, so the Hecke operator commutes with theta.  The explicitly assumed earlier correction terms have the same eigenvalue; subtract them and cancel the nonzero scalar $p$ to obtain the assertion, never applying the step at $p=\ell$.
+\end{proof}
+\begin{uses-proof}\ref{prop_i01_prime_range}, \ref{prop_i05_actual_hecke_identities}, \ref{def_ext_principal_integrality}\end{uses-proof}
+
+\begin{proposition}[I06: grid theta support]\label{prop_i06_grid_support}\lean{SptCM.Analytic.Repaired.actual_modGrid_theta_support}\leanok
+If $\ell\ge5$ is prime and $(m,6\ell)=1$, then $G_m$ belongs modulo $\ell$ to the same theta eigenspace as $f$.
+\end{proposition}
+\begin{uses-statement}\ref{def_grid_form}, \ref{def_series_f}\end{uses-statement}
+\begin{proof}
+Use the integral grid realization to reduce both actual I05 identities coefficientwise.  Prove the prime base case from the reduced $f$-Hecke identity.  Then use strong induction on $m$: for composite $m=qp$ choose a prime divisor $p$, apply the induction hypothesis to $q$, $p$, and (when needed) $q/p$, and invoke the corrected recursion.  Coprimality descends to every divisor, so the argument yields only the claimed range.
+\end{proof}
+\begin{uses-proof}\ref{prop_i05_actual_hecke_identities}, \ref{lem_i02_grid_recursion}, \ref{def_ext_principal_integrality}\end{uses-proof}
+
+\begin{lemma}[I07: triangular auxiliary polynomial]\label{lem_i07_triangular_polynomial}\lean{SptCM.Analytic.Repaired.existsUnique_triangularPolynomial}\leanok
+For every $n=24k-1>0$, there is a unique monic integral polynomial $P_n$
+of degree at most $k$ whose product $\eta P_n(j)$ has leading coefficient
+$1$, no intervening polar terms, and coefficient $-a(n)$ at $q^{1/24}$.
+\end{lemma}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+\begin{proof}The coefficient matrix of
+$\eta,\eta j,\ldots,\eta j^k$ at the exponents
+$1/24,-23/24,\ldots,(1-24k)/24$ is integral unitriangular.  Its determinant
+is one, so solve the integral system with target entries $-a(n),0,\ldots,0,1$.
+Invertibility gives uniqueness and the top target entry gives monicity.</end{proof}
+\begin{uses-proof}\ref{def_ext_modular_forms}, \ref{def_ext_j_foundations}, \ref{def_ext_principal_integrality}\end{uses-proof}
+
+\begin{lemma}[I07: first auxiliary coefficient]\label{lem_i07_first_coefficient}\lean{SptCM.Analytic.Repaired.auxiliaryHn_first_coefficient}\leanok
+For the polynomial from the triangular construction, the coefficient of $q^{1/24}$ in $H_n=\eta P_n(j)$ is $-a(n)$.
+\end{lemma}
+\begin{uses-statement}\ref{def_Hn}, \ref{def_series_f}\end{uses-statement}
+\begin{proof}Read the row indexed by the exponent $1/24$ in the solved
+unitriangular system; its prescribed target entry is $-a(n)$.</end{proof}
+\begin{uses-proof}\ref{lem_i07_triangular_polynomial}\end{uses-proof}
+
+\begin{proposition}[I07: actual auxiliary form]\label{prop_i07_hn_actual}\lean{SptCM.Analytic.Repaired.auxiliaryForm_spec}\leanok
+For every $n=24k-1>0$, the fixed $H_n$ satisfies $\mathsf{HnSpec}(n,H_n)$.
+\end{proposition}
+\begin{uses-statement}\ref{def_Hn}, \ref{def_hn_spec}\end{uses-statement}
+\begin{proof}
+Use the general E4 qualification of $\eta P(j)$ and the integral
+unitriangular construction.  The solved rows give the leading term, the
+vanishing low coefficients, and the first coefficient $-a(n)$.
+\end{proof}
+\begin{uses-proof}\ref{lem_i07_triangular_polynomial}, \ref{lem_i07_first_coefficient}, \ref{def_ext_modular_forms}, \ref{def_ext_j_foundations}\end{uses-proof}
+
+\begin{proposition}[I08: the genuine product has weight two]\label{prop_i08_product_weight_two}\lean{SptCM.Analytic.Repaired.actual_product_weight_two}\leanok
+For $n=24k-1>0$ and $m>1$ coprime to $6$, the actual product $H_nG_m$ is weakly holomorphic of weight two, and its constant coefficient is the normalized three-term coefficient sum used in the duality calculation.
+\end{proposition}
+\begin{uses-statement}\ref{def_Hn}, \ref{def_grid_form}\end{uses-statement}
+\begin{proof}Combine the verified weights, multipliers, and principal parts of the two actual forms and multiply their Fourier expansions.\end{proof}
+\begin{uses-proof}\ref{prop_i04_grid_exists}, \ref{prop_i07_hn_actual}, \ref{def_ext_modular_forms}\end{uses-proof}
+
+\begin{proposition}[I08: coefficient duality]\label{prop_i08_coefficient_duality}\lean{SptCM.Analytic.Repaired.actual_coefficient_duality}\leanok
+For $n=24k-1>0$ and $m>1$ coprime to $6$, one has $h_n(m^2)=-b_m(n)-\chi_{12}(m)a(n)$.
+\end{proposition}
+\begin{uses-statement}\ref{def_Hn}, \ref{def_grid_form}, \ref{def_series_f}\end{uses-statement}
+\begin{proof}
+The genuine product $H_nG_m$ is weakly holomorphic of weight two.  Apply the general residue theorem to make its constant coefficient zero.  The two verified principal parts leave exactly the three displayed coefficients, and rearranging gives the identity.
+\end{proof}
+\begin{uses-proof}\ref{prop_i08_product_weight_two}, \ref{def_ext_weight_two_residue}\end{uses-proof}
+
+\begin{lemma}[Inert square-coefficient vanishing]\label{lem_square_coeff_vanish}\lean{SptCM.Analytic.Repaired.actual_square_coefficient_vanish}\leanok
+If $\Can(\ell)$, $\Adm(\ell,n)$, and $(m,6\ell)=1$, then $h_n(m^2)\equiv0\pmod\ell$.
+\end{lemma}
+\begin{uses-statement}\ref{def_canonical}, \ref{def_admissible}, \ref{def_Hn}\end{uses-statement}
+\begin{proof}
+The exact coefficient reindexing turns canonicality into $f|U_\ell=0$.  Ahlgren--Kim gives the theta cycle, and the Euler mismatch kills $a(n)$.  Grid support kills $b_m(n)$; substituting both vanishings into coefficient duality proves the claim.  For $m=1$, use the verified coefficient $h_n(1)=-a(n)$.
+\end{proof}
+\begin{uses-proof}\ref{def_u_operator}, \ref{def_ext_ak_theta}, \ref{lem_i03_euler_mismatch}, \ref{prop_i06_grid_support}, \ref{prop_i07_hn_actual}, \ref{prop_i08_coefficient_duality}\end{uses-proof}
+
+\begin{lemma}[I13: correct signed exponent decomposition]\label{lem_i13_signed_exponent}\lean{SptCM.Repair.signedExponentSpec}\leanok
+For every $m\ge1$, the positive and negative parts of $e_n(m)$ satisfy $\mathsf{SignedExponentSpec}$.
+\end{lemma}
+\begin{uses-statement}\ref{def_signed_exponent}, \ref{def_signed_exponent_spec}\end{uses-statement}
+\begin{proof}
+Split on the sign of the integer $e_n(m)$.  The identities for positive and negative parts follow by integer arithmetic.  If $(m,6)>1$, the Kronecker character $\chi_{12}(m)$ is zero.
+\end{proof}
+
+\begin{proposition}[I21: injective Laurent substitution]\label{prop_i21_laurent_hauptmodul}\lean{SptCM.Repair.LaurentHauptmodulData.substitution_injective}\leanok
+% Lean: theorem LaurentHauptmodulData.substitution_injective {ell n : Nat} {hrange : AnalyticAdmissible ell n} (d : LaurentHauptmodulData ell n hrange) : Function.Injective (fun P : Polynomial (ZMod ell) => Polynomial.aeval d.t P)
+For every $\ell,n$, every $h:\mathsf{AnalyticAdmissible}(\ell,n)$, and every
+$d:\mathsf{LaurentSpec}(\ell,n,h)$, substitution
+\[
+  \F_\ell[T]\longrightarrow\F_\ell((q)),\qquad P\longmapsto P(d.t),
+\]
+is injective.
+\end{proposition}
+\begin{uses-statement}\ref{def_laurent_spec}\end{uses-statement}
+\begin{proof}
+The coefficient of $q^{-1}$ is one, so the $q$-adic valuation of $d.t$ is
+nontrivial.  The valuation is trivial on the embedded coefficient field;
+hence $d.t$ is transcendental over $\F_\ell$.  The standard
+transcendence--evaluation equivalence gives injectivity.
+\end{proof}
+
+\begin{proposition}[I21: actual Laurent model]\label{prop_i21_actual_laurent_model}\lean{SptCM.Repair.actualHauptmodulLaurent_analytic_identification}\leanok
+For every nonzero $\ell$, the actual eta quotient is the complex evaluation
+of the integral Laurent expansion \(q^{-1}E_t^{\rm form}\), every coefficient
+of its finite-characteristic model is the reduction modulo $\ell$ of the
+corresponding coefficient of \(t_q^{\rm form}\), and that reduced model has
+principal part \(q^{-1}-5+O(q)\).
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul_laurent}\end{uses-statement}
+\begin{proof}
+Use the analytic/formal identification for the complex equality and the
+coefficient formula for Hahn-series mapping for coefficientwise reduction.
+\end{proof}
+\begin{uses-proof}\ref{prop_i21_formal_principal_part}, \ref{prop_i21_analytic_formal_identification}\end{uses-proof}
+
+\section{CM polynomials and separation: I15--I20, I22}
+\begin{definition}[Level-six eta-exponent vectors]\label{def_level_six_eta_exponents}\lean{SptCM.CM.Repaired.LevelSixEtaExponents}\leanok
+% Lean: structure LevelSixEtaExponents where atOne atTwo atThree atSix : Int
+A level-six eta-exponent vector is a quadruple $(r_1,r_2,r_3,r_6)\in\Z^4$, indexed by the divisors $1,2,3,6$ of $6$.
+\end{definition}
+
+\begin{definition}[Hauptmodul exponent vector]\label{def_hauptmodul_exponents}\lean{SptCM.CM.Repaired.hauptmodulExponents}\leanok
+% Lean: def hauptmodulExponents : LevelSixEtaExponents := ⟨5,-1,1,-5⟩
+The exponent vector of $t(\tau)=\eta(\tau)^5\eta(3\tau)/(\eta(2\tau)\eta(6\tau)^5)$ is
+$e_t:=(5,-1,1,-5)$.
+\end{definition}
+\begin{uses-statement}\ref{def_level_six_eta_exponents}, \ref{def_hauptmodul}\end{uses-statement}
+
+\begin{definition}[Eta weight numerator]\label{def_eta_weight_numerator}\lean{SptCM.CM.Repaired.etaWeightNumerator}\leanok
+% Lean: def etaWeightNumerator (e : LevelSixEtaExponents) : Int := ...
+For $e=(r_1,r_2,r_3,r_6)$, define $w_2(e):=r_1+r_2+r_3+r_6$, twice the eta-quotient weight.
+\end{definition}
+\begin{uses-statement}\ref{def_level_six_eta_exponents}\end{uses-statement}
+
+\begin{lemma}[I15: weight-zero calculation]\label{lem_i15_weight_zero}\lean{SptCM.CM.Repaired.hauptmodul_weight_numerator}\leanok
+The fixed exponent vector satisfies $w_2(e_t)=0$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_eta_weight_numerator}\end{uses-statement}
+\begin{proof}Substitution gives $5-1+1-5=0$.\end{proof}
+
+\begin{definition}[First Ligozat sum]\label{def_first_ligozat_sum}\lean{SptCM.CM.Repaired.firstLigozatSum}\leanok
+% Lean: def firstLigozatSum (e : LevelSixEtaExponents) : Int := ...
+Define $L_1(e):=r_1+2r_2+3r_3+6r_6$.
+\end{definition}
+\begin{uses-statement}\ref{def_level_six_eta_exponents}\end{uses-statement}
+
+\begin{lemma}[I15: first Ligozat congruence sum]\label{lem_i15_first_ligozat_sum}\lean{SptCM.CM.Repaired.hauptmodul_first_ligozat_sum}\leanok
+The fixed exponent vector satisfies $L_1(e_t)=-24$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_first_ligozat_sum}\end{uses-statement}
+\begin{proof}Direct integer arithmetic gives $5-2+3-30=-24$.\end{proof}
+
+\begin{definition}[Second Ligozat sum]\label{def_second_ligozat_sum}\lean{SptCM.CM.Repaired.secondLigozatSum}\leanok
+% Lean: def secondLigozatSum (e : LevelSixEtaExponents) : Int := ...
+Define $L_2(e):=6r_1+3r_2+2r_3+r_6$.
+\end{definition}
+\begin{uses-statement}\ref{def_level_six_eta_exponents}\end{uses-statement}
+
+\begin{lemma}[I15: second Ligozat congruence sum]\label{lem_i15_second_ligozat_sum}\lean{SptCM.CM.Repaired.hauptmodul_second_ligozat_sum}\leanok
+The fixed exponent vector satisfies $L_2(e_t)=24$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_second_ligozat_sum}\end{uses-statement}
+\begin{proof}Direct integer arithmetic gives $30-3+2-5=24$.\end{proof}
+
+\begin{definition}[Hauptmodul character parameter]\label{def_hauptmodul_character_parameter}\lean{SptCM.CM.Repaired.hauptmodulCharacterParameter}\leanok
+% Lean: def hauptmodulCharacterParameter : Rat := 1 / (2^6 * 3^4)
+Define the rational eta-character parameter $c_t:=2^{-6}3^{-4}=1/(2^6 3^4)$.
+\end{definition}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}\end{uses-statement}
+
+\begin{lemma}[I15: square character parameter]\label{lem_i15_character_square}\lean{SptCM.CM.Repaired.hauptmodul_character_parameter_isSquare}\leanok
+One has $c_t=(1/72)^2$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_character_parameter}\end{uses-statement}
+\begin{proof}Since $2^6 3^4=(2^3 3^2)^2=72^2$, the identity follows in $\Q$.\end{proof}
+
+\begin{definition}[Level-six Ligozat cusp-order formula]\label{def_ligozat_cusp_order}\lean{SptCM.CM.Repaired.ligozatCuspOrder}\leanok
+% Lean: def ligozatCuspOrder (e : LevelSixEtaExponents) (c : Nat) : Rat := ...
+For a cusp denominator $c\mid6$, define
+\[
+ v_c(e):=\frac6{24}\sum_{\delta\in\{1,2,3,6\}}
+ \frac{\gcd(c,\delta)^2r_\delta}{\gcd(c,6/c)c\delta}.
+\]
+\end{definition}
+\begin{uses-statement}\ref{def_level_six_eta_exponents}\end{uses-statement}
+
+\begin{lemma}[I15: order at zero]\label{lem_i15_order_zero}\lean{SptCM.CM.Repaired.hauptmodul_order_at_zero}\leanok
+The cusp represented by denominator $1$ has $v_1(e_t)=1$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_ligozat_cusp_order}\end{uses-statement}
+\begin{proof}Evaluate the four rational summands in the displayed formula.\end{proof}
+
+\begin{lemma}[I15: order at one-half]\label{lem_i15_order_one_half}\lean{SptCM.CM.Repaired.hauptmodul_order_at_oneHalf}\leanok
+The cusp represented by denominator $2$ has $v_2(e_t)=0$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_ligozat_cusp_order}\end{uses-statement}
+\begin{proof}Evaluate the four rational summands in the displayed formula.\end{proof}
+
+\begin{lemma}[I15: order at one-third]\label{lem_i15_order_one_third}\lean{SptCM.CM.Repaired.hauptmodul_order_at_oneThird}\leanok
+The cusp represented by denominator $3$ has $v_3(e_t)=0$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_ligozat_cusp_order}\end{uses-statement}
+\begin{proof}Evaluate the four rational summands in the displayed formula.\end{proof}
+
+\begin{lemma}[I15: order at infinity]\label{lem_i15_order_infinity}\lean{SptCM.CM.Repaired.hauptmodul_order_at_infinity}\leanok
+The cusp represented by denominator $6$ has $v_6(e_t)=-1$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_ligozat_cusp_order}\end{uses-statement}
+\begin{proof}Evaluate the four rational summands in the displayed formula.\end{proof}
+
+\begin{definition}[General integral-curve function geometry]\label{def_i15_integral_application}\lean{SptCM.RolenLiterature.IntegralCurveFunctionGeometry}\leanok
+% Lean: structure IntegralCurveFunctionGeometry (Function Divisor Curve Section Expansion : Type*) where ...
+Fix the neutral operations and predicates used for a rational function on an
+integral curve: its divisor, the difference of two sections, absence of
+interior zeros or poles, an integral unit expansion at a section, absence of
+vertical components, and identification as a projective-line coordinate.
+This structure contains no eta quotient or paper-specific application data.
+\end{definition}
+
+\begin{definition}[E7 horizontal-divisor principle]\label{def_i15_horizontal_principle}\lean{SptCM.RolenLiterature.E7HorizontalDivisorPrinciple}\leanok
+% Lean: def E7HorizontalDivisorPrinciple (G : IntegralCurveFunctionGeometry ...) (isIntegralModel hasGenusZeroFibers : Curve -> Prop) (isRationalFunction : Function -> Prop) (cuspOrder : Function -> Section -> Order) : Prop := ...
+The general horizontal-divisor law says that on a good integral genus-zero
+model, a rational function with no interior zero or pole and cusp orders
+$+1,-1,0$ has divisor equal to the difference of its zero and pole sections.
+\end{definition}
+\begin{uses-statement}\ref{def_i15_integral_application}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_genus_zero}\end{uses-statement}
+
+\begin{definition}[E7 no-vertical-component principle]\label{def_i15_no_vertical_principle}\lean{SptCM.RolenLiterature.E7NoVerticalComponentPrinciple}\leanok
+% Lean: def E7NoVerticalComponentPrinciple (G : IntegralCurveFunctionGeometry ...) (isIntegralModel hasDisjointStandardCuspSections : Curve -> Prop) : Prop := ...
+The general spreading law says that a horizontal divisor which is the
+difference of two disjoint cusp sections has no vertical component when the
+function has an integral unit expansion at its pole section.
+\end{definition}
+\begin{uses-statement}\ref{def_i15_integral_application}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_cusps}\end{uses-statement}
+
+\begin{definition}[E7 integral degree-one principle]\label{def_i15_degree_one_principle}\lean{SptCM.RolenLiterature.E7IntegralDegreeOneCriterion}\leanok
+% Lean: def E7IntegralDegreeOneCriterion (G : IntegralCurveFunctionGeometry ...) (isIntegralModel hasGenusZeroFibers hasDisjointStandardCuspSections : Curve -> Prop) : Prop := ...
+The general degree-one law says that a rational function with horizontal
+divisor the difference of two disjoint sections and no vertical component on
+a good integral genus-zero model is a projective-line coordinate.
+\end{definition}
+\begin{uses-statement}\ref{def_i15_integral_application}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_genus_zero}, \ref{def_ext_x0_six_cusps}\end{uses-statement}
+
+\begin{lemma}[I15: no interior zero or pole]\label{lem_i15_analytic_hauptmodul_ne_zero}\lean{SptCM.CM.Repaired.analyticHauptmodul_ne_zero}\leanok
+For every $\tau$ in the upper half-plane, $t_{\rm an}(\tau)\ne0$.
+\end{lemma}
+\begin{uses-statement}\ref{def_analytic_hauptmodul}\end{uses-statement}
+\begin{proof}Each eta factor at $\tau,2\tau,3\tau,6\tau$ is nonzero by the standard Dedekind-eta theorem, so their indicated quotient is nonzero.\end{proof}
+\begin{uses-proof}\ref{def_ext_modular_forms}\end{uses-proof}
+
+\begin{proposition}[I15: conditional horizontal divisor]\label{prop_i15_horizontal_divisor}\lean{SptCM.CM.Repaired.hauptmodul_horizontal_divisor_of_E7}\leanok
+For an E7 model whose four cusps are identified with denominators
+$1,2,3,6$, if the fixed eta quotient satisfies Ligozat's hypotheses and the
+chosen geometric model records that it has no interior zero or pole, then its
+divisor is the difference $[0]-[\infty]$.
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_ligozat_cusp_order}, \ref{def_i15_horizontal_principle}, \ref{def_ext_ligozat_curve}\end{uses-statement}
+\begin{proof}
+E7 gives modularity and identifies each abstract cusp order with Ligozat's
+formula.  The verified orders are $1,0,0,-1$; cusp exhaustiveness kills every
+remaining order, so the general horizontal-divisor principle applies.
+\end{proof}
+\begin{uses-proof}\ref{lem_i15_order_zero}, \ref{lem_i15_order_one_half},
+\ref{lem_i15_order_one_third}, \ref{lem_i15_order_infinity},
+\ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_genus_zero}\end{uses-proof}
+
+\begin{proposition}[I15: formal integral unit expansion at infinity]\label{prop_i15_unit_expansion}\lean{SptCM.Repair.hauptmodulFormalLaurent_integralUnitExpansion}\leanok
+The independently constructed formal Euler product is literally
+$q^{-1}u$ with $u\in\mathbf Z[[q]]$ a unit of constant coefficient one.
+This does not identify it with the analytic eta quotient's Laurent expansion.
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul_laurent}\end{uses-statement}
+\begin{proof}
+Each stabilized Euler factor has constant coefficient one.  Their formal
+product is therefore a power-series unit, and adjoining the computed net
+$q^{-1}$ factor gives the displayed Laurent series.
+\end{proof}
+\begin{uses-proof}\ref{lem_i15_order_infinity}\end{uses-proof}
+
+\begin{definition}[Concrete actual integral unit expansion]\label{def_i15_actual_unit_expansion}\lean{SptCM.Repair.HasActualIntegralUnitExpansion}\leanok
+% Lean: def HasActualIntegralUnitExpansion (f : UpperHalfPlane -> Complex) (u : PowerSeries Int) : Prop := ...
+An analytic function $f$ has the concrete integral unit expansion $u$ if
+$u\in\mathbf Z[[q]]$ is a unit with constant coefficient one and, for every
+$\tau\in\mathbb H$,
+\[
+ f(\tau)=q(\tau)^{-1}\sum_{n\ge0}[q^n]u\,q(\tau)^n.
+\]
+\end{definition}
+\begin{uses-statement}\ref{def_hauptmodul_formal_euler_unit}, \ref{def_analytic_hauptmodul}\end{uses-statement}
+
+\begin{proposition}[I15: actual integral unit expansion at infinity]\label{prop_i15_actual_unit_expansion}\lean{SptCM.Repair.analyticHauptmodul_hasActualIntegralUnitExpansion}\leanok
+The actual Mathlib eta quotient $t_{\rm an}$ has the concrete integral unit
+expansion $E_t^{\rm form}$.
+\end{proposition}
+\begin{uses-statement}\ref{def_i15_actual_unit_expansion}\end{uses-statement}
+\begin{proof}
+The analytic/formal coefficient identification gives the displayed
+convergent equality at every upper-half-plane nome.  The independently
+verified formal calculation says that $E_t^{\rm form}$ has constant
+coefficient one and is a unit of $\mathbf Z[[q]]$.
+\end{proof}
+\begin{uses-proof}\ref{prop_i15_unit_expansion}, \ref{prop_i21_analytic_formal_identification}\end{uses-proof}
+
+\begin{proposition}[I15: conditional absence of vertical components]\label{prop_i15_no_vertical_components}\lean{SptCM.CM.Repaired.hauptmodul_no_vertical_component_of_E7}\leanok
+For any E7 model and neutral curve-function geometry, a proved horizontal
+divisor $[0]-[\infty]$ and an actual integral unit expansion at infinity imply
+that the function has no vertical divisor component.
+\end{proposition}
+\begin{uses-statement}\ref{def_i15_no_vertical_principle}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_cusps}\end{uses-statement}
+\begin{proof}Apply the general no-vertical-component principle to the good model, disjoint cusp sections, horizontal divisor, and actual unit expansion.\end{proof}
+
+\begin{proposition}[I15: integral degree-one divisor criterion]\label{prop_i15_degree_one_criterion}\lean{SptCM.CM.Repaired.integral_degree_one_coordinate_of_E7}\leanok
+For any E7 model and neutral curve-function geometry, a horizontal divisor
+$[0]-[\infty]$ with no vertical component induces a projective-line coordinate.
+\end{proposition}
+\begin{uses-statement}\ref{def_i15_degree_one_principle}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_genus_zero}, \ref{def_ext_x0_six_cusps}\end{uses-statement}
+\begin{proof}Apply the general integral degree-one principle to the good model, genus-zero fibers, disjoint cusp sections, divisor identity, and no-vertical-component fact.\end{proof}
+
+\begin{proposition}[I15: conditional integral degree-one coordinate]\label{prop_i15_integral_coordinate}\lean{SptCM.CM.Repaired.hauptmodul_integral_coordinate_of_E7}\leanok
+For an E7 model, the four labeled exhaustive cusps, the fixed Ligozat
+conditions and order identifications, a no-interior-zero-or-pole fact, and an
+actual integral unit expansion at infinity imply that the fixed eta quotient
+is a projective-line coordinate.
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul_exponents}, \ref{def_i15_horizontal_principle}, \ref{def_i15_no_vertical_principle}, \ref{def_i15_degree_one_principle}\end{uses-statement}
+\begin{proof}Derive the horizontal divisor, exclude vertical components, and apply the degree-one criterion.\end{proof}
+\begin{uses-proof}\ref{prop_i15_horizontal_divisor}, \ref{prop_i15_no_vertical_components}, \ref{prop_i15_degree_one_criterion}\end{uses-proof}
+
+\begin{proposition}[I15: actual-expansion E7 coordinate chain]\label{prop_i15_actual_expansion_coordinate_chain}\lean{SptCM.Repair.analyticHauptmodul_integral_coordinate_of_E7}\leanok
+Suppose an E7 model realizes its function type as analytic functions on the
+upper half-plane and its expansion type as integral power series.  If its
+fixed Ligozat quotient is identified with \(t_{\rm an}\), its geometric
+predicates interpret pointwise nonvanishing and concrete integral unit
+expansions, and the remaining E7 and cusp hypotheses hold, then the quotient
+is a projective-line coordinate.  No separate integral-expansion premise is
+required.
+\end{proposition}
+\begin{uses-statement}\ref{def_i15_integral_application}, \ref{def_i15_actual_unit_expansion}\end{uses-statement}
+\begin{proof}
+Transport analytic nonvanishing through the no-interior interpretation law
+and the verified actual integral expansion through the expansion
+interpretation law.  Apply the conditional E7 coordinate theorem with these
+two derived premises.
+\end{proof}
+\begin{uses-proof}\ref{lem_i15_analytic_hauptmodul_ne_zero},
+\ref{prop_i15_actual_unit_expansion},
+\ref{prop_i15_integral_coordinate}\end{uses-proof}
+
+\begin{proposition}[I15: standard-model application checks]\label{prop_i15_application_checks}\lean{SptCM.Repair.E7ActualX0SixApplicationChecks}\leanok
+The permitted E7 boundary supplies the standard integral model of
+$X_0(6)_{\mathbf Z[1/6]}$, its four cusp labels, the comparison of the
+Ligozat quotient with the actual analytic eta quotient, the cusp-order
+interpretations at denominators $1,2,3,6$, and the standard interpretations
+of analytic nonvanishing and the concrete integral unit expansion.  It does
+not supply a divisor or degree-one-coordinate conclusion.
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul}, \ref{def_i15_integral_application}\end{uses-statement}
+\begin{proof}
+The cusp and quotient identifications are geometric comparison maps.  The
+analytic and formal work now supplies the concrete expansion; the remaining
+step is an interpretation law connecting it to the abstract geometric
+predicate \(\mathsf{hasIntegralUnitExpansionAt}\).
+\end{proof}
+\begin{uses-proof}\ref{lem_i15_weight_zero}, \ref{lem_i15_first_ligozat_sum},
+\ref{lem_i15_second_ligozat_sum}, \ref{lem_i15_character_square},
+\ref{lem_i15_analytic_hauptmodul_ne_zero},
+\ref{prop_i15_actual_unit_expansion}\end{uses-proof}
+
+\begin{proposition}[I15: actual integral coordinate]\label{prop_i15_actual_coordinate}\lean{SptCM.Repair.exists_actualHauptmodul_integral_coordinate}\leanok
+From the E7 standard-model input, the fixed eta quotient induces the
+degree-one integral coordinate
+$X_0(6)_{\Z[1/6]}\simeq\mathbb P^1_{\Z[1/6]}$.
+\end{proposition}
+\begin{uses-statement}\ref{def_hauptmodul}\end{uses-statement}
+\begin{proof}Apply the verified conditional degree-one theorem after discharging every explicit actual-model premise.\end{proof}
+\begin{uses-proof}\ref{prop_i15_actual_expansion_coordinate_chain}, \ref{prop_i15_application_checks}\end{uses-proof}
+
+\begin{lemma}[Finite Galois polynomial descent]\label{lem_galois_polynomial_descent}\lean{SptCM.CM.Repaired.exists_basePolynomial_of_galois_fixed}\leanok
+Let $E/F$ be a finite Galois extension.  If every $F$-automorphism of $E$
+fixes a polynomial $P\in E[X]$, then there is a polynomial $P_0\in F[X]$
+whose coefficientwise image is $P$.
+\end{lemma}
+\begin{proof}
+Apply Mathlib's fixed-field theorem
+\code{IsGalois.mem\_range\_algebraMap\_iff\_fixed} to every coefficient,
+then use the coefficientwise characterization of the range of polynomial
+mapping.
+\end{proof}
+
+\begin{lemma}[Integral polynomial descent from the fraction field]\label{lem_integral_polynomial_descent}\lean{SptCM.CM.Repaired.exists_integrallyClosedPolynomial_of_fractional_integral}\leanok
+Let $A$ be an integrally closed domain with fraction field $K$, and let
+$L/K$ be a field extension.  If $P\in L[X]$ descends to $K[X]$ and every
+coefficient of $P$ is integral over $A$, then $P$ descends to $A[X]$.
+\end{lemma}
+\begin{proof}
+For each rational coefficient, reflect integrality through the injective map
+$K\to L$ and apply
+\code{IsIntegrallyClosed.algebraMap\_eq\_of\_integral}; assemble the lifted
+coefficients with \code{Polynomial.mem\_map\_range}.
+\end{proof}
+
+\begin{lemma}[I16: rationality of oriented class polynomials]\label{lem_i16_rationality}\lean{SptCM.CM.Repaired.ActualOrientedCMCoordinates.actual_class_polynomials_rational_of_integral_E8}\leanok
+Given a finite Galois extension $L/\Q$ containing representatives of the two
+actual oriented CM-value families, if CM reciprocity permutes each family,
+then the two actual root products $A_n$ and $B_n$ have rational coefficients.
+\end{lemma}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}, \ref{def_oriented_forms}\end{uses-statement}
+\begin{proof}The reciprocity permutations fix both root products coefficientwise. Apply finite-Galois polynomial descent to each product.\end{proof}
+\begin{uses-proof}\ref{def_ext_cm}, \ref{lem_galois_polynomial_descent}\end{uses-proof}
+
+\begin{lemma}[I16: integrality of CM Hauptmodul values away from six]\label{lem_i16_integrality}\lean{SptCM.CM.Repaired.ActualOrientedCMCoordinates.actual_cm_values_integral_awaySix_of_E8}\leanok
+Given the integral finite-Galois CM reciprocity datum supplied by potential
+good reduction, every actual CM value $t(\tau_Q)$ occurring in $A_n$ or
+$B_n$ is integral over $\Z[1/6]$.
+\end{lemma}
+\begin{uses-statement}\ref{def_hauptmodul}, \ref{def_oriented_forms}\end{uses-statement}
+\begin{proof}Transport the root-level integrality statement from the finite Galois class field through its specified complex embedding, using its realization equality with the actual analytic value.\end{proof}
+\begin{uses-proof}\ref{def_ext_cm_good_reduction}, \ref{prop_i15_actual_coordinate}\end{uses-proof}
+
+\begin{lemma}[I16: monicity of the actual root products]\label{lem_i16_monic}\lean{SptCM.CM.Repaired.ActualOrientedCMCoordinates.actual_class_polynomials_monic}\leanok
+The actual polynomials $A_n$ and $B_n$, defined as finite products of factors $X-t(\tau_Q)$, are monic.
+\end{lemma}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}\end{uses-statement}
+\begin{proof}Each linear factor is monic, and a finite product of monic polynomials is monic.\end{proof}
+
+\begin{proposition}[I16: actual oriented class polynomials]\label{prop_i16_class_polynomials}\lean{SptCM.CM.Repaired.ActualOrientedCMCoordinates.exists_actualClassPolynomialSpec_of_E8}\leanok
+Given the integral finite-Galois CM reciprocity datum for the two actual
+oriented CM-value families, there exists a
+$\mathsf{ClassPolySpec}(n,P)$ descending the two fixed complex root products
+to $\Z[1/6][X]$.
+\end{proposition}
+\begin{uses-statement}\ref{def_class_poly_spec}\end{uses-statement}
+\begin{proof}
+Use finite-Galois reciprocity to obtain rational coefficients and
+good-reduction integrality for every root.  Form the root products in the
+integral closure, so all coefficients are integral over $\Z[1/6]$.
+Intersect rationality and integrality by integral polynomial descent, then
+transport monicity from the complex root products.
+\end{proof}
+\begin{uses-proof}\ref{lem_i16_rationality}, \ref{lem_i16_integrality}, \ref{lem_integral_polynomial_descent}, \ref{lem_i16_monic}\end{uses-proof}
+
+\begin{proposition}[I17: coefficient reduction and algebraic-closure roots]\label{prop_i17_root_reduction}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actualRootReductionSpec}\leanok
+For prime $\ell\ge5$, the reduced polynomials satisfy
+$\mathsf{RootReductionSpec}(P,h_6)$.
+\end{proposition}
+\begin{uses-statement}\ref{def_root_reduction_spec}\end{uses-statement}
+\begin{proof}
+The localization map $\Z[1/6]\to\F_\ell$ exists because $6$ is invertible.  Map coefficients through this homomorphism.  Apply the field-theoretic criterion that two polynomials are coprime exactly when they have no common root in an algebraic closure.
+\end{proof}
+\begin{uses-proof}\ref{prop_i16_class_polynomials}\end{uses-proof}
+
+\begin{proposition}[I22: construct the four oriented class actions]\label{prop_i22_oriented_actions}\lean{SptCM.CM.Repaired.fourOrientedIdealClassActions_of_E8}\leanok
+For squarefree $n\equiv23\pmod{24}$, given the permitted quadratic-order
+domain theorem and fixed-orientation form--ideal-class equivalences, transport
+of the regular proper ideal-class action induces simply transitive actions on
+each of the four concrete quotients
+$\mathcal Q_{n,1},\mathcal Q_{n,11},\mathcal Q_{n,5},\mathcal Q_{n,7}$.
+\end{proposition}
+\begin{uses-statement}\ref{def_oriented_forms}\end{uses-statement}
+\begin{proof}
+Identify an oriented form with its proper ideal class together with the two
+chosen local orientations.  Ideal multiplication preserves those choices;
+the standard CM action is free and transitive at each fixed orientation.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_quadratic_order_domain}, \ref{def_ext_oriented_form_classification}\end{uses-proof}
+
+\begin{lemma}[I22: counts from the four oriented actions]\label{lem_i22_class_counts}\lean{SptCM.Arithmetic.Repaired.classCountSpec_of_E8}\leanok
+For squarefree $n\equiv23\pmod{24}$, given the permitted E8/E11
+reduced-form equivalence and simply transitive E8 actions on the four concrete
+oriented quotients, $\mathsf{ClassCountSpec}(n)$ holds.
+\end{lemma}
+\begin{uses-statement}\ref{def_class_count_spec}\end{uses-statement}
+\begin{proof}
+The pinned E8/E11 reduced-form classification identifies the concrete
+reduced-form type of discriminant $-n$ with the proper ideal-class group of
+$\mathbf Z[(1+\sqrt{-n})/2]$, including the boundary convention.  For each of
+the four concrete orientation quotients, choose a base point in the permitted
+E8 simply transitive action.  Sending an ideal class to its translate of that
+base point is a bijection.  Taking cardinalities and composing with the
+reduced-form equivalence gives all four equalities with $h(-n)$.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_cm}, \ref{def_ext_reduced_form_classification}, \ref{def_ext_elementary}\end{uses-proof}
+
+\begin{proposition}[I22: actual class-number and orientation counts]\label{prop_i22_actual_class_counts}\lean{SptCM.CM.Repaired.actualClassCountSpec_of_E8}\leanok
+For squarefree $n\equiv23\pmod{24}$, given the permitted quadratic-order
+domain theorem and the ordinary and fixed-orientation form--ideal-class
+classifications,
+$\mathsf{ClassCountSpec}(n)$ holds for the actual four oriented form
+quotients.
+\end{proposition}
+\begin{uses-statement}\ref{def_class_count_spec}\end{uses-statement}
+\begin{proof}
+Apply the count-from-actions theorem to the four internally constructed
+actions and the permitted E8/E11 reduced-form classification.
+\end{proof}
+\begin{uses-proof}\ref{prop_i22_oriented_actions}, \ref{lem_i22_class_counts}\end{uses-proof}
+
+\begin{lemma}[Class-polynomial degrees]\label{lem_class_poly_degree}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actualReducedClassPolynomials_degrees}\leanok
+For a verified $\Z[1/6]$ coefficient descent of the actual four oriented root products, and every
+good prime $\ell$, coefficientwise reduction preserves the degrees:
+$\deg\bar A_{\ell,n}=\deg\bar B_{\ell,n}=2h(-n)$.
+\end{lemma}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}\end{uses-statement}
+\begin{proof}
+Each product contains two orientation sets.  Their cardinalities are $h(-n)$, and the degree of a finite product of monic linear factors is the number of factors.
+\end{proof}
+\begin{uses-proof}\ref{prop_i16_class_polynomials}, \ref{prop_i22_actual_class_counts}\end{uses-proof}
+
+\begin{lemma}[Generic root specialization after coefficient descent]\label{lem_i18_generic_root_specialization}\lean{SptCM.CM.Repaired.exists_specialized_root_of_reducedPolynomial_root}\leanok
+Let $P\in\Z[1/6][X]$ become a finite linear-factor product after mapping to
+an extension ring $R$.  For a residue map $R\to k$ compatible with reduction
+$\Z[1/6]\to\F_\ell$, every root in $k$ of the coefficientwise reduction of
+$P$ is the specialization of one of those algebraic factors.
+\end{lemma}
+\begin{proof}
+Map the coefficient-descent equality through the compatible residue
+homomorphism, commute polynomial mapping with the finite product, and apply
+the root criterion for a product of linear factors over a field.
+\end{proof}
+\begin{uses-proof}\ref{prop_i17_root_reduction}\end{uses-proof}
+
+\begin{lemma}[I18: numerator root comes from an oriented factor]\label{lem_i18_numerator_root_factor}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actualNumerator_root_factor}\leanok
+For the actual coefficientwise-reduced numerator over an algebraic closure
+of $\F_\ell$, a root is the specialization of one of the algebraic CM
+values from orientation $1$ or orientation $11$ at a prime over $\ell$.
+\end{lemma}
+\begin{uses-statement}\ref{def_class_poly_a}\end{uses-statement}
+\begin{proof}
+Transport the coefficient-descent equality to a common finite extension containing the CM values, specialize at a prime over $\ell$, and use that a finite product vanishes in a field only if one specialized linear factor vanishes.
+\end{proof}
+\begin{uses-proof}\ref{lem_i18_generic_root_specialization}\end{uses-proof}
+
+\begin{lemma}[I18: denominator root comes from an oriented factor]\label{lem_i18_denominator_root_factor}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actualDenominator_root_factor}\leanok
+For the actual coefficientwise-reduced denominator over an algebraic closure
+of $\F_\ell$, a root is the specialization of one of the algebraic CM
+values from orientation $5$ or orientation $7$ at a prime over $\ell$.
+\end{lemma}
+\begin{uses-statement}\ref{def_class_poly_b}\end{uses-statement}
+\begin{proof}
+Transport the coefficient-descent equality to a common finite extension containing the CM values, specialize at a prime over $\ell$, and use that a finite product vanishes in a field only if one specialized linear factor vanishes.
+\end{proof}
+\begin{uses-proof}\ref{lem_i18_generic_root_specialization}\end{uses-proof}
+
+\begin{proposition}[I18: a common root gives one specialized level-six point]\label{prop_i18_common_point}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actual_common_point_of_common_root}\leanok
+Given a common finite-Galois realization, a compatible good-prime residue
+specialization, and the integral degree-one coordinate realization on the
+good fiber, a common root of the actual reduced $A_n$ and $B_n$ lifts to CM
+factors of opposite orientation whose specialized level-six points coincide.
+\end{proposition}
+\begin{uses-statement}\ref{def_reduced_class_polys}, \ref{def_class_poly_a}, \ref{def_class_poly_b}\end{uses-statement}
+\begin{proof}Apply the numerator and denominator factor theorems.  Their two
+specialized coordinate values both equal the common root, so injectivity of
+the integral degree-one coordinate identifies the specialized points.</end{proof}
+\begin{uses-proof}\ref{prop_i15_actual_coordinate}, \ref{prop_i16_class_polynomials}, \ref{prop_i17_root_reduction}, \ref{lem_i18_numerator_root_factor}, \ref{lem_i18_denominator_root_factor}\end{uses-proof}
+
+\begin{proposition}[I18: specialize both CM actions]\label{prop_i18_specialized_actions}\lean{SptCM.Repair.common_root_specialization_exists}\leanok
+Given the paper-specific map from a geometric class-polynomial collision to
+two inert CM points with the same reduction, the permitted E8 theorems produce
+a value of $\mathsf{CollisionSpec}$: both points acquire potentially good
+reduction, their common reduction is supersingular, and both CM-order actions
+specialize injectively.
+\end{proposition}
+\begin{uses-statement}\ref{def_collision_spec}\end{uses-statement}
+\begin{proof}Apply potential good reduction with level, Deuring's inert-reduction theorem, and injectivity of CM specialization to the two concrete CM points.\end{proof}
+\begin{uses-proof}\ref{prop_i18_common_point}, \ref{def_ext_cm_good_reduction}, \ref{def_ext_deuring}, \ref{def_ext_cm_specialization_injective}\end{uses-proof}
+
+\begin{proposition}[I18: common-root specialization]\label{prop_i18_common_root}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actual_common_root_specialization}\leanok
+Assume the standard E8 residue specialization, the integral degree-one
+coordinate realization, and the interpretation of the two finite root
+families as reductions of the corresponding inert CM points.  If
+$\bar A_{\ell,n}$ and $\bar B_{\ell,n}$ have a common root in an algebraic
+closure of $\F_\ell$, then $\mathsf{CollisionSpec}(\ell,n)$ holds.
+\end{proposition}
+\begin{uses-statement}\ref{def_collision_spec}\end{uses-statement}
+\begin{proof}
+Lift each root to its oriented CM factor.  The integral degree-one coordinate identifies equal reduced coordinates with the same geometric point of the integral model.  Apply potential good reduction and extension of prime-to-$\ell$ level structure.  Inertness gives supersingularity by Deuring, and specialization is injective on both CM orders.
+\end{proof}
+\begin{uses-proof}\ref{prop_i18_common_point}, \ref{prop_i18_specialized_actions}\end{uses-proof}
+
+\begin{definition}[Level-six orientation scalar]\label{def_orientation_scalar}\lean{SptCM.Repair.orientationScalar}\leanok
+% Lean: def orientationScalar (b : Nat) : ZMod 6 := (b+1)/2
+For an odd orientation residue $b$, define its scalar on the cyclic level-six subgroup by $s(b):=(b+1)/2\pmod6$.
+\end{definition}
+
+\begin{definition}[Canonical quadratic element of an oriented form]\label{def_i19_raw_omega}\lean{SptCM.Repair.rawOmega}\leanok
+% Lean: def rawOmega (Q : RawOrientedForm n r) : Complex := a * rawCMPoint Q + (b+1)/2
+For a raw oriented form $Q=[a,b,c]$, define
+\[
+  \omega_Q:=a\tau_Q+\frac{b+1}{2}\in\C.
+\]
+\end{definition}
+
+\begin{lemma}[I19: identify the canonical quadratic element]\label{lem_i19_raw_omega_eq}\lean{SptCM.Repair.rawOmega_eq}\leanok
+For every raw oriented form of discriminant $-n$,
+\[
+  \omega_Q=\frac{1+i\sqrt n}{2}.
+\]
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_raw_omega}\end{uses-statement}
+\begin{proof}
+Substitute $\tau_Q=(-b+i\sqrt n)/(2a)$ and cancel the nonzero positive
+leading coefficient $a$.
+\end{proof}
+
+\begin{lemma}[I19: conjugation of the canonical quadratic element]\label{lem_i19_raw_omega_star}\lean{SptCM.Repair.star_rawOmega}\leanok
+Complex conjugation sends $\omega_Q$ to $1-\omega_Q$.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_raw_omega}\end{uses-statement}
+\begin{proof}
+Use the explicit value of $\omega_Q$ and conjugate its real and imaginary
+parts.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_raw_omega_eq}\end{uses-proof}
+
+\begin{lemma}[I19: trace of the canonical quadratic element]\label{lem_i19_raw_omega_trace}\lean{SptCM.Repair.reducedTrace_rawOmega}\leanok
+The reduced trace of $\omega_Q$ is $1$.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_raw_omega}\end{uses-statement}
+\begin{proof}
+Add $\omega_Q$ to its conjugate $1-\omega_Q$.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_raw_omega_star}\end{uses-proof}
+
+\begin{lemma}[I19: norm of the canonical quadratic element]\label{lem_i19_raw_omega_norm}\lean{SptCM.Repair.reducedNorm_rawOmega}\leanok
+If $n>0$, then the reduced norm of $\omega_Q$ is $(n+1)/4$.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_raw_omega}\end{uses-statement}
+\begin{proof}
+Multiply the explicit values of $\omega_Q$ and its conjugate and use
+$(\sqrt n)^2=n$.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_raw_omega_eq}, \ref{lem_i19_raw_omega_star}\end{uses-proof}
+
+\begin{lemma}[I19: quadratic equation of the canonical element]\label{lem_i19_raw_omega_quadratic}\lean{SptCM.Repair.rawOmega_quadratic_relation}\leanok
+If $n>0$, then
+\[
+  \omega_Q^2-\omega_Q+\frac{n+1}{4}=0.
+\]
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_raw_omega}\end{uses-statement}
+\begin{proof}
+Rewrite the reduced norm as $\omega_Q(1-\omega_Q)$ and rearrange.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_raw_omega_star}, \ref{lem_i19_raw_omega_norm}\end{uses-proof}
+
+\begin{definition}[Canonical generator of the negative quadratic order]\label{def_i19_order_omega}\lean{SptCM.Repair.negativeQuadraticOmega}\leanok
+% Lean: def negativeQuadraticOmega (n : Nat) : NegativeQuadraticOrder n := AdjoinRoot.root _
+Let $\Omega_n$ be the distinguished generator of
+$\Z[X]/(X^2-X+(n+1)/4)$.
+\end{definition}
+
+\begin{lemma}[I19: integral quadratic equation]\label{lem_i19_order_omega_quadratic}\lean{SptCM.Repair.negativeQuadraticOmega_quadratic_relation}\leanok
+The generator $\Omega_n$ satisfies
+$\Omega_n^2-\Omega_n+(n+1)/4=0$ in the canonical quadratic order.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_order_omega}\end{uses-statement}
+\begin{proof}
+Apply the defining equation for the distinguished root of an
+\texttt{AdjoinRoot}.
+\end{proof}
+
+\begin{lemma}[I19: specialization preserves the quadratic equation]\label{lem_i19_map_order_omega_quadratic}\lean{SptCM.Repair.map_negativeQuadraticOmega_quadratic_relation}\leanok
+Every ring homomorphism out of the canonical quadratic order carries
+$\Omega_n$ to a root of the same quadratic equation.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_order_omega}\end{uses-statement}
+\begin{proof}
+Apply the ring homomorphism to the integral quadratic equation.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_order_omega_quadratic}\end{uses-proof}
+
+\begin{lemma}[I19: trace after genuine specialization]\label{lem_i19_map_order_omega_trace}\lean{SptCM.Repair.reducedTrace_map_negativeQuadraticOmega}\leanok
+If a ring specialization carries conjugation of $\Omega_n$ to quaternionic
+conjugation, then its image has reduced trace one.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_order_omega}\end{uses-statement}
+\begin{proof}
+Conjugation compatibility gives $\overline{\varphi(\Omega_n)}
+=1-\varphi(\Omega_n)$; add the two terms.
+\end{proof}
+
+\begin{lemma}[I19: norm after genuine specialization]\label{lem_i19_map_order_omega_norm}\lean{SptCM.Repair.reducedNorm_map_negativeQuadraticOmega}\leanok
+Under the same conjugation compatibility, the reduced norm of
+$\varphi(\Omega_n)$ is the image of the integral constant $(n+1)/4$.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_order_omega}\end{uses-statement}
+\begin{proof}
+Rewrite the norm using conjugation compatibility, then rearrange the
+transported quadratic equation.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_map_order_omega_quadratic}\end{uses-proof}
+
+\begin{lemma}[I19: specialized norm is the canonical integer]\label{lem_i19_map_order_omega_norm_nat}\lean{SptCM.Repair.reducedNorm_map_negativeQuadraticOmega_eq_natCast}\leanok
+The reduced norm in the preceding lemma is the canonical integer
+$\lfloor(n+1)/4\rfloor$ in the target ring, independently of the
+specialization homomorphism.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_order_omega}\end{uses-statement}
+\begin{proof}
+Ring homomorphisms preserve integer casts, and natural-number division agrees
+with integer division on nonnegative inputs.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_map_order_omega_norm}\end{uses-proof}
+
+\begin{lemma}[I19: common norm of two genuine specializations]\label{lem_i19_map_order_omega_common_norm}\lean{SptCM.Repair.reducedNorm_maps_negativeQuadraticOmega_eq}\leanok
+Two conjugation-compatible specializations of the same canonical quadratic
+order send $\Omega_n$ to elements with equal reduced norm.
+\end{lemma}
+\begin{uses-statement}\ref{def_i19_order_omega}\end{uses-statement}
+\begin{proof}
+Both reduced norms are the same canonical integer
+$\lfloor(n+1)/4\rfloor$ in the target ring.
+\end{proof}
+\begin{uses-proof}\ref{lem_i19_map_order_omega_norm_nat}\end{uses-proof}
+
+\begin{definition}[I19: action specification from specialization maps]\label{def_i19_action_from_maps}\lean{SptCM.Repair.OrientedSpecializedActions.ofQuadraticSpecializations}\leanok
+% Lean: def OrientedSpecializedActions.ofQuadraticSpecializations (...) : OrientedSpecializedActions CM S
+Given two conjugation-compatible ring specializations of the canonical
+quadratic order which realize the two specialized CM actions, together with
+their geometric actions on the cyclic level-six subgroup, construct the
+oriented action specification.  Its trace and common-norm fields are derived,
+not supplied.
+\end{definition}
+\begin{uses-statement}\ref{def_i19_order_omega}, \ref{def_orientation_scalar}\end{uses-statement}
+
+\begin{lemma}[I19: scalar for residue one]\label{lem_i19_scalar_one}\lean{SptCM.Repair.orientationScalar_one}\leanok
+One has $s(1)=1$ in $\Z/6\Z$.
+\end{lemma}
+\begin{uses-statement}\ref{def_orientation_scalar}\end{uses-statement}
+\begin{proof}Evaluate the definition.\end{proof}
+
+\begin{lemma}[I19: scalar for residue eleven]\label{lem_i19_scalar_eleven}\lean{SptCM.Repair.orientationScalar_eleven}\leanok
+One has $s(11)=0$ in $\Z/6\Z$.
+\end{lemma}
+\begin{uses-statement}\ref{def_orientation_scalar}\end{uses-statement}
+\begin{proof}Evaluate the definition.\end{proof}
+
+\begin{lemma}[I19: scalar for residue five]\label{lem_i19_scalar_five}\lean{SptCM.Repair.orientationScalar_five}\leanok
+One has $s(5)=3$ in $\Z/6\Z$.
+\end{lemma}
+\begin{uses-statement}\ref{def_orientation_scalar}\end{uses-statement}
+\begin{proof}Evaluate the definition.\end{proof}
+
+\begin{lemma}[I19: scalar for residue seven]\label{lem_i19_scalar_seven}\lean{SptCM.Repair.orientationScalar_seven}\leanok
+One has $s(7)=4$ in $\Z/6\Z$.
+\end{lemma}
+\begin{uses-statement}\ref{def_orientation_scalar}\end{uses-statement}
+\begin{proof}Evaluate the definition.\end{proof}
+
+\begin{lemma}[I19: quadratic centralizer alternative]\label{lem_i19_centralizer_alternative}\lean{SptCM.Repair.centralizer_alternative_of_trace_one_norm_eq}\leanok
+In a division ring with conjugation, if commuting elements $\alpha,\beta$ have reduced trace one and equal reduced norm, then $\beta=\alpha$ or $\beta=1-\alpha$.
+\end{lemma}
+\begin{proof}
+Trace one gives $\bar\alpha=1-\alpha$ and $\bar\beta=1-\beta$.  Equal norms and commutativity factor as
+$(\beta-\alpha)(\beta+\alpha-1)=0$; the division-ring property yields the two alternatives.
+\end{proof}
+
+\begin{lemma}[I19: specialized actions do not commute]\label{lem_i19_noncommuting_actions}\lean{SptCM.Repair.specialized_actions_noncommute}\leanok
+For a collision from I18 whose specialized images satisfy
+$\mathsf{ActionSpec}$, the two images $\alpha,\beta$ do not commute.
+\end{lemma}
+\begin{uses-statement}\ref{def_action_spec}\end{uses-statement}
+\begin{proof}
+The four verified residues $b\equiv1,11,5,7\pmod{12}$ act on $C$ by $1,0,3,4$, respectively.  If $\alpha$ and $\beta$ commuted, the quadratic alternative would put $\beta$ in $\{\alpha,1-\alpha\}$, contradicting the disjoint numerator and denominator scalar sets.  The construction of the trace and norm identities remains to be supplied by the CM specialization.
+\end{proof}
+\begin{uses-proof}\ref{prop_i18_common_root}, \ref{lem_i19_scalar_one}, \ref{lem_i19_scalar_eleven}, \ref{lem_i19_scalar_five}, \ref{lem_i19_scalar_seven}, \ref{lem_i19_centralizer_alternative}\end{uses-proof}
+
+\begin{proposition}[I19: construct the actual specialized action data]\label{prop_i19_actual_action_spec}\lean{SptCM.Repair.actualOrientedSpecializedActions_of_E8}\leanok
+Let $S$ be a geometric CM specialization, let the E8 oriented quadratic
+specialization supply genuine ring maps from
+$\mathbf Z[X]/(X^2-X+(n+1)/4)$ together with its level-preserving subring
+and scalar action, and let the two points of $S$ be identified with raw
+oriented forms in the numerator residue family $\{1,11\}$ and denominator
+residue family $\{5,7\}$.  Then these data construct an
+$\mathsf{ActionSpec}$ for $S$.  Its trace-one and common-norm fields are
+consequences of the ring specializations, rather than additional premises.
+\end{proposition}
+\begin{uses-statement}\ref{def_action_spec}\end{uses-statement}
+\begin{proof}
+Apply the action-specification constructor to the two E8 ring
+specializations.  E8 identifies each specialized action with the image of
+the canonical generator, proves compatibility with conjugation, proves
+membership in the level-preserving subring, and supplies the scalar formula.
+The transported quadratic equation and conjugation give trace one and equal
+reduced norms for the two images.
+\end{proof}
+\begin{uses-proof}\ref{prop_i18_common_root}, \ref{lem_i19_scalar_one},
+\ref{lem_i19_scalar_eleven}, \ref{lem_i19_scalar_five},
+\ref{lem_i19_scalar_seven}, \ref{lem_i19_raw_omega_trace},
+\ref{lem_i19_raw_omega_norm}, \ref{lem_i19_raw_omega_quadratic},
+\ref{lem_i19_map_order_omega_trace},
+\ref{lem_i19_map_order_omega_norm_nat},
+\ref{lem_i19_map_order_omega_common_norm},
+\ref{def_i19_action_from_maps}\end{uses-proof}
+
+\begin{lemma}[I20: identify the preserving Eichler order]\label{lem_i20_eichler_order}\lean{SptCM.Repair.preservingOrder_isEichlerOfLevelSix}\leanok
+For any E9 model, a supersingular curve $E$ with a cyclic order-six subgroup $C$ has level-six Eichler preserving order by Arpin's theorem.
+\end{lemma}
+\begin{proof}Verify that the specialized curve is supersingular and $C$ is cyclic of order six, then apply E9's exact order theorem.\end{proof}
+\begin{uses-proof}\ref{prop_i18_common_root}, \ref{def_ext_arpin}\end{uses-proof}
+
+\begin{lemma}[I20: local covolume normalization]\label{lem_i20_local_covolume}\lean{SptCM.Repair.levelSix_local_covolume_lower}\leanok
+Given primitive local-index data recording indices $2$ and $3$, discriminant-$\ell$ maximal-order covolume, positive span index, and the exact covolume scaling law, the lattice spanned by $1,\alpha,\beta,\alpha\beta$ has covolume at least $6\ell$.
+\end{lemma}
+\begin{proof}Substitute the recorded indices and maximal-order covolume into the scaling law; the positive integral span index is at least one.\end{proof}
+\begin{uses-proof}\ref{lem_i20_eichler_order}\end{uses-proof}
+
+\begin{lemma}[I20: reduced norms of the four lattice vectors]\label{lem_i20_norm_table}\lean{SptCM.Repair.reducedNorm_squaredNorm_table}\leanok
+If $N(\alpha)=N(\beta)=m$, then the squared-norm factors for $1,\alpha,\beta,\alpha\beta$ are respectively $2,2m,2m,2m^2$ in the Goren--Lauter normalization.
+\end{lemma}
+\begin{proof}Use trace one, the common norm computation, and multiplicativity of reduced norm.\end{proof}
+\begin{uses-proof}\ref{lem_i19_noncommuting_actions}\end{uses-proof}
+
+\begin{lemma}[I20: apply the Hadamard bound]\label{lem_i20_hadamard_application}\lean{SptCM.Repair.gorenLauter_hadamard_of_noncommuting}\leanok
+Noncommutation makes $1,\alpha,\beta,\alpha\beta$ independent, and the Goren--Lauter theorem bounds the square of their covolume by the product of the four verified squared norms.
+\end{lemma}
+\begin{proof}Use the division-algebra independence lemma and instantiate the general four-vector inequality.\end{proof}
+\begin{uses-proof}\ref{lem_i19_noncommuting_actions}, \ref{lem_i20_norm_table}, \ref{def_ext_goren_lauter}\end{uses-proof}
+
+\begin{lemma}[I20: level-six covolume inequality]\label{lem_i20_volume}\lean{SptCM.Repair.levelSix_volume_inequality_of_local_indices}\leanok
+Given the E9 theorems, noncommuting actions of common reduced norm $m$, squared-norm compatibility, and primitive local-index data for their four-vector span, one has $6\ell\le4m^2$.
+\end{lemma}
+\begin{proof}
+Arpin identifies the level-preserving ring as an Eichler order of level $6$.  The local index calculations at $2$ and $3$ give covolume $6\ell$.  Noncommutation makes $1,\alpha,\beta,\alpha\beta$ independent; apply Goren--Lauter to their lattice and use multiplicativity of reduced norm.
+\end{proof}
+\begin{uses-proof}\ref{lem_i20_local_covolume}, \ref{lem_i20_hadamard_application}\end{uses-proof}
+
+\begin{proposition}[I20: actual E8--E9 volume inequality]\label{prop_i20_actual_volume_data}\lean{SptCM.Repair.EichlerLatticeArithmetic.actual_specialized_actions_volume_of_E8_E9}\leanok
+Let $S$, the E8 oriented specialization, and its two identified collision
+forms be as in I19.  Let an E9 covolume model and general Eichler-lattice
+arithmetic be given for the same division ring.  Suppose that the chosen
+curve is the reduction of the numerator point, CM supersingularity implies
+E9 supersingularity, its characteristic is $\ell$, the chosen subgroup is
+cyclic of order six, the E8 level-preserving subring is the E9 preserving
+order, and the arithmetic predicate for membership in an order agrees with
+subring membership.  Then
+\[
+  6\ell\leq 4\left(\frac{n+1}{4}\right)^2 .
+\]
+\end{proposition}
+\begin{uses-statement}\ref{def_collision_spec}, \ref{def_action_spec}\end{uses-statement}
+\begin{proof}
+Construct the I19 action specification and hence derive noncommutation.
+The two compatibility equalities transport E8's level-order membership to
+membership in the actual E9 preserving order.  The defining quadratic
+equation and conjugation compute both reduced norms as $(n+1)/4$; the
+reduced-norm comparison transfers these values to the rational norm used by
+the Eichler lattice.  The general E9 covolume theorem then gives the displayed
+inequality.
+\end{proof}
+\begin{uses-proof}\ref{prop_i19_actual_action_spec}, \ref{lem_i20_eichler_order},
+\ref{lem_i20_local_covolume}, \ref{lem_i20_norm_table},
+\ref{lem_i20_hadamard_application}, \ref{lem_i20_volume}\end{uses-proof}
+
+\begin{proposition}[Class-polynomial separation]\label{prop_class_poly_separation}\lean{SptCM.CM.Repaired.ActualClassPolynomialSpec.actualClassPolynomials_isCoprime_of_goodReduction_E8_E9}\leanok
+For the genuine descended class polynomials and the standard compatible
+E8 residue/CM-action and E9 preserving-order models, if
+$n\equiv23\pmod {24}$ and $(n+1)^2<24\ell$, then
+$\bar A_{\ell,n}$ and $\bar B_{\ell,n}$ are coprime.
+\end{proposition}
+\begin{uses-statement}\ref{def_admissible}, \ref{def_reduced_class_polys}\end{uses-statement}
+\begin{proof}
+A common algebraic-closure root gives the specialized pair and the noncommuting actions.  Their common norm is $(n+1)/4$, so the volume inequality yields $24\ell\le(n+1)^2$, contradicting the strict bound.  The algebraic-closure root criterion gives coprimality.
+\end{proof}
+\begin{uses-proof}\ref{prop_i17_root_reduction}, \ref{prop_i18_common_root}, \ref{prop_i19_actual_action_spec}, \ref{lem_i19_noncommuting_actions}, \ref{prop_i20_actual_volume_data}, \ref{lem_i20_volume}\end{uses-proof}
+
+\begin{lemma}[Coprime low-degree Wronskian criterion]\label{lem_wronskian_coprime_degree}\lean{SptCM.wronskianObstruction_ne_zero_zmod}\leanok
+Over $\F_\ell$, if $A$ and $B$ are coprime, $A$ is monic, and
+$0<\deg A<\ell$, then $\Wr(A,B)\ne0$.
+\end{lemma}
+\begin{uses-statement}\ref{def_wronskian}\end{uses-statement}
+\begin{proof}
+If the Wronskian vanished, coprimality would force $A'=0$.  In
+characteristic $\ell$ the positive monic degree of such a polynomial is
+divisible by $\ell$, contradicting the degree interval.
+\end{proof}
+
+\begin{proposition}[Wronskian nonvanishing]\label{prop_W_nonzero}\lean{SptCM.Repair.actualClassPolynomials_wronskian_ne_zero}\leanok
+For the genuine descended class polynomials, if their coefficientwise
+reductions are coprime and $0<2h(-n)<\ell$, then
+$\Wr(\bar A_{\ell,n},\bar B_{\ell,n})\ne0$.
+\end{proposition}
+\begin{uses-statement}\ref{def_admissible}, \ref{def_reduced_class_polys}, \ref{def_wronskian}\end{uses-statement}
+\begin{proof}
+The actual root products are monic of degree $2h(-n)$.  If the Wronskian
+vanished, coprimality would make $\bar A$ divide its derivative.  The
+derivative would be zero, forcing its positive monic degree to be divisible
+by $\ell$, contradicting the degree interval.
+\end{proof}
+\begin{uses-proof}\ref{lem_class_poly_degree}, \ref{lem_wronskian_coprime_degree}\end{uses-proof}
+
+
+\section{Pairing and Borcherds specialization: I09--I14}
+\begin{definition}[Finite convolution constant term]\label{def_i09_finite_product_constant_term}\lean{SptCM.Analytic.Repaired.finiteMockProductConstantTerm}\leanok
+% Lean: noncomputable def finiteMockProductConstantTerm (n : Nat) (H : HForm Int) : Int := sum r in Icc (-n) 1, H r * aCoeff (-r)
+For a series whose pole order is at most \(n/24\), define the finite
+coefficient convolution
+\[
+ \mathsf{FCT}_{n}(H):=\sum_{r=-n}^{1} H(r)a(-r).
+\]
+\end{definition}
+\begin{uses-statement}\ref{def_Hn}, \ref{def_series_f}\end{uses-statement}
+
+\begin{definition}[Finite constant term in the Stokes application]\label{def_i09_mock_product_constant_term}\lean{SptCM.Analytic.Repaired.hnMockProductConstantTerm}\leanok
+% Lean: def hnMockProductConstantTerm (n : Nat) (H : HForm Int) : Int := H (-n) * aCoeff n + H 1 * aCoeff (-1)
+\(\mathsf{CT}_{n}(H)\) is the sum of the two possible contributions to
+\([q^0](Hf)\): the coefficient of \(H\) at \(-n\) paired with \(a(n)\),
+and the coefficient at \(1\) paired with the unique negative coefficient
+\(a(-1)\) of \(f\).
+\end{definition}
+\begin{uses-statement}\ref{def_Hn}, \ref{def_series_f}\end{uses-statement}
+
+\begin{lemma}[I09: only two constant-term contributions]\label{lem_i09_two_constant_term_contributions}\lean{SptCM.Analytic.Repaired.finiteMockProductConstantTerm_eq_hnMockProductConstantTerm}\leanok
+If \(H\) has the exact \(H_n\) Fourier normalization and \(n>0\), then
+\[
+ \mathsf{FCT}_{n}(H)
+ =H(-n)a(n)+H(1)a(-1).
+\]
+\end{lemma}
+\begin{uses-statement}\ref{def_i09_finite_product_constant_term}, \ref{def_i09_mock_product_constant_term}\end{uses-statement}
+\begin{proof}
+Every summand other than \(r=-n\) and \(r=1\) contains a coefficient of
+\(H\) that vanishes by the verified low-index normalization.
+\end{proof}
+\begin{uses-proof}\ref{prop_i07_hn_actual}\end{uses-proof}
+
+\begin{lemma}[I09: actual constant-term cancellation]\label{lem_i09_constant_term_cancellation}\lean{SptCM.Analytic.Repaired.auxiliaryHn_mockProductConstantTerm_eq_zero}\leanok
+For \(n=24k-1\) with \(k>0\), the actual triangularly constructed
+auxiliary form satisfies \(\mathsf{CT}_{n}(H_n)=0\).
+\end{lemma}
+\begin{uses-statement}\ref{def_i09_mock_product_constant_term}, \ref{def_Hn}\end{uses-statement}
+\begin{proof}
+The leading coefficient of \(H_n\) is one, its index-one coefficient is
+\(-a(n)\), and \(a(-1)=1\).  Hence the two terms are \(a(n)\) and
+\(-a(n)\).
+\end{proof}
+\begin{uses-proof}\ref{prop_i07_hn_actual}\end{uses-proof}
+
+\begin{proposition}[I09: finite-height Stokes application]\label{prop_i09_stokes_application}\lean{SptCM.Analytic.Repaired.auxiliaryHn_finiteHeightStokesApplication}\leanok
+For the actual pair $(H_n,\eta)$, the general finite-height Stokes theorem has the published nonzero shadow scale, the stated top-boundary error tends to zero, and its two surviving constant-term contributions are $a(n)$ and $-a(n)$.
+\end{proposition}
+\begin{uses-statement}\ref{def_Hn}, \ref{def_series_f}\end{uses-statement}
+\begin{proof}Insert Bringmann's exact shadow normalization, compute every boundary term, and use the Fourier normalization of the actual $H_n$.\end{proof}
+\begin{uses-proof}\ref{def_ext_bringmann}, \ref{def_ext_stokes}, \ref{prop_i07_hn_actual}, \ref{lem_i09_two_constant_term_contributions}, \ref{lem_i09_constant_term_cancellation}\end{uses-proof}
+
+\begin{proposition}[I09: specialized Stokes pairing]\label{prop_i09_pairing_zero}\lean{SptCM.Analytic.Repaired.auxiliaryHn_stokesPairing_eq_zero}\leanok
+For every $n=24k-1>0$, the correctly normalized regularized pairing $\langle H_n,\eta\rangle^{\rm reg}$ is zero.
+\end{proposition}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+\begin{proof}
+Apply the finite-height Stokes theorem using Bringmann's exact shadow normalization.  The side boundaries cancel, the nonholomorphic top-boundary contribution tends to zero, and the remaining constant term is $\CT(H_nf)=a(n)-a(n)=0$.
+\end{proof}
+\begin{uses-proof}\ref{prop_i09_stokes_application}\end{uses-proof}
+
+\begin{lemma}[I10: four-component Gauss sum]\label{lem_i10_gauss_sum}\lean{SptCM.Analytic.Repaired.chiTwelve_gauss_sum}\leanok
+For $v=\mathfrak e_1-\mathfrak e_5-\mathfrak e_7+\mathfrak e_{11}$, the finite quadratic Gauss sum has the exact scalar required by the Weil representation at level $12$.
+\end{lemma}
+\begin{proof}Evaluate the twelve residue classes directly, retaining the chosen square-root and sign convention.\end{proof}
+
+\begin{lemma}[I10: finite component Weil matrices]\label{lem_i10_component_weil_matrices}\lean{SptCM.Analytic.Repaired.fourComponentVector_weil_generators}\leanok
+For every scalar $c\in\mathbf C$, the level-$12$ normalized inverse Fourier
+matrix fixes $c(\mathfrak e_1-\mathfrak e_5-\mathfrak e_7+\mathfrak e_{11})$,
+and the diagonal quadratic $T$-matrix multiplies it by $e(1/24)$.
+\end{lemma}
+\begin{proof}
+Expand the normalized $S$-matrix on all twelve residue classes and apply the
+verified Gauss sum.  For $T$, the four supported residues $1,5,7,11$ all have
+square congruent to $1$ modulo $24$; the other eight components vanish.
+\end{proof}
+\begin{uses-proof}\ref{lem_i10_gauss_sum}\end{uses-proof}
+
+\begin{definition}[Integral four-component coefficient series]\label{def_i10_four_component_series}\lean{SptCM.Analytic.Repaired.fourComponentHSeries}\leanok
+% Lean: def fourComponentHSeries (H : HForm Int) : Int -> Fin 12 -> Int := fun r s => H r * chiTwelveResidue s
+For an integral scalar coefficient series \(H\), define
+\(\mathbf H(r,s):=H(r)\chi_{12}(s)\) on the twelve residue components.
+\end{definition}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+
+\begin{definition}[Exact four-component Fourier-data predicate]\label{def_i10_fourier_data}\lean{SptCM.Analytic.Repaired.HasFourComponentFourierData}\leanok
+% Lean: def HasFourComponentFourierData (n : Nat) (V : Int -> Fin 12 -> Int) : Prop := ...
+\(\mathsf{FourierData}(n,V)\) means that every component of \(V\) has zero
+constant coefficient and that its only negative index is \(-n\), where its
+coefficient vector is
+\(\mathfrak e_1-\mathfrak e_5-\mathfrak e_7+\mathfrak e_{11}\).
+\end{definition}
+\begin{uses-statement}\ref{def_i10_four_component_series}\end{uses-statement}
+
+\begin{lemma}[I10: Weil generator transformations]\label{lem_i10_weil_generators}\lean{SptCM.Analytic.Repaired.auxiliaryHn_weil_generators}\leanok
+The actual vector-valued form $\mathbf H_n=H_nv$ obeys the required $S$- and $T$-generator transformations.
+\end{lemma}
+\begin{uses-statement}\ref{def_Hn}\end{uses-statement}
+\begin{proof}Combine the exact finite component-matrix calculation with the
+scalar $S$- and $T$-transformation law of the actual $H_n=\eta P_n(j)$.\end{proof}
+\begin{uses-proof}\ref{lem_i10_component_weil_matrices}, \ref{prop_i07_hn_actual}, \ref{def_ext_modular_forms}, \ref{def_ext_j_foundations}\end{uses-proof}
+
+\begin{lemma}[I10: vector principal part and constant term]\label{lem_i10_vector_fourier_data}\lean{SptCM.Analytic.Repaired.auxiliaryHn_fourComponent_fourierData}\leanok
+For \(n=24k-1\) with \(k>0\), the vector formed from the actual
+triangularly constructed \(H_n=\eta P_n(j)\) satisfies
+\(\mathsf{FourierData}(n,\mathbf H_n)\); equivalently it has zero constant
+term and its only negative coefficient is the required integral vector at
+index \(-n\).
+\end{lemma}
+\begin{uses-statement}\ref{def_i10_four_component_series}, \ref{def_i10_fourier_data}, \ref{def_Hn}\end{uses-statement}
+\begin{proof}
+The scalar normalization has leading coefficient one at \(-n\), zero
+constant coefficient, and no other negative coefficient.  Multiplication by
+the explicitly integral twelve-component sign vector gives the assertion
+componentwise.
+\end{proof}
+\begin{uses-proof}\ref{prop_i07_hn_actual}\end{uses-proof}
+
+\begin{proposition}[I10: vector-valued Borcherds input]\label{prop_i10_vector_input}\lean{SptCM.Analytic.Repaired.auxiliaryHn_vectorInputSpec}\leanok
+The fixed vector-valued form $\mathbf H_n$ satisfies $\mathsf{VectorInputSpec}(n,\mathbf H_n)$.
+\end{proposition}
+\begin{uses-statement}\ref{def_vector_input_spec}\end{uses-statement}
+\begin{proof}
+Evaluate the finite quadratic Gauss sum for the four-component vector.  The resulting matrices identify its $S$- and $T$-actions.  Substitution into the verified transformation law of $H_n$ gives the required Weil law, while the Fourier normalization gives the constant and principal parts.
+\end{proof}
+\begin{uses-proof}\ref{lem_i10_weil_generators}, \ref{lem_i10_vector_fourier_data}\end{uses-proof}
+
+\begin{lemma}[I11: enumerate the four cusps]\label{lem_i11_cusp_exhaustion}\lean{SptCM.Analytic.Repaired.levelSix_cusp_exhaustion}\leanok
+The cusps represented by $0,1/2,1/3,\infty$ exhaust the cusps of $X_0(6)$ with the conventions used in the Weyl-vector formula.
+\end{lemma}
+\begin{proof}Use the squarefree-level cusp classification and check the four denominators dividing six.\end{proof}
+\begin{uses-proof}\ref{def_ext_squarefree_cusps}\end{uses-proof}
+
+\begin{lemma}[I11: finite Atkin--Lehner eigenvalue table]\label{lem_i11_atkin_lehner_eigenvalues}\lean{SptCM.Analytic.Repaired.fourComponentVector_atkinLehner_eigenvalue}\leanok
+For $c=1,2,3,6$, let $\sigma_c$ be the permutation of $\mathbb Z/12\mathbb Z$ determined by
+$\sigma_c(r)\equiv-r\pmod{2c}$ and
+$\sigma_c(r)\equiv r\pmod{12/c}$.  Then the component vector
+$v=\mathfrak e_1-\mathfrak e_5-\mathfrak e_7+\mathfrak e_{11}$ is a
+$\sigma_c$-eigenvector with respective eigenvalues $+1,-1,-1,+1$.
+\end{lemma}
+\begin{proof}Use the explicit multipliers $1,7,5,11$ modulo $12$ and enumerate the twelve components.\end{proof}
+\begin{uses-proof}\ref{lem_i10_component_weil_matrices}, \ref{lem_i11_cusp_exhaustion}\end{uses-proof}
+
+\begin{lemma}[I11: finite theta-vector contraction]\label{lem_i11_finite_theta_contraction}\lean{SptCM.Analytic.Repaired.fourComponentThetaContraction_atkinLehner}\leanok
+For every four-component theta vector $\theta$ and $c\in\{1,2,3,6\}$,
+contracting $v$ against the component permutation $\theta^{\sigma_c}$ equals
+the corresponding sign $\varepsilon_c\in\{+1,-1,-1,+1\}$ times the
+unpermuted contraction.
+\end{lemma}
+\begin{proof}Reindex the twelve-term contraction by the verified involution $\sigma_c$ and use its eigenvalue on $v$.\end{proof}
+\begin{uses-proof}\ref{lem_i11_atkin_lehner_eigenvalues}\end{uses-proof}
+
+\begin{lemma}[I11: cusp-theta contractions]\label{lem_i11_cusp_contractions}\lean{SptCM.Analytic.Repaired.regularizedCuspThetaContraction_eq_signed_eta}\leanok
+At each of the four cusps, the Atkin--Lehner action on $v$ and the theta contraction identify the vector-valued regularized pairing with the corresponding signed scalar multiple $\pm2\langle H_n,\eta\rangle^{\rm reg}$.
+\end{lemma}
+\begin{uses-statement}\ref{def_vector_input_spec}\end{uses-statement}
+\begin{proof}Use the finite contraction, the componentwise theta identity $\sum_r\chi_{12}(r)\theta_r=2\eta$, and bilinearity of the regularized pairing.\end{proof}
+\begin{uses-proof}\ref{def_ext_eta_component_theta}, \ref{lem_i11_finite_theta_contraction}, \ref{prop_i10_vector_input}\end{uses-proof}
+
+\begin{proposition}[I11: all Weyl vectors vanish]\label{prop_i11_weyl_zero}\lean{SptCM.Analytic.Repaired.auxiliaryHn_realComponentWeylVectors_eq_zero}\leanok
+For the four cusps of $X_0(6)$, every Weyl vector of the Bruinier--Ono lift of $\mathbf H_n$ is zero.
+\end{proposition}
+\begin{proof}
+Compute the four Atkin--Lehner eigenvalues of the component vector and contract each cusp theta function to $\pm2\eta$.  The specialized pairing is zero, and the general Bruinier--Schwagenscheidt formula then gives each Weyl vector as zero with the correct normalization.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_weyl}, \ref{prop_i09_pairing_zero}, \ref{lem_i11_cusp_contractions}\end{uses-proof}
+
+\begin{proposition}[I12: signed Heegner divisor]\label{prop_i12_heegner_divisor}\lean{SptCM.Analytic.Repaired.prop_i12_heegner_divisor}\leanok
+For the actual vector input, Bruinier--Ono's predicted divisor is
+$D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$, with every multiplicity equal to one.
+\end{proposition}
+\begin{uses-statement}\ref{def_vector_input_spec}, \ref{def_oriented_forms}\end{uses-statement}
+\begin{proof}Match every negative Fourier coefficient and discriminant convention in the general divisor formula.\end{proof}
+\begin{uses-proof}\ref{def_ext_borcherds}, \ref{prop_i10_vector_input}\end{uses-proof}
+
+\begin{proposition}[I12: divisor of the class-polynomial quotient]\label{prop_i12_class_quotient_divisor}\lean{SptCM.Analytic.Repaired.actualClassPolynomialLaurentQuotient_divisor_eq_signed}\leanok
+For any meromorphic geometry satisfying the uniform finite-root-product divisor interpretation law, the genuine quotient $A_n(t)/B_n(t)$ formed from the descended class polynomials and the exact rational Euler-product Hauptmodul has divisor
+$D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$.
+\end{proposition}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}, \ref{def_hauptmodul}\end{uses-statement}
+\begin{proof}The uniform interpretation law identifies its divisor with the root divisor.  The actual numerator roots have orientations $1,11$, the actual denominator roots have orientations $5,7$, and the internally computed signs give the displayed signed divisor.\end{proof}
+\begin{uses-proof}\ref{prop_i15_actual_coordinate}, \ref{prop_i16_class_polynomials}, \ref{prop_i12_heegner_divisor}\end{uses-proof}
+
+\begin{lemma}[I12: no cusp contribution and rigidity]\label{lem_i12_cusp_rigidity}\lean{SptCM.Analytic.Repaired.i12_cusp_rigidity}\leanok
+Assume the general root-product divisor law, the general interpretation of vanishing Weyl vectors as zero cusp data, and compact-curve divisor rigidity.  For the actual input, the Borcherds lift is a rational scalar multiple of the genuine class-polynomial Laurent quotient.
+\end{lemma}
+\begin{proof}Apply E6 to the verified component-theta contraction and zero regularized pairing to derive vanishing of every level-six Weyl vector.  The Weyl interpretation law gives zero cusp data for the lift, while the equal-degree interior root-product law gives zero cusp data for the class quotient.  Their divisors agree by the preceding proposition, so compact-curve rigidity supplies the scalar multiple.\end{proof}
+\begin{uses-proof}\ref{prop_i11_weyl_zero}, \ref{prop_i12_class_quotient_divisor}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_genus_zero}\end{uses-proof}
+
+\begin{lemma}[I12: leading normalization]\label{lem_i12_leading_normalization}\lean{SptCM.Analytic.Repaired.i12_leading_normalization}\leanok
+After base-changing the exact integral Euler-product Hauptmodul to $\mathbb Q((q))$, the coefficient of $q^0$ in the actual quotient $A_n(t)/B_n(t)$ is one; the coefficient of $q^0$ in the canonical stabilized Borcherds Euler quotient is also one.
+\end{lemma}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}, \ref{def_hauptmodul_laurent}\end{uses-statement}
+\begin{proof}Reverse the two monic equal-degree polynomials, cancel their common power of $t$, and evaluate the resulting power-series units at $t^{-1}$.  The principal part $t=q^{-1}-5+O(q)$ makes $t^{-1}$ have positive order, while both reversed polynomials have constant coefficient one.  On the Borcherds side, the canonical numerator and denominator power series both have constant coefficient one, and this remains true for their quotient after embedding into Laurent series.\end{proof}
+\begin{uses-proof}\ref{def_ext_borcherds}, \ref{lem_class_poly_degree}, \ref{prop_i21_actual_laurent_model}\end{uses-proof}
+
+\begin{proposition}[I12: normalized Borcherds product identity]\label{prop_i12_product_identity}\lean{SptCM.Analytic.Repaired.actualClassPolynomialLaurentQuotient_eq_canonicalEulerQuotient}\leanok
+Under the general divisor, cusp-order, leading-value, and compact-curve rigidity interpretation laws, for squarefree $n\equiv23\pmod{24}$ the genuine descended class-polynomial quotient in the exact rational Euler-product Hauptmodul satisfies
+\[
+\frac{A_n(t(\tau))}{B_n(t(\tau))}=\prod_{m\ge1}(1-q^m)^{\chi_{12}(m)h_n(m^2)}
+\]
+as a Laurent-series identity.
+\end{proposition}
+\begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}, \ref{def_hauptmodul_laurent}, \ref{def_signed_exponent}\end{uses-statement}
+\begin{proof}
+Apply the general Bruinier--Ono theorem to the verified vector-valued input.  Zero Weyl vectors remove cusp exponents.  Check the signed Heegner divisor with multiplicity one, identify it with the divisor of the class-polynomial quotient, and use divisor-zero rigidity.  Monicity and equal degree make the remaining scalar one.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_borcherds}, \ref{prop_i12_heegner_divisor}, \ref{prop_i12_class_quotient_divisor}, \ref{lem_i12_cusp_rigidity}, \ref{lem_i12_leading_normalization}\end{uses-proof}
+
+\begin{proposition}[I14: actual stabilized Euler products]\label{prop_i14_euler_products}\lean{SptCM.Repair.eulerProducts_spec}\leanok
+The fixed pair $(P_n^+,P_n^-)$ satisfies $\mathsf{EulerProductSpec}$.
+\end{proposition}
+\begin{uses-statement}\ref{def_euler_product_plus}, \ref{def_euler_product_minus}, \ref{def_euler_product_spec}\end{uses-statement}
+\begin{proof}
+For a fixed coefficient degree, factors whose index exceeds that degree contribute one, so a finite truncation computes the coefficient.  Apply the signed-exponent decomposition factor by factor.  Every truncation has constant term one, hence the denominator is nonzero.
+\end{proof}
+\begin{uses-proof}\ref{lem_i13_signed_exponent}\end{uses-proof}
+
+\begin{lemma}[Quotient derivative forces Wronskian zero]\label{lem_quotient_derivative_wronskian_zero}\lean{SptCM.wronskian_zero_of_borcherds_quotient}\leanok
+Let $t$ be transcendental over a coefficient ring with nonzero derivative.
+If
+\[
+  A(t)\,P^- = P^+\,B(t),
+\]
+$P^-\ne0$, and both $P^+$ and $P^-$ have zero derivative, then
+$\Wr(A,B)=0$.
+\end{lemma}
+\begin{uses-statement}\ref{def_wronskian}\end{uses-statement}
+\begin{proof}
+Differentiate the quotient identity, use the two derivative vanishings, and
+apply the chain rule.  Cancel the nonzero denominator and derivative of $t$;
+transcendence makes polynomial evaluation at $t$ injective.
+\end{proof}
+
+\begin{proposition}[Canonicality forces Wronskian zero]\label{prop_W_zero}\lean{SptCM.Repair.actualClassPolynomials_wronskian_eq_zero}\leanok
+If $\Can(\ell)$ and $\Adm(\ell,n)$, then $\Wr(\bar A_{\ell,n},\bar B_{\ell,n})=0$ in $\F_\ell[T]$.
+\end{proposition}
+\begin{uses-statement}\ref{def_canonical}, \ref{def_admissible}, \ref{def_reduced_class_polys}, \ref{def_wronskian}, \ref{def_reduced_auxiliary_form}\end{uses-statement}
+\begin{proof}
+Apply the specialized canonical-Euler-product Wronskian theorem.  For each Euler factor, either $\ell$ divides its index or inert square-coefficient vanishing makes its signed exponent divisible by $\ell$.  Frobenius makes both stabilized products have zero derivative.  Differentiate the normalized quotient identity, cross-multiply using the nonzero denominator, and cancel $\Theta t_q$.  Injective Laurent substitution forces the polynomial Wronskian to vanish.
+\end{proof}
+\begin{uses-proof}\ref{lem_square_coeff_vanish}, \ref{prop_i12_product_identity}, \ref{prop_i14_euler_products}, \ref{prop_i21_actual_laurent_model}, \ref{prop_i21_laurent_hauptmodul}, \ref{lem_quotient_derivative_wronskian_zero}\end{uses-proof}
+
+
+\section{Small discriminants and final assembly}
+\begin{definition}[First exceptional progression index]\label{def_first_nonresidue}\lean{SptCM.firstNonresidue}\leanok
+% Lean: def firstExceptionalIndex (ell : Nat) : Nat := least k >= 1 with legendreSym ell (1-24*k) != 1
+For prime $\ell$, let $k_\ell$ be the least $k\ge1$ for which $\left(\frac{1-24k}{\ell}\right)\ne1$.
+\end{definition}
+\begin{lemma}[Treviño interval bound]\label{lem_first_nonresidue_bound}\lean{SptCM.Repair.firstNonresidue_bound_of_E10}\leanok
+For every prime $\ell\ge10^{11}$, $k_\ell\le3.38\ell^{1/4}\log\ell+1$.
+\end{lemma}
+\begin{uses-statement}\ref{def_first_nonresidue}\end{uses-statement}
+\begin{proof}
+Before the first exceptional index, quadratic reciprocity turns the progression into consecutive values on which the genuine Legendre character is constant.  This character is nonprincipal, so the corrected Treviño theorem gives the stated length bound.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_trevino}, \ref{def_ext_reciprocity}\end{uses-proof}
+\begin{lemma}[Explicit numerical cutoff]\label{lem_numeric_cutoff}\lean{SptCM.numeric_cutoff}\leanok
+If $\ell\ge10^{11}$, then $81.12\ell^{1/4}\log\ell+24<\sqrt{24\ell}$.
+\end{lemma}
+\begin{proof}
+Divide by $\sqrt{24\ell}$, prove both summands decrease for $\ell>e^4$, and verify the endpoint using $\log(10^{11})<26$, $(10^{11})^{1/4}>560$, and $\sqrt{24}>4.8$.
+\end{proof}
+\begin{lemma}[Minimal exceptional index is inert]\label{lem_minimal_inert}\lean{SptCM.Repair.minimalExceptionalIndex_inert}\leanok
+Assuming the corrected Treviño estimate E10, for
+$n=24k_\ell-1$ and prime $\ell\ge10^{11}$,
+$\left(\frac{-n}{\ell}\right)=-1$.
+\end{lemma}
+\begin{uses-statement}\ref{def_ext_trevino}, \ref{def_first_nonresidue}\end{uses-statement}
+\begin{proof}
+The numerical bound gives $0<n<\ell$.  Thus the exceptional Legendre symbol is nonzero, and minimality says that it must equal $-1$.
+\end{proof}
+\begin{uses-proof}\ref{lem_first_nonresidue_bound}, \ref{lem_numeric_cutoff}, \ref{def_ext_euler_criterion}\end{uses-proof}
+\begin{lemma}[Minimal inert index is squarefree]\label{lem_minimal_squarefree}\lean{SptCM.Repair.minimalExceptionalIndex_squarefree}\leanok
+Assuming the corrected Treviño estimate E10, for
+$n=24k_\ell-1$ and prime $\ell\ge10^{11}$, $n$ is squarefree.
+\end{lemma}
+\begin{uses-statement}\ref{def_ext_trevino}, \ref{def_first_nonresidue}\end{uses-statement}
+\begin{proof}
+If $u^2\mid n$ with $u>1$, then $u^2\equiv1\pmod{24}$.  Multiplicativity of the Legendre symbol makes $n/u^2$ a smaller inert progression term, contradicting the minimality of $k_\ell$.
+\end{proof}
+\begin{uses-proof}\ref{lem_minimal_inert}, \ref{def_ext_reciprocity}, \ref{def_ext_euler_criterion}\end{uses-proof}
+\begin{lemma}[Class-number positivity]\label{lem_class_number_pos}\lean{SptCM.negativeClassNumber_pos}\leanok
+For squarefree $n\equiv23\pmod{24}$, $0<h(-n)$.
+\end{lemma}
+\begin{proof}
+The principal form supplies a proper ideal class, and I22 identifies the reduced-form count with the ordinary class number.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_elementary}, \ref{prop_i22_actual_class_counts}\end{uses-proof}
+\begin{lemma}[Elementary class-number bound]\label{lem_class_number_bound}\lean{SptCM.class_number_bound}\leanok
+For squarefree $n\equiv23\pmod{24}$, $h(-n)<n$.
+\end{lemma}
+\begin{proof}
+A reduced positive form has $1\le a\le\lfloor\sqrt{n/3}\rfloor$ and $|b|\le a$.  Counting all possible pairs gives an upper bound below $n$ for $n\ge23$, and I22 identifies this count with the ordinary class number.
+\end{proof}
+\begin{uses-proof}\ref{def_ext_elementary}, \ref{prop_i22_actual_class_counts}\end{uses-proof}
+\begin{lemma}[Small admissible discriminant]\label{lem_small_n}\lean{SptCM.Repair.small_n_of_E10}\leanok
+Every prime $\ell\ge10^{11}$ admits $n$ satisfying $\mathsf{SmallDisc}(\ell,n)$.
+\end{lemma}
+\begin{uses-statement}\ref{def_small_discriminant_spec}\end{uses-statement}
+\begin{proof}
+Take $n=24k_\ell-1$.  Squarefreeness and inertness follow from minimality.  The Treviño and numerical bounds give $n+1<\sqrt{24\ell}$.  The class-number estimate and $\ell>96$ give $0<2h(-n)<\ell$.
+\end{proof}
+\begin{uses-proof}\ref{lem_first_nonresidue_bound}, \ref{lem_numeric_cutoff}, \ref{lem_minimal_inert}, \ref{lem_minimal_squarefree}, \ref{lem_class_number_pos}, \ref{lem_class_number_bound}\end{uses-proof}
+
+\begin{proposition}[No large canonical prime]\label{prop_large_exclusion}\lean{SptCM.Repair.large_exclusion_of_uniform_literature}\leanok
+Given the uniform E1--E11 literature ledger and the source-facing analytic
+models for the published grid, Stokes pairing, and general Borcherds lift, if
+$\ell\ge10^{11}$ is prime, then $\neg\Can(\ell)$.
+\end{proposition}
+\begin{uses-statement}\ref{def_canonical}\end{uses-statement}
+\begin{proof}
+Assume canonicality and choose the small admissible $n$.  The normalized product and Frobenius argument make the reduced Wronskian zero, while CM separation and the degree bound make it nonzero, a contradiction.
+\end{proof}
+\begin{uses-proof}\ref{lem_small_n}, \ref{prop_class_poly_separation},
+\ref{prop_W_zero}, \ref{prop_W_nonzero}\end{uses-proof}
+
+\begin{definition}[Public release proposition]\label{def_release_statement}\lean{SptCM.Repair.RolenClassificationStatement}\leanok
+% Lean: def RolenClassificationStatement : Prop := forall ell, CanonicalCongruencePrime ell <-> ell=5 ∨ ell=7 ∨ ell=13
+$\mathsf{ReleaseStatement}$ is the proposition $\forall\ell,\ \Can(\ell)\leftrightarrow(\ell=5\lor\ell=7\lor\ell=13)$.
+\end{definition}
+\begin{uses-statement}\ref{def_canonical}\end{uses-statement}
+
+\begin{proposition}[I23: discharge all paper-specific endpoint premises]\label{prop_i23_public_endpoint}\lean{SptCM.Repair.canonicalCongruencePrime_iff_of_uniform_literature}\leanok
+From a value of the uniform E1--E11 literature ledger and the source-facing
+analytic model package one can prove $\mathsf{ReleaseStatement}$ without an
+\texttt{InfiniteProductObstructionData}, arbitrary class-polynomial families,
+a normalized-product premise, or a collision-data argument.
+\end{proposition}
+\begin{uses-statement}\ref{def_rolen_literature}, \ref{def_ext_bringmann},
+\ref{def_ext_published_grid}, \ref{def_ext_borcherds}, \ref{def_ext_weyl},
+\ref{def_ext_stokes}, \ref{def_release_statement}\end{uses-statement}
+\begin{proof}
+The internal constructions above produce the actual grid, $H_n$, Laurent Hauptmodul, class polynomials, Euler products, and CM specialization.  Large primes are excluded by the two Wronskian conclusions.  Ahlgren--Kim handles the remaining finite range, and Andrews proves canonicality for $5,7,13$.
+\end{proof}
+\begin{uses-proof}\ref{def_andrews_5}, \ref{def_andrews_7}, \ref{def_andrews_13}, \ref{def_ext_ak_finite}, \ref{prop_large_exclusion}\end{uses-proof}
+
+\paragraph{Release audits I24--I25.}
+These are metatheoretic acceptance checks rather than mathematical
+declarations and therefore are not vertices of the Lean dependency DAG.
+For I24, the generated manifest must resolve every link below to a declaration
+with the same elaborated type, and a changed vertex remains unmarked until
+Axile verifies it.  For I25, the pinned project must clean-build; the release
+audit must inventory \texttt{sorry}, \texttt{admit}, custom axioms,
+\texttt{unsafe}, and forbidden tactics; and the elaborated type and
+\texttt{\#print axioms} output of the public theorem must show that its only
+mathematical premise is the E1--E11 literature record.
+
+\begin{theorem}[Classification of canonical congruence primes]\label{thm_main}\lean{SptCM.Repair.rolen_spt_classification}\leanok
+% Lean: theorem rolen_spt_classification (lit : UniformRolenLiterature) (analytic : UniformActualNormalizedProductPackage ...) : forall ell, CanonicalCongruencePrime ell <-> ell=5 ∨ ell=7 ∨ ell=13
+For every value of the uniform E1--E11 literature ledger, every compatible
+source-facing analytic model package, and every natural number $\ell$,
+\[
+\Can(\ell)\quad\Longleftrightarrow\quad \ell=5\ \lor\ \ell=7\ \lor\ \ell=13.
+\]
+\end{theorem}
+\begin{uses-statement}\ref{def_rolen_literature}, \ref{def_ext_bringmann},
+\ref{def_ext_published_grid}, \ref{def_ext_borcherds}, \ref{def_ext_weyl},
+\ref{def_ext_stokes}, \ref{def_canonical}\end{uses-statement}
+\begin{proof}
+The public-endpoint proposition supplies the classification from exactly the literature record.
+\end{proof}
+\begin{uses-proof}\ref{prop_i23_public_endpoint}\end{uses-proof}
+
+\end{document}

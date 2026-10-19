@@ -1,0 +1,115 @@
+{
+  "assembled_by": "Axiom Prover",
+  "schema_version": 1,
+  "target": "The SPT canonical congruence primes are exactly 5, 7, and 13.",
+  "policy": "Only E1-E11 may remain unproved; every Rolen-specific specialization must be derived in Lean.",
+  "inputs": [
+    {
+      "id": "E1",
+      "source": "G. E. Andrews, J. Reine Angew. Math. 624 (2008), 133-142",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.Andrews5",
+        "SptCM.RolenLiterature.Andrews7",
+        "SptCM.RolenLiterature.Andrews13"
+      ]
+    },
+    {
+      "id": "E2",
+      "source": "S. Ahlgren and B. Kim, J. Number Theory 189 (2018), Theorem 3 and Proposition 6",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.E2AhlgrenKimFiniteExclusion",
+        "SptCM.RolenLiterature.E2AhlgrenKimThetaCycle"
+      ]
+    },
+    {
+      "id": "E3",
+      "source": "K. Bringmann, Duke Math. J. 144 (2008); Bringmann-Folsom-Ono-Rolen, AMS Colloquium Publications 64 (2017)",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.BringmannCompletion",
+        "SptCM.RolenLiterature.HeckeShadowIntertwining"
+      ]
+    },
+    {
+      "id": "E4",
+      "source": "Standard eta, j, Eisenstein-series, Hecke and residue theory; Ahlgren-Kim, Forum Math. 26 (2014), for the mock modular grid",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.DedekindEtaFoundations",
+        "SptCM.RolenLiterature.ModularInvariantFoundations",
+        "SptCM.RolenLiterature.EisensteinFoundations",
+        "SptCM.RolenLiterature.PrincipalPartIntegrality",
+        "SptCM.RolenLiterature.GeneralModularHeckeLaws",
+        "SptCM.RolenLiterature.WeightTwoResidueTheorem",
+        "SptCM.RolenLiterature.PublishedMockModularGrid"
+      ]
+    },
+    {
+      "id": "E5",
+      "source": "J. H. Bruinier and K. Ono, Ann. of Math. 172 (2010), Theorem 6.1",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.E5BruinierOno"
+      ]
+    },
+    {
+      "id": "E6",
+      "source": "J. H. Bruinier and M. Schwagenscheidt, J. Algebra 478 (2017), equation (11)",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.E6BruinierSchwagenscheidt"
+      ]
+    },
+    {
+      "id": "E7",
+      "source": "G. Ligozat, Courbes modulaires de genre 1 (1975), plus standard integral modular-curve theory for X_0(6) away from 6",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.LigozatEtaQuotients",
+        "SptCM.RolenLiterature.X0SixGoodIntegralModel",
+        "SptCM.RolenLiterature.X0SixGenusZeroFibers",
+        "SptCM.RolenLiterature.X0SixDisjointCusps",
+        "SptCM.RolenLiterature.E7HorizontalDivisorPrinciple",
+        "SptCM.RolenLiterature.E7NoVerticalComponentPrinciple",
+        "SptCM.RolenLiterature.E7IntegralDegreeOneCriterion"
+      ]
+    },
+    {
+      "id": "E8",
+      "source": "Standard CM, ideal-class, class-field, potential-good-reduction, and Deuring reduction theorems in the precise oriented level-six forms recorded in Lean",
+      "citation_status": "Exact theorem-level citations for every oriented and integral-closure formulation are required before release. The residue theorem is typed on integralClosure AwaySix L; a residue homomorphism from the characteristic-zero field L is impossible.",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.E8NegativeQuadraticOrderDomain",
+        "SptCM.RolenLiterature.E8ReducedFormClassification",
+        "SptCM.RolenLiterature.E8FourOrientedFormClassification",
+        "SptCM.RolenLiterature.E8FiniteGaloisCMReciprocity",
+        "SptCM.RolenLiterature.E8FiniteGaloisIntegralCMReciprocity",
+        "SptCM.RolenLiterature.CMPotentialGoodReduction",
+        "SptCM.RolenLiterature.DeuringInertSupersingular",
+        "SptCM.RolenLiterature.CMSpecializationInjective",
+        "SptCM.RolenLiterature.Repair.E8AwaySixIntegralClosureResidueTheorem"
+      ]
+    },
+    {
+      "id": "E9",
+      "source": "S. Arpin, J. Theor. Nombres Bordeaux 36 (2024), 405-443; E. Z. Goren and K. E. Lauter, Ann. Inst. Fourier 57 (2007), 457-480",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.ArpinLevelSix",
+        "SptCM.RolenLiterature.GorenLauterHadamard"
+      ]
+    },
+    {
+      "id": "E10",
+      "source": "E. Trevino, Mosc. J. Comb. Number Theory 2 (2012), with Corrigendum 7 (2017)",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.E10TrevinoCorrected"
+      ]
+    },
+    {
+      "id": "E11",
+      "source": "Standard binary quadratic form reduction, reciprocity, Euler criterion, squarefree-cusp classification, and finite-height Stokes/residue calculus",
+      "lean_declarations": [
+        "SptCM.RolenLiterature.BinaryQuadraticFormReduction",
+        "SptCM.RolenLiterature.QuadraticReciprocityInput",
+        "SptCM.RolenLiterature.EulerCriterionInput",
+        "SptCM.RolenLiterature.FiniteHeightStokesTheorem",
+        "SptCM.RolenLiterature.SquarefreeGammaZeroCuspClassification"
+      ]
+    }
+  ]
+}

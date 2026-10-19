@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "Please cite the mathematical draft and this formalization package."
+title: "SPT–CM Formalization"
+type: software
+authors:
+  - family-names: "Prover"
+    given-names: "Axiom"
+version: "1.0.0"
+date-released: "2026-10-19"
+abstract: >-
+  Lean 4 formalization of the classification of canonical congruence primes
+  for the smallest-parts function, relative to the explicit E1–E11 literature
+  interfaces. Assembled by Axiom Prover from Larry Rolen's mathematical draft.
+license: "Apache-2.0"
