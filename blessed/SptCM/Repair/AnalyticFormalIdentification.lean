@@ -1,10 +1,18 @@
-import blessed.SptCM.Repair.ActualLaurentBridge
-import blessed.SptCM.Repair.FormalHauptmodulEuler
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.RingTheory.PowerSeries.PiTopology
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+module
+
+public import blessed.SptCM.Repair.ActualLaurentBridge
+public import blessed.SptCM.Repair.FormalHauptmodulEuler
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.RingTheory.PowerSeries.PiTopology
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 namespace SptCM.Repair
 
@@ -105,6 +113,7 @@ theorem analyticFormalEulerIdentification (τ : UpperHalfPlane) :
 
 
 /-- The `N`th finite Euler product. -/
+@[expose]
 noncomputable def etaEulerPartial (q : ℂ) (N : ℕ) : ℂ :=
   ∏ n ∈ Finset.range N, (1 - q ^ (n + 1))
 
@@ -134,6 +143,7 @@ theorem etaEulerPartial_tendsto {q : ℂ} (hq : ‖q‖ < 1) :
   exact (ModularForm.multipliable_one_sub_pow hq).tendsto_prod_tprod_nat
 
 /-- The simultaneous finite approximation to the level-six Euler unit. -/
+@[expose]
 noncomputable def hauptmodulEulerPartial (q : ℂ) (N : ℕ) : ℂ :=
   etaEulerPartial q N ^ 5 * etaEulerPartial (q ^ 3) N /
     (etaEulerPartial (q ^ 2) N * etaEulerPartial (q ^ 6) N ^ 5)
@@ -170,10 +180,12 @@ theorem hauptmodulEulerPartial_tendsto (τ : UpperHalfPlane) :
 
 
 /-- The Euler product as a holomorphic function of the nome. -/
+@[expose]
 noncomputable def etaEulerDisk (q : ℂ) : ℂ :=
   ∏' n : ℕ, (1 - q ^ (n + 1))
 
 /-- The level-six unit as a function on the nome disk. -/
+@[expose]
 noncomputable def hauptmodulEulerDisk (q : ℂ) : ℂ :=
   etaEulerDisk q ^ 5 * etaEulerDisk (q ^ 3) /
     (etaEulerDisk (q ^ 2) * etaEulerDisk (q ^ 6) ^ 5)
@@ -412,6 +424,7 @@ theorem hauptmodulEulerDisk_taylorSeries {q : ℂ} (hq : ‖q‖ < 1) :
 /-- The formal Taylor series at zero, packaged as an ordinary algebraic power
 series.  This lets us compare the analytic finite Euler quotients with the
 integral formal products coefficient by coefficient. -/
+@[expose]
 noncomputable def analyticTaylorPowerSeries (f : ℂ → ℂ) : PowerSeries ℂ :=
   PowerSeries.mk fun n =>
     (n.factorial : ℂ)⁻¹ * iteratedDeriv n f 0
@@ -585,6 +598,7 @@ theorem analyticTaylorPowerSeries_inv_one_sub_pow (k a : ℕ) (hk : k ≠ 0) :
 
 /-- One analytic Euler factor, arranged multiplicatively so that it matches
 `hauptmodulFormalEulerFactor` term for term. -/
+@[expose]
 noncomputable def hauptmodulEulerAnalyticFactor (q : ℂ) (m : ℕ) : ℂ :=
   (1 - q ^ m) ^ 5 * (1 - q ^ (3 * m)) *
     (1 / (1 - q ^ (2 * m))) * (1 / (1 - q ^ (6 * m)) ^ 5)
@@ -701,6 +715,7 @@ theorem map_hauptmodulFormalEulerFactor (m : ℕ) (hm : m ≠ 0) :
 
 /-- `LowCoefficientsOne P m` says that `P` is congruent to `1` through
 all degrees strictly below `m`. -/
+@[expose]
 def LowCoefficientsOne {R : Type*} [CommRing R]
     (P : PowerSeries R) (m : ℕ) : Prop :=
   ∀ n < m, PowerSeries.coeff n P = PowerSeries.coeff n 1

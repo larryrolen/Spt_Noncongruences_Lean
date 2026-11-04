@@ -1,5 +1,13 @@
-import blessed.SptCM.Analytic.Repaired.Grid
-import Mathlib.Tactic
+module
+
+public import blessed.SptCM.Analytic.Repaired.Grid
+public import Mathlib.Tactic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Principal parts in the grid Hecke recurrence
@@ -15,12 +23,14 @@ open SptCM.Analytic
 
 /-- The conventionally zero term `G_{m/p}` when `p ∤ m`.  When `m=p`, this is
 `G₁`, so the published convention `G₁=0` gives the required cancellation. -/
+@[expose]
 def gridDivisorTerm {K : Type*} [Zero K]
     (G : ℕ → QSeries K) (m p : ℕ) : QSeries K :=
   if p ∣ m then G (m / p) else 0
 
 /-- The source-normalized left side of Rolen's grid Hecke recurrence, solved
 for `G_{mp}`. -/
+@[expose]
 def normalizedGridHeckeLeft {K : Type*} [Field K]
     (p m : ℕ) (chi : ℕ → K) (legendre : ℤ → K)
     (G : ℕ → QSeries K) : QSeries K :=

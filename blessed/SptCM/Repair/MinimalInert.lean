@@ -1,4 +1,12 @@
-import blessed.SptCM.Repair.TrevinoBridge
+module
+
+public import blessed.SptCM.Repair.TrevinoBridge
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The minimal inert progression discriminant

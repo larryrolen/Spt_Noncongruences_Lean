@@ -1,5 +1,14 @@
-import blessed.SptCM.Analytic.PaperCoefficientModels
-import blessed.SptCM.Interfaces
+module
+
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+public import blessed.SptCM.Interfaces
+
+public section
+
+-- Keep the existing ring operations on ZMod; the generic group reconstruction
+-- introduced in this Mathlib version creates an incompatible negation instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Prime and discriminant ranges for the analytic obstruction
@@ -13,6 +22,7 @@ namespace SptCM.Repair
 
 /-- The actual prime/discriminant range in which the analytic obstruction is
 used. -/
+@[expose]
 def AnalyticAdmissible (ℓ n : ℕ) : Prop :=
   ℓ.Prime ∧ 5 ≤ ℓ ∧ SptCM.Admissible ℓ n
 
@@ -37,6 +47,7 @@ theorem not_analyticAdmissible_three (n : ℕ) : ¬ AnalyticAdmissible 3 n := by
 /-- A concrete nonprincipality predicate for an integer-valued character
 modulo `p`: it takes a value other than one at some unit.  This replaces an
 uninterpreted caller-chosen label. -/
+@[expose]
 def IsNonprincipalModCharacter
     (p : ℕ) (χ : ℤ → ℤ) : Prop :=
   ∃ a : ℤ, ¬(p : ℤ) ∣ a ∧ χ a ≠ 1

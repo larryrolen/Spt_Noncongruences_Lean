@@ -1,4 +1,12 @@
-import blessed.SptCM.Repair.I15ActualApplication
+module
+
+public import blessed.SptCM.Repair.I15ActualApplication
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The standard `X₀(6)` application of the integral-coordinate argument
@@ -82,11 +90,13 @@ structure ActualX0SixApplicationChecks where
 
 /-- The proposition-valued exact E7 input: the standard integral model and
 all comparison maps required by the application exist. -/
+@[expose]
 def E7ActualX0SixApplicationChecks : Prop :=
   Nonempty ActualX0SixApplicationChecks
 
 /-- The paper's actual integral-coordinate assertion, expressed without
 choosing implementation types for the standard integral modular curve. -/
+@[expose]
 def ActualHauptmodulIntegralCoordinate : Prop :=
   ∃ D : ActualX0SixApplicationChecks,
     D.G.identifiesWithProjectiveLine

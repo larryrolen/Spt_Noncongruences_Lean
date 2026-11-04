@@ -1,5 +1,13 @@
-import blessed.SptCM.Repair.AnalyticFormalIdentification
-import blessed.SptCM.Repair.LaurentHauptmodul
+module
+
+public import blessed.SptCM.Repair.AnalyticFormalIdentification
+public import blessed.SptCM.Repair.LaurentHauptmodul
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The actual integral Laurent model in finite characteristic
@@ -12,6 +20,7 @@ integral Euler product `hauptmodulFormalLaurent`.
 namespace SptCM.Repair
 
 /-- Coefficientwise reduction of the integral Euler-product Laurent series. -/
+@[expose]
 noncomputable def actualHauptmodulLaurent (ℓ : ℕ) : LaurentSeries (ZMod ℓ) :=
   HahnSeries.map hauptmodulFormalLaurent (Int.castRingHom (ZMod ℓ))
 
@@ -35,6 +44,7 @@ theorem actualHauptmodulLaurent_principalPart
 
 /-- The concrete Laurent datum supplied by coefficientwise reduction of the
 integral Euler product. -/
+@[expose]
 noncomputable def actualLaurentHauptmodulData
     (ℓ n : ℕ) (hrange : AnalyticAdmissible ℓ n) :
     LaurentHauptmodulData ℓ n hrange where

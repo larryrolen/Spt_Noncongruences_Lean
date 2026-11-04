@@ -1,5 +1,10 @@
-import Mathlib.NumberTheory.ModularForms.Cusps
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+module
+
+public import Mathlib.NumberTheory.ModularForms.Cusps
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+
+public section
+
 
 /-!
 # General squarefree-level cusp classification interface
@@ -28,17 +33,20 @@ abbrev GammaZeroCusp (N : ℕ) :=
 abbrev LevelDivisor (N : ℕ) := {d : ℕ // d ∣ N}
 
 /-- The standard representative attached to a divisor `d ∣ N`. -/
+@[expose]
 def squarefreeCuspPoint (N : ℕ) (d : LevelDivisor N) : OnePoint ℚ :=
   if d.1 = 1 then (0 : ℚ)
   else if d.1 = N then OnePoint.infty
   else ((1 / (d.1 : ℚ) : ℚ) : OnePoint ℚ)
 
 /-- The corresponding orbit class on `X₀(N)`. -/
+@[expose]
 def squarefreeCuspRepresentative (N : ℕ) (d : LevelDivisor N) :
     GammaZeroCusp N :=
   Quotient.mk'' (squarefreeCuspPoint N d)
 
 /-- General E4/E11 squarefree-level cusp classification. -/
+@[expose]
 def SquarefreeGammaZeroCuspClassification : Prop :=
   ∀ (N : ℕ), N ≠ 0 → Squarefree N →
     Function.Bijective (squarefreeCuspRepresentative N)

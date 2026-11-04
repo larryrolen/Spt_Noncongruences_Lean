@@ -1,8 +1,16 @@
-import blessed.SptCM.Definitions
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+module
+
+public import blessed.SptCM.Definitions
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # External interfaces for the Spt--CM paper
@@ -26,6 +34,7 @@ abbrev CoeffSeries (R : Type*) := ℤ → R
 abbrev SeriesOperator (R : Type*) := CoeffSeries R → CoeffSeries R
 
 /-- The coefficient of a neutral series at an integral normalized index. -/
+@[expose]
 def seriesCoeff {R : Type*} (f : CoeffSeries R) (n : ℤ) : R := f n
 
 /-- Abstract data needed to discuss a harmonic completion without building a
@@ -83,22 +92,27 @@ structure CovolumeModel (Lattice Vector : Type*) where
 /-! ## Andrews and Ahlgren--Kim -/
 
 /-- Andrews' congruence at `5`. -/
+@[expose]
 def Andrews5 : Prop := CanonicalCongruencePrime 5
 
 /-- Andrews' congruence at `7`. -/
+@[expose]
 def Andrews7 : Prop := CanonicalCongruencePrime 7
 
 /-- Andrews' congruence at `13`. -/
+@[expose]
 def Andrews13 : Prop := CanonicalCongruencePrime 13
 
 /-- The exact finite-range classification furnished by Ahlgren--Kim,
 Theorem 3, at the cutoff used in the paper. -/
+@[expose]
 def AhlgrenKimFiniteExclusion : Prop :=
   ∀ ℓ : ℕ, CanonicalCongruencePrime ℓ → ℓ < 10 ^ 11 →
     ℓ = 5 ∨ ℓ = 7 ∨ ℓ = 13
 
 /-- Ahlgren--Kim Proposition 6 after choosing the scalar normalization but
 before taking coefficientwise consequences. -/
+@[expose]
 def AhlgrenKimThetaCycleInput (ℓ : ℕ)
     (thetaPower : SeriesOperator (ZMod ℓ))
     (epsilon : ZMod ℓ) (f : CoeffSeries (ZMod ℓ)) : Prop :=
@@ -108,17 +122,20 @@ def AhlgrenKimThetaCycleInput (ℓ : ℕ)
 
 /-- Bringmann's existence and shadow normalization for the completion of the
 smallest-parts mock modular form. -/
+@[expose]
 def BringmannCompletionInput {H S : Type*}
     (M : HarmonicCompletionModel H S) (f eta : S) (shadowConstant : S → S) : Prop :=
   ∃ fhat : H,
     M.holomorphicPart fhat = f ∧ M.shadow fhat = shadowConstant eta
 
 /-- Euler's theta-series identity for Dedekind eta in a chosen series model. -/
+@[expose]
 def EulerEtaThetaIdentity {S : Type*} (eta thetaSeries : S) : Prop :=
   eta = thetaSeries
 
 /-- The dual-weight Hecke/shadow intertwining formula cited as HMFBook
 (7.5), including its normalization factor. -/
+@[expose]
 def HeckeShadowIntertwiningInput {H S : Type*}
     (M : HarmonicCompletionModel H S) (T : DualWeightHeckeModel H S) : Prop :=
   ∀ (ℓ : ℕ) (F : H),
@@ -130,6 +147,7 @@ def HeckeShadowIntertwiningInput {H S : Type*}
 /-- Ligozat's general eta-quotient modularity, character, and cusp-order
 formula.  The concrete exponent vector and its four computed cusp orders are
 paper-internal applications of this interface. -/
+@[expose]
 def LigozatEtaQuotientInput {Exponent Cusp Order Quotient : Type*}
     (M : EtaQuotientModel Exponent Cusp Order Quotient) : Prop :=
   ∀ e : Exponent, M.conditions e →
@@ -139,6 +157,7 @@ def LigozatEtaQuotientInput {Exponent Cusp Order Quotient : Type*}
 
 /-- Bruinier--Ono Theorem 6.1: the general Borcherds lift has the predicted
 divisor, unitary character, and product expansion. -/
+@[expose]
 def BruinierOnoBorcherdsInput {Input Divisor Product : Type*}
     (B : BorcherdsLiftData Input Divisor Product) : Prop :=
   ∀ F : Input,
@@ -148,6 +167,7 @@ def BruinierOnoBorcherdsInput {Input Divisor Product : Type*}
 
 /-- Bruinier--Schwagenscheidt equation (11), expressing each Weyl vector as
 the normalized regularized pairing with the cusp theta function. -/
+@[expose]
 def BruinierSchwagenscheidtWeylInput
     {Input Theta Scalar Cusp : Type*}
     (W : WeylVectorData Input Theta Scalar Cusp) : Prop :=
@@ -169,12 +189,14 @@ structure CMReductionModel (CMPoint Reduction Endomorphism : Type*) where
 
 /-- Potential good reduction of CM points, including extension of the
 prime-to-residue-characteristic level structure. -/
+@[expose]
 def CMPotentialGoodReductionInput {CMPoint Reduction Endomorphism : Type*}
     (M : CMReductionModel CMPoint Reduction Endomorphism) : Prop :=
   ∀ P, M.hasPotentiallyGoodReduction P
 
 /-- Deuring's inert-reduction implication, isolated from the collision
 argument that later uses supersingularity. -/
+@[expose]
 def CMInertReductionSupersingularInput
     {CMPoint Reduction Endomorphism : Type*}
     (M : CMReductionModel CMPoint Reduction Endomorphism) : Prop :=
@@ -182,6 +204,7 @@ def CMInertReductionSupersingularInput
     M.isSupersingular (M.reduction P)
 
 /-- Injectivity of specialization on the CM order. -/
+@[expose]
 def CMSpecializedActionInjectiveInput
     {CMPoint Reduction Endomorphism : Type*}
     (M : CMReductionModel CMPoint Reduction Endomorphism) : Prop :=
@@ -190,6 +213,7 @@ def CMSpecializedActionInjectiveInput
 /-! ## Quaternionic inputs -/
 
 /-- Arpin Theorem 3.7 in the only specialization used by the paper. -/
+@[expose]
 def ArpinEichlerOrderInput {Curve Subgroup Order : Type*}
     (M : LevelEndomorphismModel Curve Subgroup Order) : Prop :=
   ∀ (E : Curve) (C : Subgroup),
@@ -198,6 +222,7 @@ def ArpinEichlerOrderInput {Curve Subgroup Order : Type*}
 
 /-- The four-vector Hadamard/covolume inequality cited from
 Goren--Lauter, Lemma 2.1.1. -/
+@[expose]
 def GorenLauterHadamardInput {Lattice Vector : Type*}
     (M : CovolumeModel Lattice Vector) : Prop :=
   ∀ a b c d : Vector,
@@ -210,11 +235,13 @@ def GorenLauterHadamardInput {Lattice Vector : Type*}
 
 /-- A character is constant on the `H` consecutive integers beginning at
 `a`, expressed without committing to a particular character library. -/
+@[expose]
 def ConstantOnInterval {R : Type*} (χ : ℤ → R) (a : ℤ) (H : ℕ) : Prop :=
   ∀ i j : ℕ, i < H → j < H → χ (a + i) = χ (a + j)
 
 /-- Treviño's Theorem 1 with the 2017 corrected all-prime constant `3.38`.
 `Nonprincipal` records the usual character-theoretic hypothesis. -/
+@[expose]
 def TrevinoCorrectedCharacterBound {R : Type*}
     (Nonprincipal : ℕ → (ℤ → R) → Prop) : Prop :=
   ∀ (ℓ H : ℕ) (χ : ℤ → R) (a : ℤ),

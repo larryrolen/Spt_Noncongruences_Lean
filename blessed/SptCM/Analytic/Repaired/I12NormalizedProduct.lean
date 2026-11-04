@@ -1,12 +1,20 @@
-import blessed.SptCM.Analytic.Repaired.EulerProducts
-import blessed.SptCM.Analytic.Repaired.PairingBorcherds
-import blessed.SptCM.Analytic.Repaired.CuspWeylVectors
-import blessed.SptCM.CM.ActualClassPolynomials
-import blessed.SptCM.CM.Repaired.I16Coordinates
-import blessed.SptCM.CM.Repaired.I16Reduction
-import blessed.SptCM.Repair.I21ActualLaurentModel
-import Mathlib.RingTheory.HahnSeries.HEval
-import Mathlib.Algebra.Polynomial.Reverse
+module
+
+public import blessed.SptCM.Analytic.Repaired.EulerProducts
+public import blessed.SptCM.Analytic.Repaired.PairingBorcherds
+public import blessed.SptCM.Analytic.Repaired.CuspWeylVectors
+public import blessed.SptCM.CM.ActualClassPolynomials
+public import blessed.SptCM.CM.Repaired.I16Coordinates
+public import blessed.SptCM.CM.Repaired.I16Reduction
+public import blessed.SptCM.Repair.I21ActualLaurentModel
+public import Mathlib.RingTheory.HahnSeries.HEval
+public import Mathlib.Algebra.Polynomial.Reverse
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # I12: the normalized Borcherds product
@@ -29,6 +37,7 @@ inductive I12Orientation
   deriving DecidableEq
 
 /-- The residue represented by an orientation. -/
+@[expose]
 def I12Orientation.residue : I12Orientation → Fin 12
   | .one => 1
   | .eleven => 11
@@ -36,6 +45,7 @@ def I12Orientation.residue : I12Orientation → Fin 12
   | .seven => 7
 
 /-- The sign with which an oriented CM divisor occurs. -/
+@[expose]
 def I12Orientation.sign : I12Orientation → ℤ
   | .one | .eleven => 1
   | .five | .seven => -1
@@ -45,11 +55,13 @@ abbrev I12Divisor := I12Orientation → ℤ
 
 /-- The divisor read directly from the coefficient at the unique negative
 index of the vector-valued input. -/
+@[expose]
 def heegnerDivisorFromSeries (n : ℕ) (V : ℤ → Fin 12 → ℤ) : I12Divisor :=
   fun o => V (-(n : ℤ)) o.residue
 
 /-- The displayed signed Heegner divisor
 `D_(n,1)+D_(n,11)-D_(n,5)-D_(n,7)`. -/
+@[expose]
 def signedHeegnerDivisor : I12Divisor := I12Orientation.sign
 
 /-- I12: the actual I10 principal part gives all four Heegner multiplicities,
@@ -68,12 +80,14 @@ theorem prop_i12_heegner_divisor
       I12Orientation.residue, chiTwelveResidue]
 
 /-- The canonical embedding of `ℤ[1/6]` into `ℚ`. -/
+@[expose]
 noncomputable def awaySixToRat : SptCM.AwaySix →+* ℚ :=
   Localization.awayLift (Int.castRingHom ℚ) 6 (by norm_num)
 
 /-- The actual Laurent-series evaluation of `A_n(t)/B_n(t)`.  The
 coefficient polynomials come from a sound descent specification for the
 genuine complex root products, and substitution is Mathlib's `aeval`. -/
+@[expose]
 noncomputable def actualClassPolynomialLaurentQuotient
     {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
     (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C)
@@ -83,6 +97,7 @@ noncomputable def actualClassPolynomialLaurentQuotient
 
 /-- The actual stabilized Euler quotient attached to the scalar series of the
 I10 input.  These are precisely the canonical products constructed in I14. -/
+@[expose]
 noncomputable def actualBorcherdsEulerQuotient {Form : Type*}
     (F : FourComponentInput Form) : LaurentSeries ℚ :=
   ((SptCM.Repair.eulerProductPlus F.scalarSeries : PowerSeries ℚ) :
@@ -92,6 +107,7 @@ noncomputable def actualBorcherdsEulerQuotient {Form : Type*}
 
 /-- The exact integral Euler-product Hauptmodul, base-changed to `ℚ` for
 the characteristic-zero class-polynomial quotient. -/
+@[expose]
 noncomputable def actualRationalHauptmodulLaurent : LaurentSeries ℚ :=
   HahnSeries.map SptCM.Repair.hauptmodulFormalLaurent (Int.castRingHom ℚ)
 
@@ -270,6 +286,7 @@ theorem actualClassPolynomialLaurentQuotient_leading_normalization
 
 /-- Root-divisor of the actual class-polynomial quotient.  It is computed
 from which of the four concrete products a root factor belongs to. -/
+@[expose]
 def actualClassPolynomialRootDivisor : I12Divisor
   | .one | .eleven => 1
   | .five | .seven => -1
@@ -370,12 +387,14 @@ theorem i12_leading_normalization
     actualBorcherdsEulerQuotient_coeff_zero F⟩
 
 /-- Predicted divisor read from the unique negative coefficient. -/
+@[expose]
 def actualPredictedHeegnerDivisor {Form : Type*} (n : ℕ) :
     FourComponentInput Form → I12Divisor :=
   fun F => heegnerDivisorFromSeries n F.vectorSeries
 
 /-- E5 applied to the actual I10 input and the fixed canonical stabilized
 Euler quotient.  The expansion predicate is no longer caller-selectable. -/
+@[expose]
 def actualI12BorcherdsModel {Form : Type*} [SMul ℂ Form]
     (E : EtaJGeneratorBasis Form) (n : ℕ)
     (lift : FourComponentInput Form → LaurentSeries ℚ)
@@ -440,6 +459,7 @@ class-polynomial quotient in the exact Hauptmodul has precisely the signed
 root divisor computed from its numerator and denominator factors.  This is
 quantified over every descended class-polynomial specification and does not
 assume the final Borcherds-product identity. -/
+@[expose]
 def I12ClassPolynomialDivisorPrinciple
     (G : I12MeromorphicGeometry
       (LaurentSeries ℚ) I12Divisor I12Divisor ℚ) : Prop :=
@@ -453,6 +473,7 @@ def I12ClassPolynomialDivisorPrinciple
 /-- The finite CM roots are interior points, so the equal-degree
 class-polynomial quotient has no cusp contribution.  As above, this is a
 uniform geometric interpretation law, not the desired product equality. -/
+@[expose]
 def I12ClassPolynomialCuspPrinciple
     (G : I12MeromorphicGeometry
       (LaurentSeries ℚ) I12Divisor I12Divisor ℚ) : Prop :=
@@ -464,6 +485,7 @@ def I12ClassPolynomialCuspPrinciple
 
 /-- General interpretation of Weyl vectors as cusp orders of a Borcherds
 lift: vanishing at all four level-six cusps forces trivial cusp data. -/
+@[expose]
 def I12WeylCuspPrinciple
     {Form : Type*}
     (G : I12MeromorphicGeometry
@@ -491,6 +513,7 @@ theorem actualClassPolynomialLaurentQuotient_divisor_eq_signed
 
 /-- General compact-curve rigidity: two meromorphic functions with the same
 horizontal divisor and cusp data differ by a scalar. -/
+@[expose]
 def I12DivisorRigidityPrinciple
     {Function Divisor CuspData Scalar : Type*}
     [Field Scalar] [Field Function] [Algebra Scalar Function]
@@ -499,6 +522,7 @@ def I12DivisorRigidityPrinciple
     ∃ c : Scalar, f = algebraMap Scalar Function c * g
 
 /-- General compatibility of the leading value with scalar multiplication. -/
+@[expose]
 def I12LeadingValuePrinciple
     {Function Divisor CuspData Scalar : Type*}
     [Field Scalar] [Field Function] [Algebra Scalar Function]

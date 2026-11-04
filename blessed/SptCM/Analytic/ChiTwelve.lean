@@ -1,4 +1,12 @@
-import Mathlib
+module
+
+public import Mathlib
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The quadratic character modulo twelve
@@ -7,12 +15,14 @@ import Mathlib
 namespace SptCM.Analytic
 
 /-- The quadratic character `χ₁₂(m) = (12/m)`, explicitly by residue class. -/
+@[expose]
 def chi12 (m : ℤ) : ℤ :=
   if m % 12 = 1 ∨ m % 12 = 11 then 1
   else if m % 12 = 5 ∨ m % 12 = 7 then -1
   else 0
 
 /-- The same character on the canonical finite residue type. -/
+@[expose]
 def chi12Residue (r : Fin 12) : ℤ :=
   if r.val = 1 ∨ r.val = 11 then 1
   else if r.val = 5 ∨ r.val = 7 then -1
@@ -30,6 +40,7 @@ theorem chi12Residue_sq_of_coprime_six (r : Fin 12)
   fin_cases r <;> simp_all [chi12Residue, Nat.Coprime]
 
 /-- Canonical residue of a natural number modulo twelve. -/
+@[expose]
 def natResidueTwelve (m : ℕ) : Fin 12 := ⟨m % 12, Nat.mod_lt _ (by norm_num)⟩
 
 theorem natResidueTwelve_mul (a b : ℕ) :

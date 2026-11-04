@@ -1,7 +1,12 @@
-import blessed.SptCM.Literature.SquarefreeCusps
-import Mathlib.NumberTheory.ModularForms.Cusps
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-import Mathlib.Tactic
+module
+
+public import blessed.SptCM.Literature.SquarefreeCusps
+public import Mathlib.NumberTheory.ModularForms.Cusps
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+public import Mathlib.Tactic
+
+public section
+
 
 namespace SptCM.Analytic.Repaired
 

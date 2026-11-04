@@ -1,4 +1,12 @@
-import Mathlib
+module
+
+public import Mathlib
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Abstract theta--Hecke deductions
@@ -14,12 +22,14 @@ and solving the grid recurrences -- are proved here.
 namespace SptCM.Analytic
 
 /-- An element is in the `ε`-eigenspace of the theta-cycle operator. -/
+@[expose]
 def IsThetaEigen {K V : Type*} [Semiring K] [AddCommMonoid V] [Module K V]
     (theta : V →ₗ[K] V) (ε : K) (x : V) : Prop :=
   theta x = ε • x
 
 /-- The exact external assertion supplied by the Ahlgren--Kim theta-cycle
 result, separated from its coefficientwise consequences. -/
+@[expose]
 def AhlgrenKimThetaCycleInput
     {K V : Type*} [Semiring K] [AddCommMonoid V] [Module K V]
     (theta : V →ₗ[K] V) (ε : K) (f : V) : Prop :=
@@ -153,6 +163,7 @@ abbrev QSeries (K : Type*) := ℤ → K
 /-- The principal-part predicate characterizing the canonical grid form.  It
 states only the two negative coefficients used in the paper and vanishing of
 all other negative coefficients. -/
+@[expose]
 def HasGridPrincipalPart {K : Type*} [Ring K]
     (chi : ℕ → K) (m : ℕ) (g : QSeries K) : Prop :=
   ∀ r : ℤ, r < 0 →
@@ -168,6 +179,7 @@ structure GridFormData (K : Type*) [Ring K] where
   principalPart : ∀ m, 1 < m → HasGridPrincipalPart chi m (form m)
 
 /-- The chosen canonical grid form. -/
+@[expose]
 def gridForm {K : Type*} [Ring K] (data : GridFormData K) (m : ℕ) : QSeries K :=
   data.form m
 
@@ -191,6 +203,7 @@ theorem gridForm_existsUnique
 
 /-- The coefficient formula for the paper's weight `3/2` Hecke operator.
 Inadmissible divided indices contribute zero. -/
+@[expose]
 def heckeThreeHalf {K : Type*} [Field K]
     (ell : ℕ) (chiEll : K) (legendre : ℤ → K) (g : QSeries K) : QSeries K :=
   fun n =>
@@ -198,6 +211,7 @@ def heckeThreeHalf {K : Type*} [Field K]
       if ((ell : ℤ) ^ 2) ∣ n then (ell : K) * g (n / (ell : ℤ) ^ 2) else 0
 
 /-- The coefficient formula for the dual weight `1/2` Hecke operator. -/
+@[expose]
 def heckeOneHalf {K : Type*} [Field K]
     (ell : ℕ) (chiEll : K) (legendre : ℤ → K) (g : QSeries K) : QSeries K :=
   fun n =>

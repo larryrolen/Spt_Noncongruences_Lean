@@ -1,7 +1,15 @@
-import blessed.SptCM.Analytic.Repaired.Grid
-import blessed.SptCM.Analytic.Repaired.WeilGenerators
-import blessed.SptCM.Analytic.DualityPairing
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
+module
+
+public import blessed.SptCM.Analytic.Repaired.Grid
+public import blessed.SptCM.Analytic.Repaired.WeilGenerators
+public import blessed.SptCM.Analytic.DualityPairing
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The actual auxiliary form, the published grid, and coefficient duality
@@ -49,6 +57,7 @@ structure WeightTwoMultiplicationTheory
 
 /-- The integral Fourier expansion of the actual eta--j auxiliary form,
 viewed over a field. -/
+@[expose]
 noncomputable def actualAuxiliarySeries
     {K Form : Type*} [Field K] [SMul ℂ Form]
     (E : EtaJGeneratorBasis Form) (k : ℕ) (a : ℤ) : HForm K :=

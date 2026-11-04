@@ -1,7 +1,16 @@
-import blessed.SptCM.Lemmas.SmallDiscriminantArithmetic
-import blessed.SptCM.PaperInterfaces
-import Mathlib.Analysis.SpecialFunctions.Log.Monotone
-import Mathlib.Analysis.Complex.ExponentialBounds
+module
+
+public import blessed.SptCM.Lemmas.SmallDiscriminantArithmetic
+public import blessed.SptCM.PaperInterfaces
+public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
+public import Mathlib.Analysis.Complex.ExponentialBounds
+
+public section
+
+-- Keep the existing ring operations on ZMod; the generic group reconstruction
+-- introduced in this Mathlib version creates an incompatible negation instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The small discriminant argument
@@ -16,6 +25,7 @@ namespace SptCM
 /-- The bounded first nonresidue furnished by Treviño's corrected character
 estimate together with the explicit numerical estimate in the paper.  The last
 field records the defining minimality of the chosen member of the progression. -/
+@[expose]
 def SmallInertCandidateInput : Prop :=
   ∀ ℓ : ℕ, ℓ.Prime → cutoff ≤ ℓ → ∃ n : ℕ,
     0 < n ∧ n % 24 = 23 ∧ ¬ IsSquare (-(n : ZMod ℓ)) ∧
@@ -25,6 +35,7 @@ def SmallInertCandidateInput : Prop :=
 
 /-- Removing a prime-square divisor preserves the progression and inertness
 conditions used in the paper's minimality argument. -/
+@[expose]
 def PrimeSquareInvarianceInput : Prop :=
   ∀ (ℓ n p q : ℕ), ℓ.Prime → p.Prime → n = p ^ 2 * q →
     n % 24 = 23 → ¬ IsSquare (-(n : ZMod ℓ)) →
@@ -74,6 +85,7 @@ theorem primeSquareInvarianceInput : PrimeSquareInvarianceInput := by
 
 /-- The elementary reduced-form estimate used in the paper, isolated from the
 choice of the discriminant. -/
+@[expose]
 def ClassNumberEstimateInput (h : ℕ → ℕ) : Prop :=
   ∀ n : ℕ, 23 ≤ n → Squarefree n → n % 24 = 23 → 0 < h n ∧ h n < n
 
@@ -118,6 +130,7 @@ namespace SptCM
 
 /-- The first positive index at which the progression character differs from
 one.  It is zero only when no such positive index exists. -/
+@[expose]
 noncomputable def firstNonresidue (ℓ : ℕ) [Fact ℓ.Prime] : ℕ := by
   classical
   exact if h : ∃ k : ℕ, 0 < k ∧
@@ -126,6 +139,7 @@ noncomputable def firstNonresidue (ℓ : ℕ) [Fact ℓ.Prime] : ℕ := by
   else 0
 
 /-- The least nonnegative representative of `24⁻¹ (mod ℓ)`. -/
+@[expose]
 noncomputable def inverse24Index (ℓ : ℕ) [NeZero ℓ] : ℕ :=
   ((24 : ZMod ℓ)⁻¹).val
 
@@ -239,6 +253,7 @@ theorem character_interval
 integer upper bound for the length of a constant interval of the relevant
 nonprincipal quadratic character.  This is the sole cited analytic premise
 in this module. -/
+@[expose]
 def TrevinoCorrectedInput (B : ℕ → ℕ) : Prop :=
   ∀ (ℓ k : ℕ) (χ : ℕ → ℤ), ℓ.Prime → cutoff ≤ ℓ →
     (∀ j : ℕ, 0 < j → j < k → χ j = 1) → k - 1 ≤ B ℓ
@@ -311,6 +326,7 @@ theorem numeric_cutoff_of_bound
 
 /-- A purely integral index cutoff lying strictly below
 `√(24ℓ)/24`; using `Nat.sqrt` avoids real-analysis side conditions. -/
+@[expose]
 def explicitCutoffIndex (ℓ : ℕ) : ℕ :=
   (Nat.sqrt (24 * ℓ) - 1) / 24
 
@@ -510,7 +526,7 @@ theorem smallInertCandidate_of_trevino
     exact neg_ne_zero.mpr hncast
   have hinert : ¬ IsSquare (-(n : ZMod ℓ)) := by
     have := (legendreSym.eq_neg_one_iff ℓ).1 hcharneg
-    simpa using this
+    simpa only [Int.cast_neg, Int.cast_natCast] using this
   refine ⟨n, hnpos, hnmod, hinert, hnsq, ?_⟩
   intro m hmpos hmlt hmprop
   rcases hmprop with ⟨hmmod, hminert⟩
@@ -524,7 +540,7 @@ theorem smallInertCandidate_of_trevino
     omega
   have hmchar : legendreSym ℓ (-(m : ℤ)) = -1 := by
     rw [legendreSym.eq_neg_one_iff]
-    simpa using hminert
+    simpa only [Int.cast_neg, Int.cast_natCast] using hminert
   have hinterval := character_interval_progression hex hjpos hjlt
   have harg : (1 : ℤ) - 24 * (j : ℤ) = -(m : ℤ) := by
     exact_mod_cast
@@ -554,16 +570,19 @@ abbrev ReducedFormIndex (M : ℕ) :=
   Σ a : Fin M, Fin (2 * (a.val + 1) + 1)
 
 /-- Decode the positive first coefficient. -/
+@[expose]
 def ReducedFormIndex.a {M : ℕ} (i : ReducedFormIndex M) : ℕ :=
   i.1.val + 1
 
 /-- Decode the signed middle coefficient. -/
+@[expose]
 def ReducedFormIndex.b {M : ℕ} (i : ReducedFormIndex M) : ℤ :=
   (i.2.val : ℤ) - (i.a : ℤ)
 
 /-- The usual reduced positive forms of discriminant `-n`, represented by
 their bounded pair `(a,b)`; the coefficient `c` is uniquely determined by
 the discriminant equation. -/
+@[expose]
 def IsReducedFormIndex (n : ℕ)
     (i : ReducedFormIndex (Nat.sqrt (n / 3))) : Prop :=
   ∃ c : ℕ,
@@ -574,6 +593,7 @@ def IsReducedFormIndex (n : ℕ)
 /-- The elementary negative-discriminant class number used here is the
 number of reduced positive forms.  For fundamental negative discriminants
 this is the standard form-class definition of `h(-n)`. -/
+@[expose]
 noncomputable def negativeClassNumber (n : ℕ) : ℕ := by
   classical
   exact Fintype.card {i : ReducedFormIndex (Nat.sqrt (n / 3)) //
@@ -693,6 +713,7 @@ theorem small_n_of_estimates
 
 /-- The standard reduced-form enumeration datum, separated from the analytic
 character estimate. -/
+@[expose]
 def ReducedFormCountInput (h : ℕ → ℕ) : Prop :=
   ∀ n : ℕ, Squarefree n → n % 24 = 23 →
     ∃ M : ℕ, h n ≤ M ^ 2 + 2 * M ∧ 3 * M ^ 2 ≤ n

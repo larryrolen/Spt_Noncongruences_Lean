@@ -1,4 +1,12 @@
-import blessed.SptCM.Analytic.ThetaHecke
+module
+
+public import blessed.SptCM.Analytic.ThetaHecke
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Range-correct grid theta propagation
@@ -10,6 +18,7 @@ the characteristic prime itself can never be an induction factor.
 namespace SptCM.Repair
 
 /-- The exact range of grid indices in Rolen's support proposition. -/
+@[expose]
 def GridIndexAllowed (ℓ m : ℕ) : Prop := Nat.Coprime m (6 * ℓ)
 
 @[simp] theorem gridIndexAllowed_one (ℓ : ℕ) : GridIndexAllowed ℓ 1 := by

@@ -1,6 +1,14 @@
-import blessed.SptCM.Analytic.Repaired.CharacteristicGridSupport
-import blessed.SptCM.Analytic.Repaired.Duality
-import blessed.SptCM.Interfaces
+module
+
+public import blessed.SptCM.Analytic.Repaired.CharacteristicGridSupport
+public import blessed.SptCM.Analytic.Repaired.Duality
+public import blessed.SptCM.Interfaces
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The inert square-coefficient endpoint

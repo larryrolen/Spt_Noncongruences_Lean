@@ -1,5 +1,13 @@
-import blessed.SptCM.Repair.AndrewsCongruences
-import blessed.SptCM.Repair.TrevinoBridge
+module
+
+public import blessed.SptCM.Repair.AndrewsCongruences
+public import blessed.SptCM.Repair.TrevinoBridge
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Final cutoff assembly with the exact E1 and E2 statements
@@ -15,6 +23,7 @@ namespace SptCM.Repair
 open SptCM.RolenLiterature
 
 /-- The exact public mathematical statement of Rolen's Theorem 1.1. -/
+@[expose]
 def RolenClassificationStatement : Prop :=
   ∀ ℓ : ℕ, CanonicalCongruencePrime ℓ ↔
     ℓ = 5 ∨ ℓ = 7 ∨ ℓ = 13

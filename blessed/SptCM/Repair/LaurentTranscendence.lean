@@ -1,6 +1,11 @@
-import Mathlib.RingTheory.LaurentSeries
-import Mathlib.RingTheory.Valuation.IsTrivialOn
-import Mathlib.RingTheory.Valuation.Integers
+module
+
+public import Mathlib.RingTheory.LaurentSeries
+public import Mathlib.RingTheory.Valuation.IsTrivialOn
+public import Mathlib.RingTheory.Valuation.Integers
+
+public section
+
 
 /-!
 # Transcendence from a Laurent pole

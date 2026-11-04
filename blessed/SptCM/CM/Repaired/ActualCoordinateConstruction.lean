@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.Repaired.I16Coordinates
-import blessed.SptCM.CM.Repaired.OrientedClassActions
+module
+
+public import blessed.SptCM.CM.Repaired.I16Coordinates
+public import blessed.SptCM.CM.Repaired.OrientedClassActions
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Construction of the actual oriented CM coordinates
@@ -22,6 +30,7 @@ open SptCM.Arithmetic.Repaired
 transformation law on CM points.  This is the source-faithful E4/E7 boundary:
 it is uniform in the discriminant and orientation, and says only that the
 function is unchanged by a single `Γ₀(6)` change of variables. -/
+@[expose]
 def GammaZeroSixCMTransformationLaw (F : UpperHalfPlane → ℂ) : Prop :=
   ∀ {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r)
     (g : GammaZeroSixMatrix)
@@ -64,6 +73,7 @@ theorem analyticHauptmodul_rawCMValueInvariant
 /-- Turn a finite equivalence with an oriented-form quotient into the exact
 finite enumeration used by the class-polynomial construction.  Choice occurs
 only after finiteness and the actual cardinality have been proved. -/
+@[expose]
 def orientedCMEnumerationOfEquiv
     {n r h : ℕ} {I : Type} [Finite I]
     (e : I ≃ orientedForms n r) (hcard : Nat.card I = h) :
@@ -79,6 +89,7 @@ def orientedCMEnumerationOfEquiv
 classification, once the class group's cardinality has been identified with
 `h`.  The coordinates themselves are not chosen data: they are the genuine
 analytic Hauptmodul values descended using the E4/E7 transformation law. -/
+@[expose]
 def actualOrientedCMCoordinatesOfEquivalences
     {n h : ℕ} [IsDomain (NegativeQuadraticOrder n)]
     [Finite (ClassGroup (NegativeQuadraticOrder n))]

@@ -1,7 +1,15 @@
-import blessed.SptCM.Literature.RolenLiterature
-import blessed.SptCM.CM.Repaired.I16Coordinates
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.FieldTheory.RatFunc.Defs
+module
+
+public import blessed.SptCM.Literature.RolenLiterature
+public import blessed.SptCM.CM.Repaired.I16Coordinates
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.FieldTheory.RatFunc.Defs
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # A nonvacuous uniform literature boundary
@@ -38,6 +46,7 @@ structure E8IntegralClosureResidueSpecialization
 
 /-- Reduce an element after supplying the mathematically necessary proof that
 it is integral over `ℤ[1/6]`. -/
+@[expose]
 def E8IntegralClosureResidueSpecialization.reduce
     {L k : Type*} {ℓ : ℕ}
     [Field L] [Algebra AwaySix L]
@@ -65,6 +74,7 @@ theorem E8IntegralClosureResidueSpecialization.reduce_algebraMap
 coefficient ring needed by the paper.  The theorem only produces a residue
 map on the integral closure.  Root collisions and polynomial separation are
 not part of this external statement. -/
+@[expose]
 def E8AwaySixIntegralClosureResidueTheorem : Prop :=
   ∀ (ℓ : ℕ) [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ))
     (L : Type) (_ : Field L) (_ : Algebra AwaySix L)
@@ -76,6 +86,7 @@ def E8AwaySixIntegralClosureResidueTheorem : Prop :=
 /-- Reduction of the first CM family through the corrected integral
 closure residue map.  This is the direct replacement for applying a
 (nonexistent) residue homomorphism to the ambient number field. -/
+@[expose]
 def E8FiniteGaloisIntegralCMReciprocity.reducedX
     {I J L k : Type*} {ℓ : ℕ}
     [Field L] [Algebra AwaySix L] [Algebra ℚ L]
@@ -90,6 +101,7 @@ def E8FiniteGaloisIntegralCMReciprocity.reducedX
 
 /-- Reduction of the second CM family through the corrected integral closure
 residue map. -/
+@[expose]
 def E8FiniteGaloisIntegralCMReciprocity.reducedY
     {I J L k : Type*} {ℓ : ℕ}
     [Field L] [Algebra AwaySix L] [Algebra ℚ L]
@@ -104,6 +116,7 @@ def E8FiniteGaloisIntegralCMReciprocity.reducedY
 
 /-- Lift every numerator root of an actual integral finite-Galois
 realization to the integral closure. -/
+@[expose]
 def integralNumeratorRoot
     {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
     {L : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L]
@@ -116,6 +129,7 @@ def integralNumeratorRoot
 
 /-- Lift every denominator root of an actual integral finite-Galois
 realization to the integral closure. -/
+@[expose]
 def integralDenominatorRoot
     {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
     {L : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L]
@@ -127,6 +141,7 @@ def integralDenominatorRoot
     (mem_integralClosure_iff AwaySix L).mpr (F.integralDenominator i)⟩
 
 /-- Correct specialization of an actual numerator CM root. -/
+@[expose]
 def specializedActualNumeratorRoot
     {n h ℓ : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
     {L k : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L]
@@ -139,6 +154,7 @@ def specializedActualNumeratorRoot
   S.residue (integralNumeratorRoot F i)
 
 /-- Correct specialization of an actual denominator CM root. -/
+@[expose]
 def specializedActualDenominatorRoot
     {n h ℓ : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
     {L k : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L]

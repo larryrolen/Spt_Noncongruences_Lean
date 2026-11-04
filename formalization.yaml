@@ -1,0 +1,72 @@
+# Self-reported metadata for the conditional Palomar submission.
+# Registration requires the full Palomar workflow and editorial review.
+version: v0.4
+project:
+  name: "Canonical congruences for the smallest parts function, conditional on literature inputs"
+  description: >-
+    This development formalizes the classification of canonical congruence
+    primes for Andrews' smallest-parts function: the primes are exactly 5, 7,
+    and 13. A canonical congruence uses the residue inverse to 24 modulo a
+    prime at least five. The formal endpoint takes explicit literature and
+    analytic-model hypotheses, documented as E1-E11 in ASSUMPTIONS.md and
+    EXTERNAL_INPUTS.json. The development derives the normalized
+    Borcherds/class-polynomial product identity, the Wronskian obstruction,
+    large-prime exclusion, and final classification relative to those inputs.
+    It does not supply formal proofs of all the external literature inputs.
+  authors:
+    - Larry Rolen
+  responsible_maintainers:
+    - Larry Rolen
+  license: MIT
+sources:
+  - title: "Class polynomial obstructions to canonical congruences for the smallest parts function"
+    authors:
+      - Larry Rolen
+    id: "https://arxiv.org/abs/2610.27145v1"
+    type: paper
+    location: "Theorem 1.1 and its supporting arguments"
+    relationship: formalizes
+    note: >-
+      The formalization is conditional on the explicit literature and model
+      interfaces. The complete external-input register and source locators
+      are maintained in ASSUMPTIONS.md and EXTERNAL_INPUTS.json. Some exact
+      theorem-level citations for E8 remain marked as requiring verification.
+classification:
+  arxiv:
+    - math.NT
+  msc2020:
+    - 11P83
+    - 11F37
+status:
+  scope: >-
+    Conditional classification for the combinatorially defined smallest-parts
+    function. Endpoint: SptCM.Repair.rolen_spt_classification.
+    The upgraded proof library builds on Lean 4.35.0-rc2. The conditional
+    main theorem uses only propext, Classical.choice, and Quot.sound.
+    The local statement and reachable-definition comparison passes. Full Palomar
+    preflight, including independent proof checking, is recorded separately in
+    the workflow report for the submitted commit.
+automation:
+  methods:
+    - method: autonomous
+      framework: AxiomProver
+      tool_setup: "The source repository attributes the Lean formalization entirely to AxiomProver."
+    - method: agent
+      framework: Codex
+      tool_setup: "Lean upgrade, module-system compatibility fixes, standalone statement preparation, and kernel axiom audits."
+  notes: >-
+    Model versions, compute budgets, and prompt logs for AxiomProver have not
+    been supplied. No missing production details have been reconstructed.
+fidelity:
+  divergences: >-
+    The final Lean theorem is relative to UniformRolenLiterature,
+    EtaJGeneratorBasis, UniformActualNormalizedProductPackage,
+    IntegralGridRealization, and WeightTwoMultiplicationTheory, together
+    with their typed model parameters. These premises must remain visible
+    and fully defined in the independently auditable Challenge.
+review:
+  status: unchecked
+  notes: >-
+    Codex inspected repository structure, the final theorem signature, and
+    the assumption register. This is not a proof or alignment certification.
+    Any prior human review of the formalization has not been established.

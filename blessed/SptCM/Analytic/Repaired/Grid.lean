@@ -1,5 +1,13 @@
-import blessed.SptCM.Literature.RolenLiterature
-import blessed.SptCM.Analytic.PaperConstructions
+module
+
+public import blessed.SptCM.Literature.RolenLiterature
+public import blessed.SptCM.Analytic.PaperConstructions
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Repaired modular-grid interface and valid-range theta propagation
@@ -17,13 +25,16 @@ open SptCM.RolenLiterature
 open SptCM.Analytic
 
 /-- The valid index range in Rolen's grid-support proposition. -/
+@[expose]
 def ValidGridIndex (ℓ m : ℕ) : Prop := Nat.Coprime m (6 * ℓ)
 
 /-- The valid prime step: the Hecke prime is genuinely prime and avoids the
 level and the characteristic. -/
+@[expose]
 def ValidHeckePrime (ℓ p : ℕ) : Prop := p.Prime ∧ Nat.Coprime p (6 * ℓ)
 
 /-- The characteristic-free prime range used by the initial `f`-identity. -/
+@[expose]
 def ValidLevelPrime (p : ℕ) : Prop := p.Prime ∧ Nat.Coprime p 6
 
 /-- Re-export of the cycle-free, exact literature interface.  This is an
@@ -41,6 +52,7 @@ abbrev gridForm {K : Type*} [Field K]
 /-- The one-index specification satisfied by the fixed member of the
 published grid.  Uniqueness remains in `AhlgrenKimGridTheorem`, since it is a
 property of the ambient modular-form space rather than of one series. -/
+@[expose]
 def GenuineGridSpec {K : Type*} [Field K]
     (G : PublishedMockModularGrid K) (m : ℕ) : Prop :=
   G.Qualifies m (G.grid m) ∧
@@ -95,6 +107,7 @@ structure HeckeQualificationData {K : Type*} [Field K]
 
 /-- The source-faithful pair of Hecke identities, with every quantifier
 restricted to the range in which the qualification calculations apply. -/
+@[expose]
 def HeckeIdentitySpec {K : Type*} [Field K]
     (G : PublishedMockModularGrid K)
     (D : HeckeQualificationData G) : Prop :=

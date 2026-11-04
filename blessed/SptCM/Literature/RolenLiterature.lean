@@ -1,15 +1,23 @@
-import blessed.SptCM.Definitions
-import blessed.SptCM.Literature.AhlgrenKimGrid
-import blessed.SptCM.Literature.SquarefreeCusps
-import blessed.SptCM.Analytic.PaperCoefficientModels
-import blessed.SptCM.Arithmetic.SmallDiscriminant
-import blessed.SptCM.CM.ClassPolynomials
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.ClassGroup.Basic
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import blessed.SptCM.Definitions
+public import blessed.SptCM.Literature.AhlgrenKimGrid
+public import blessed.SptCM.Literature.SquarefreeCusps
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+public import blessed.SptCM.Arithmetic.SmallDiscriminant
+public import blessed.SptCM.CM.ClassPolynomials
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.ClassGroup.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The literature boundary for the Rolen SPT argument
@@ -29,37 +37,45 @@ namespace SptCM.RolenLiterature
 /-! ## E1--E3: SPT congruences and harmonic Maass forms -/
 
 /-- A congruence on one explicitly specified arithmetic progression. -/
+@[expose]
 def SptProgressionCongruence (modulus shift : ℕ) : Prop :=
   ∀ k : ℕ, modulus ∣ spt (modulus * k + shift)
 
 /-- Andrews' modulus-five congruence. -/
+@[expose]
 def Andrews5 : Prop := SptProgressionCongruence 5 4
 
 /-- Andrews' modulus-seven congruence. -/
+@[expose]
 def Andrews7 : Prop := SptProgressionCongruence 7 5
 
 /-- Andrews' modulus-thirteen congruence. -/
+@[expose]
 def Andrews13 : Prop := SptProgressionCongruence 13 6
 
 /-- E1 (Andrews): exactly the three published congruences, with the shifts
 `4`, `5`, and `6` appearing in the source.  Primality and the computation of
 the canonical inverse of `24` are deliberately not external assumptions. -/
+@[expose]
 def E1AndrewsCongruences : Prop :=
   Andrews5 ∧ Andrews7 ∧ Andrews13
 
 /-- E2 (Ahlgren--Kim, Theorem 3): the exact finite-range exclusion used at
 the final cutoff. -/
+@[expose]
 def E2AhlgrenKimFiniteExclusion : Prop :=
   ∀ ℓ : ℕ, CanonicalCongruencePrime ℓ → ℓ < 10 ^ 11 →
     ℓ = 5 ∨ ℓ = 7 ∨ ℓ = 13
 
 /-- E2 (Ahlgren--Kim, Proposition 6): their normalized theta-cycle input,
 only in the prime range in which it is cited. -/
+@[expose]
 def E2AhlgrenKimThetaCycle : Prop :=
   ∀ (ℓ : ℕ) [Fact ℓ.Prime], 5 ≤ ℓ →
     SptCM.Analytic.AhlgrenKimThetaCycleFromUInput ℓ
 
 /-- The two independently cited parts of E2. -/
+@[expose]
 def E2AhlgrenKim : Prop :=
   E2AhlgrenKimFiniteExclusion ∧ E2AhlgrenKimThetaCycle
 
@@ -73,6 +89,7 @@ structure HarmonicMaassModel (Completion Series : Type*) where
 
 /-- E3 (Bringmann): existence of the completion with the published
 holomorphic part and normalized eta shadow. -/
+@[expose]
 def BringmannCompletion {Completion Series : Type*}
     (M : HarmonicMaassModel Completion Series)
     (f eta : Series) (shadowNormalization : Series → Series) : Prop :=
@@ -81,6 +98,7 @@ def BringmannCompletion {Completion Series : Type*}
 
 /-- E3 (general harmonic-Maass-form theory): the dual-weight
 Hecke/shadow intertwining identity, including its scalar normalization. -/
+@[expose]
 def HeckeShadowIntertwining {Completion Series : Type*}
     (M : HarmonicMaassModel Completion Series) : Prop :=
   ∀ (m : ℕ) (F : Completion),
@@ -88,6 +106,7 @@ def HeckeShadowIntertwining {Completion Series : Type*}
       M.shadowScale m (M.heckeOneHalf m (M.shadow F))
 
 /-- Compatibility conjunction for older callers. -/
+@[expose]
 def E3CompletionAndHecke {Completion Series : Type*}
     (M : HarmonicMaassModel Completion Series)
     (f eta : Series) (shadowNormalization : Series → Series) : Prop :=
@@ -117,6 +136,7 @@ structure StandardModularFormModel (Form : Type*) where
 
 /-- E4: Dedekind eta transformation, nonvanishing, and integral unit-product
 expansion. -/
+@[expose]
 def DedekindEtaFoundations {Form : Type*}
     (M : StandardModularFormModel Form) : Prop :=
   ∀ F, M.isDedekindEta F →
@@ -125,6 +145,7 @@ def DedekindEtaFoundations {Form : Type*}
       M.hasIntegralUnitProductExpansion F
 
 /-- E4: modularity and integral Fourier expansion of the modular invariant. -/
+@[expose]
 def ModularInvariantFoundations {Form : Type*}
     (M : StandardModularFormModel Form) : Prop :=
   ∀ F, M.isModularInvariant F →
@@ -132,23 +153,27 @@ def ModularInvariantFoundations {Form : Type*}
 
 /-- E4: weights/transformation laws and integral expansions of the relevant
 Eisenstein series. -/
+@[expose]
 def EisensteinFoundations {Form : Type*}
     (M : StandardModularFormModel Form) : Prop :=
   ∀ F, M.isEisensteinSeries F →
     M.hasStandardTransformationLaw F ∧ M.hasIntegralFourierExpansion F
 
 /-- E4: principal-part integrality for qualified weakly holomorphic forms. -/
+@[expose]
 def PrincipalPartIntegrality {Form : Type*}
     (M : StandardModularFormModel Form) : Prop :=
   ∀ F, M.isWeaklyHolomorphic F → M.hasIntegralPrincipalPart F →
     M.hasIntegralFourierExpansion F
 
 /-- E4: general modular Hecke laws, without a paper-specific identity. -/
+@[expose]
 def GeneralModularHeckeLaws {Form : Type*}
     (M : StandardModularFormModel Form) : Prop :=
   ∀ m F, M.isWeaklyHolomorphic F → M.heckeLaw m F
 
 /-- E4: the weight-two residue/constant-term theorem. -/
+@[expose]
 def WeightTwoResidueTheorem {Form : Type*}
     (M : StandardModularFormModel Form) : Prop :=
   ∀ F, M.isWeaklyHolomorphic F → M.isWeightTwo F →
@@ -158,6 +183,7 @@ def WeightTwoResidueTheorem {Form : Type*}
 foundations.  The published grid is intentionally not hidden in this
 conjunction: its exact data-bearing theorem is stored separately in
 `RolenLiterature.e4PublishedGrid`. -/
+@[expose]
 def E4StandardModularForms {Form : Type*}
     (M : StandardModularFormModel Form) : Prop :=
   DedekindEtaFoundations M ∧ ModularInvariantFoundations M ∧
@@ -175,6 +201,7 @@ structure BorcherdsLiftModel (Input Product Divisor : Type*) where
 
 /-- E5 (Bruinier--Ono, Theorem 6.1): the general lift theorem.  It says
 nothing here about Rolen's particular input or normalized quotient. -/
+@[expose]
 def E5BruinierOno {Input Product Divisor : Type*}
     (M : BorcherdsLiftModel Input Product Divisor) : Prop :=
   ∀ F, M.admissibleInput F →
@@ -192,6 +219,7 @@ structure WeylVectorModel (Input Theta Scalar Cusp : Type*) where
 
 /-- E6 (Bruinier--Schwagenscheidt, equation (11)): the Weyl vector at each
 cusp is the normalized regularized theta pairing. -/
+@[expose]
 def E6BruinierSchwagenscheidt
     {Input Theta Scalar Cusp : Type*}
     (M : WeylVectorModel Input Theta Scalar Cusp) : Prop :=
@@ -214,6 +242,7 @@ structure LigozatModel (Exponent Quotient Cusp Order Curve : Type*) where
   hasDisjointStandardCuspSections : Curve → Prop
 
 /-- E7: Ligozat's general modularity, character, and cusp-order theorem. -/
+@[expose]
 def LigozatEtaQuotients
     {Exponent Quotient Cusp Order Curve : Type*}
     (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
@@ -224,6 +253,7 @@ def LigozatEtaQuotients
 
 /-- E7: good integral model of the compactified level-six modular curve away
 from the level. -/
+@[expose]
 def X0SixGoodIntegralModel
     {Exponent Quotient Cusp Order Curve : Type*}
     (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
@@ -231,6 +261,7 @@ def X0SixGoodIntegralModel
     M.isIntegralModelAwayFromLevel X
 
 /-- E7: smooth irreducible genus-zero geometric fibers away from six. -/
+@[expose]
 def X0SixGenusZeroFibers
     {Exponent Quotient Cusp Order Curve : Type*}
     (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
@@ -238,6 +269,7 @@ def X0SixGenusZeroFibers
     M.hasGenusZeroGeometricFibers X
 
 /-- E7: disjointness of the four standard cusp sections away from six. -/
+@[expose]
 def X0SixDisjointCusps
     {Exponent Quotient Cusp Order Curve : Type*}
     (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
@@ -245,6 +277,7 @@ def X0SixDisjointCusps
     M.hasDisjointStandardCuspSections X
 
 /-- Compatibility conjunction for older callers. -/
+@[expose]
 def E7LigozatAndIntegralModel
     {Exponent Quotient Cusp Order Curve : Type*}
     (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
@@ -267,6 +300,7 @@ structure IntegralCurveFunctionGeometry
 /-- General horizontal-divisor principle: on a smooth proper curve, a
 rational function with no interior zero or pole and cusp orders `+1,-1`
 has divisor the difference of those two cusp sections. -/
+@[expose]
 def E7HorizontalDivisorPrinciple
     {Function Divisor Curve Section Expansion Order : Type*}
     [Zero Order] [One Order] [Neg Order]
@@ -287,6 +321,7 @@ def E7HorizontalDivisorPrinciple
 
 /-- General integral spreading principle: an integral unit expansion at a
 horizontal cusp excludes an additional vertical divisor component. -/
+@[expose]
 def E7NoVerticalComponentPrinciple
     {Function Divisor Curve Section Expansion : Type*}
     (G : IntegralCurveFunctionGeometry
@@ -301,6 +336,7 @@ def E7NoVerticalComponentPrinciple
 
 /-- General degree-one divisor criterion on a smooth proper integral
 genus-zero model. -/
+@[expose]
 def E7IntegralDegreeOneCriterion
     {Function Divisor Curve Section Expansion : Type*}
     (G : IntegralCurveFunctionGeometry
@@ -333,6 +369,7 @@ abbrev ReducedFormClasses (n : ℕ) :=
 
 /-- In the odd negative-discriminant case used here, `-n` is fundamental
 exactly when `n` is squarefree and `n ≡ 3 (mod 4)`. -/
+@[expose]
 def IsNegativeFundamentalDiscriminant (n : ℕ) : Prop :=
   Squarefree n ∧ n % 4 = 3
 
@@ -349,6 +386,7 @@ abbrev NegativeQuadraticOrder (n : ℕ) :=
 domain in the negative-fundamental-discriminant range.  It is separated from
 the form classification so callers can install the required typeclass
 without assuming any action or count statement. -/
+@[expose]
 def E8NegativeQuadraticOrderDomain (n : ℕ) : Prop :=
   IsNegativeFundamentalDiscriminant n →
     Nonempty (IsDomain (NegativeQuadraticOrder n))
@@ -358,6 +396,7 @@ combining the form/ideal-class correspondence allowed by E8 with the
 existence-and-uniqueness part of binary quadratic-form reduction allowed by
 E11.  The completion register records that an exact bibliographic citation
 for this precise boundary-convention version is still required. -/
+@[expose]
 def E8ReducedFormClassification (n : ℕ)
     [IsDomain (NegativeQuadraticOrder n)] : Prop :=
   IsNegativeFundamentalDiscriminant n →
@@ -377,12 +416,14 @@ structure FourOrientedClassEquivalences (n : ℕ)
 /-- Exact E8/E11 fixed-orientation classification: for a negative fundamental
 discriminant the four concrete `Γ₀(6)` oriented-form quotients are the four
 proper ideal-class torsors obtained from the choices above `2` and `3`. -/
+@[expose]
 def E8FourOrientedFormClassification (n : ℕ)
     [IsDomain (NegativeQuadraticOrder n)] : Prop :=
   IsNegativeFundamentalDiscriminant n → n % 24 = 23 →
     Nonempty (FourOrientedClassEquivalences n)
 
 /-- The displayed maps satisfy the group-action laws. -/
+@[expose]
 def IsIdealClassAction
     {R X : Type*} [CommRing R] [IsDomain R]
     (act : ClassGroup R → X → X) : Prop :=
@@ -390,6 +431,7 @@ def IsIdealClassAction
     (∀ g h x, act (g * h) x = act g (act h x))
 
 /-- A concrete ideal-class action is simply transitive. -/
+@[expose]
 def IsSimplyTransitiveIdealClassAction
     {R X : Type*} [CommRing R] [IsDomain R]
     (act : ClassGroup R → X → X) : Prop :=
@@ -397,6 +439,7 @@ def IsSimplyTransitiveIdealClassAction
 
 /-- Exact ideal-class-action output allowed by E8: action laws and simple
 transitivity, but no cardinality conclusion. -/
+@[expose]
 def E8IdealClassAction
     {R X : Type*} [CommRing R] [IsDomain R]
     (act : ClassGroup R → X → X) : Prop :=
@@ -461,12 +504,14 @@ structure E8OrientedQuadraticSpecialization
 
 /-- E8: simply transitive proper ideal-class action at each fixed order and
 orientation. -/
+@[expose]
 def CMClassAction
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   ∀ O, M.actionSimplyTransitive O
 
 /-- E8: correctness of the general proper-ideal-class count. -/
+@[expose]
 def CMClassCount
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
@@ -512,6 +557,7 @@ structure E8FiniteGaloisIntegralCMReciprocity
 finite CM-value families.  It asserts only a finite Galois realization,
 Shimura reciprocity on the roots, and their good-reduction integrality over
 the chosen coefficient ring.  Polynomial descent is deliberately absent. -/
+@[expose]
 def E8IntegralCMClassFieldExistence
     (A I J : Type*) [CommRing A] (x : I → ℂ) (y : J → ℂ) : Prop :=
   ∃ (L : Type) (_ : Field L) (_ : Algebra A L) (_ : Algebra ℚ L)
@@ -557,24 +603,28 @@ structure E8GoodReductionRegularEvaluation
   regularEvaluation : ∀ P, GoodInteriorPoint P → value P ∈ S
 
 /-- E8: potential good reduction for the qualified CM points with level. -/
+@[expose]
 def CMPotentialGoodReduction
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   ∀ P, M.hasPotentiallyGoodReduction P
 
 /-- E8: Deuring's inert-reduction theorem. -/
+@[expose]
 def DeuringInertSupersingular
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   ∀ ℓ P, M.inertAt ℓ P → M.supersingular (M.reduction P)
 
 /-- E8: injectivity of the relevant CM-order action after specialization. -/
+@[expose]
 def CMSpecializationInjective
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   ∀ P, M.specializationInjective P
 
 /-- Compatibility conjunction for the reduction branch. -/
+@[expose]
 def E8StandardCMReduction
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
@@ -584,6 +634,7 @@ def E8StandardCMReduction
 /-- Compatibility interface used by the existing reduction branch.  Its first
 conjunct is intentionally *not* used for I22; the pinned declarations
 `E8ReducedFormClassification` and `E8IdealClassAction` above replace it there. -/
+@[expose]
 def E8StandardCM
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
@@ -602,6 +653,7 @@ structure EichlerCovolumeModel (Curve Subgroup Order Lattice Vector : Type*) whe
   squaredNorm : Vector → ℝ
 
 /-- E9 (Arpin): the level-six Eichler-order theorem. -/
+@[expose]
 def ArpinLevelSix
     {Curve Subgroup Order Lattice Vector : Type*}
     (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop :=
@@ -609,6 +661,7 @@ def ArpinLevelSix
     M.isEichlerOfLevelSix (M.preservingOrder E C)
 
 /-- E9 (Goren--Lauter): the general four-vector covolume/Hadamard bound. -/
+@[expose]
 def GorenLauterHadamard
     {Curve Subgroup Order Lattice Vector : Type*}
     (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop :=
@@ -618,6 +671,7 @@ def GorenLauterHadamard
         M.squaredNorm c * M.squaredNorm d
 
 /-- Compatibility conjunction for older callers. -/
+@[expose]
 def E9ArpinGorenLauter
     {Curve Subgroup Order Lattice Vector : Type*}
     (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop :=
@@ -629,6 +683,7 @@ def E9ArpinGorenLauter
 integers.  `DirichletCharacter` supplies multiplicativity, periodicity and
 the extension by zero at non-units; these were missing from the old
 arbitrary-function formulation. -/
+@[expose]
 def ConstantDirichletOnInterval {R : Type*} [CommMonoidWithZero R]
     {ℓ : ℕ} (χ : DirichletCharacter R ℓ) (a : ℤ) (H : ℕ) : Prop :=
   ∀ i j : ℕ, i < H → j < H →
@@ -637,6 +692,7 @@ def ConstantDirichletOnInterval {R : Type*} [CommMonoidWithZero R]
 /-- E10 (Treviño, corrected): the all-prime constant-character estimate with
 constant `3.38`.  Nonprincipality is the standard condition `χ ≠ 1`,
 not a caller-chosen predicate. -/
+@[expose]
 def E10TrevinoCorrected : Prop :=
   ∀ (ℓ H : ℕ) (χ : DirichletCharacter ℂ ℓ) (a : ℤ),
     ℓ.Prime → χ ≠ 1 → ConstantDirichletOnInterval χ a H →
@@ -657,6 +713,7 @@ structure ElementaryTheoryModel
 
 /-- E11: reduction of positive definite integral binary quadratic forms,
 including the chosen boundary convention. -/
+@[expose]
 def BinaryQuadraticFormReduction
     {BinaryForm Character ModularForm : Type*}
     (M : ElementaryTheoryModel BinaryForm Character ModularForm) : Prop :=
@@ -664,12 +721,14 @@ def BinaryQuadraticFormReduction
     ∃ Q', M.isReduced Q' ∧ M.equivalent Q Q'
 
 /-- E11: quadratic reciprocity with the modeled sign conventions. -/
+@[expose]
 def QuadraticReciprocityInput
     {BinaryForm Character ModularForm : Type*}
     (M : ElementaryTheoryModel BinaryForm Character ModularForm) : Prop :=
   ∀ χ, M.reciprocityApplies χ → M.reciprocityConclusion χ
 
 /-- E11: Euler's criterion and the modeled multiplicativity consequence. -/
+@[expose]
 def EulerCriterionInput
     {BinaryForm Character ModularForm : Type*}
     (M : ElementaryTheoryModel BinaryForm Character ModularForm) : Prop :=
@@ -691,6 +750,7 @@ structure FiniteHeightStokesModel (Input : Type*) where
 /-- The exact output of finite-height Stokes: the truncated-domain identity,
 convergence to the regularized pairing, and decay of the nonholomorphic top
 boundary. -/
+@[expose]
 def FiniteHeightStokesConclusion {Input : Type*}
     (M : FiniteHeightStokesModel Input) (x : Input) : Prop :=
   (∀ T, M.shadowScale x * M.truncatedIntegral x T =
@@ -701,11 +761,13 @@ def FiniteHeightStokesConclusion {Input : Type*}
 
 /-- E11: the general finite-height Stokes theorem, with its full numerical
 identity and both limiting assertions exposed. -/
+@[expose]
 def FiniteHeightStokesTheorem {Input : Type*}
     (M : FiniteHeightStokesModel Input) : Prop :=
   ∀ x, M.qualified x → FiniteHeightStokesConclusion M x
 
 /-- Compatibility conjunction for older callers. -/
+@[expose]
 def E11ElementaryTheory
     {BinaryForm Character ModularForm StokesInput : Type*}
     (M : ElementaryTheoryModel BinaryForm Character ModularForm)

@@ -1,7 +1,15 @@
-import blessed.SptCM.CM.Repaired.I18CommonRoot
-import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
-import blessed.SptCM.Quaternion.Repaired.I20Covolume
-import blessed.SptCM.Arithmetic.SmallDiscriminant
+module
+
+public import blessed.SptCM.CM.Repaired.I18CommonRoot
+public import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
+public import blessed.SptCM.Quaternion.Repaired.I20Covolume
+public import blessed.SptCM.Arithmetic.SmallDiscriminant
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Actual-index adapter for the I19 oriented specialization
@@ -26,6 +34,7 @@ open SptCM.Repair
 
 /-- Choose a raw form representing an actual oriented quotient class.  The
 choice is internal; no representative is part of the E8 assumptions. -/
+@[expose]
 noncomputable def rawRepresentative {n r : ℕ}
     (q : SptCM.orientedForms n r) : SptCM.RawOrientedForm n r :=
   Quotient.out q

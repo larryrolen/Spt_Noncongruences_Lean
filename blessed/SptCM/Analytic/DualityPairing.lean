@@ -1,6 +1,14 @@
-import blessed.SptCM.Analytic.PaperCoefficientModels
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Roots
+module
+
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.Roots
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Coefficient duality, regularized pairing, and class-polynomial bookkeeping
@@ -23,6 +31,7 @@ abbrev HForm (R : Type*) := ℤ → R
 
 /-- The exact Fourier normalization
 `H_n = q^{-n/24} - a(n) q^{1/24} + O(q^{25/24})`. -/
+@[expose]
 def HasHnNormalization {R : Type*} [Ring R]
     (n : ℕ) (a : R) (H : HForm R) : Prop :=
   H (-(n : ℤ)) = 1 ∧ H 1 = -a ∧
@@ -30,6 +39,7 @@ def HasHnNormalization {R : Type*} [Ring R]
 
 /-- A chosen auxiliary coefficient series; no unformalized modularity assertion
 is built into the definition. -/
+@[expose]
 def auxiliaryHForm {R : Type*} (H : HForm R) : HForm R := H
 
 /-- The two coefficient statements extracted from the chosen normalization. -/
@@ -42,6 +52,7 @@ theorem Hn_normalization_coefficients
 /-- The three possibly nonzero summands in the constant coefficient of
 `H_n G_m`.  The normalizations of `H_n` and `G_m` show that every other
 pair of opposite Fourier exponents contributes zero. -/
+@[expose]
 def normalizedProductConstantTerm {R : Type*} [Ring R]
     (n m : ℕ) (H G : HForm R) : R :=
   H (-(n : ℤ)) * G n + H 1 * G (-1) +
@@ -51,6 +62,7 @@ def normalizedProductConstantTerm {R : Type*} [Ring R]
 coefficient comparison: a weight-two weakly holomorphic product on `X(1)` has
 zero constant coefficient.  Here the constant coefficient is represented by
 the three terms left by the two explicit principal-part normalizations. -/
+@[expose]
 def WeightTwoResidueInput {R : Type*} [Ring R]
     (n m : ℕ) (H G : HForm R) : Prop :=
   normalizedProductConstantTerm n m H G = 0
@@ -202,6 +214,7 @@ structure StokesPairingData where
 
 /-- The regularized Petersson pairing represented by the limit field of the
 Stokes data. -/
+@[expose]
 def regularizedPairing (d : StokesPairingData) : ℝ := d.pairing
 
 /-- Passing to the limit in the truncated Stokes identity gives the pairing
@@ -242,6 +255,7 @@ theorem Hn_pairing_eq_zero
 
 /-- The precisely cited Weyl-vector formula of Bruinier--Schwagenscheidt,
 packaged as a proposition rather than a global axiom. -/
+@[expose]
 def BruinierSchwagenscheidtWeylInput
     (weylVector factor pairing : ℝ) : Prop :=
   weylVector = factor * pairing
@@ -261,6 +275,7 @@ section ClassPolynomials
 variable {R ι κ : Type*} [CommRing R]
 
 /-- The root-product construction used for each oriented CM class set. -/
+@[expose]
 noncomputable def rootPolynomial (s : Finset ι) (value : ι → R) : Polynomial R :=
   ∏ i ∈ s, (X - C (value i))
 
@@ -276,6 +291,7 @@ theorem rootPolynomial_natDegree [Nontrivial R]
   exact natDegree_finsetProd_X_sub_C_eq_card s value
 
 /-- Combining the two orientations used for `A_n` (or for `B_n`). -/
+@[expose]
 noncomputable def twoOrientationClassPolynomial
     (s : Finset ι) (t : Finset κ) (u : ι → R) (v : κ → R) : Polynomial R :=
   rootPolynomial s u * rootPolynomial t v

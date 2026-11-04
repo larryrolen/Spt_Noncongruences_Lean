@@ -1,5 +1,13 @@
-import blessed.SptCM.Analytic.PaperCoefficientModels
-import blessed.SptCM.Analytic.DualityPairing
+module
+
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+public import blessed.SptCM.Analytic.DualityPairing
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Concrete normalized coefficient objects used by the paper
@@ -14,6 +22,7 @@ namespace SptCM.Analytic
 /-- A concrete coefficient series with the paper's grid principal part.
 The positive coefficients remain parameters because their analytic
 construction from `-Θj/η` and Faber polynomials is not present in Mathlib. -/
+@[expose]
 def canonicalGridSeries {R : Type*} [Ring R]
     (chi : ℕ → R) (m : ℕ) (positiveCoeff : ℤ → R) : QSeries R :=
   fun r =>
@@ -36,6 +45,7 @@ theorem canonicalGridSeries_hasGridPrincipalPart
       simp [canonicalGridSeries, hm, hone, hpos]
 
 /-- `G₁=0`, as in the paper's endpoint convention. -/
+@[expose]
 def paperGridForm {R : Type*} [Ring R]
     (chi : ℕ → R) (positiveCoeff : ℕ → ℤ → R) (m : ℕ) : QSeries R :=
   if m = 1 then 0 else canonicalGridSeries chi m (positiveCoeff m)
@@ -123,6 +133,7 @@ theorem grid_theta_support_along_chain
 
 /-- A concrete coefficient series with the exact normalization
 `q^{-n/24} - a q^{1/24} + O(q^{25/24})`. -/
+@[expose]
 def normalizedHSeries {R : Type*} [Ring R]
     (n : ℕ) (a : R) (tail : ℤ → R) : HForm R :=
   fun r =>
@@ -145,6 +156,7 @@ theorem normalizedHSeries_hasHnNormalization
     simp [normalizedHSeries, hrn, hr1, hnot]
 
 /-- The paper's auxiliary form in the coefficient model. -/
+@[expose]
 def paperHn {R : Type*} [Ring R]
     (n : ℕ) (a : R) (tail : ℤ → R) : HForm R :=
   normalizedHSeries n a tail
@@ -158,6 +170,7 @@ theorem paperHn_normalization
 
 /-- Paper-specific name for the regularized pairing carried by finite-height
 Stokes data.  The actual limit argument is `StokesPairingData.pairing_formula`. -/
+@[expose]
 def paperRegularizedPairing (d : StokesPairingData) : ℝ :=
   regularizedPairing d
 

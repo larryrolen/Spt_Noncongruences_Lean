@@ -1,6 +1,15 @@
-import blessed.SptCM.Repair.SignedExponent
-import blessed.SptCM.CM.Borcherds
-import Mathlib.RingTheory.PowerSeries.Inverse
+module
+
+public import blessed.SptCM.Repair.SignedExponent
+public import blessed.SptCM.CM.Borcherds
+public import Mathlib.RingTheory.PowerSeries.Inverse
+
+public section
+
+-- Keep the existing ring operations on ZMod; the generic group reconstruction
+-- introduced in this Mathlib version creates an incompatible negation instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Canonical stabilized Euler products
@@ -18,6 +27,7 @@ open scoped PowerSeries
 
 /-- The finite truncation of an Euler product with the indicated factor
 indices and natural exponents. -/
+@[expose]
 noncomputable def eulerProductTruncation {R : Type*} [CommRing R]
     (index exponent : ℕ → ℕ) (N : ℕ) : PowerSeries R :=
   ∏ i ∈ Finset.range N,
@@ -25,6 +35,7 @@ noncomputable def eulerProductTruncation {R : Type*} [CommRing R]
 
 /-- The canonical coefficientwise Euler product: its coefficient in degree
 `d` is read from the finite truncation through `d + 1`. -/
+@[expose]
 noncomputable def stabilizedEulerProduct {R : Type*} [CommRing R]
     (index exponent : ℕ → ℕ) : PowerSeries R :=
   PowerSeries.mk fun d =>
@@ -81,11 +92,13 @@ theorem isUnit_stabilizedEulerProduct {R : Type*} [CommRing R]
 
 /-- The actual numerator Euler product attached to the signed coefficients
 of `H`. -/
+@[expose]
 noncomputable def eulerProductPlus {R : Type*} [CommRing R] (H : ℤ → ℤ) : PowerSeries R :=
   stabilizedEulerProduct (R := R) id (positiveEulerExponent H)
 
 /-- The actual denominator Euler product attached to the signed coefficients
 of `H`. -/
+@[expose]
 noncomputable def eulerProductMinus {R : Type*} [CommRing R] (H : ℤ → ℤ) : PowerSeries R :=
   stabilizedEulerProduct (R := R) id (negativeEulerExponent H)
 
@@ -100,6 +113,7 @@ private theorem negativeEulerExponent_zero (H : ℤ → ℤ) :
 /-- Complete sound specification of the two constructed products.  Besides
 coefficientwise stabilization it records their normalized unit constant
 terms and the pointwise signed-exponent decomposition. -/
+@[expose]
 def EulerProductSpec {R : Type*} [CommRing R]
     (H : ℤ → ℤ) (Pplus Pminus : PowerSeries R) : Prop :=
   SptCM.IsStabilizedEulerProduct Pplus id (positiveEulerExponent H) ∧
@@ -141,6 +155,7 @@ theorem eulerProducts_spec {R : Type*} [CommRing R] (H : ℤ → ℤ) :
 /-- Coefficientwise reduction of the integral auxiliary form.  Keeping this
 as a named object makes the passage from the characteristic-zero Borcherds
 identity to the characteristic-`ℓ` Frobenius argument explicit. -/
+@[expose]
 def reducedAuxiliaryForm (ℓ : ℕ) (H : ℤ → ℤ) :
     SptCM.Analytic.HForm (ZMod ℓ) :=
   fun r => (H r : ZMod ℓ)
@@ -162,7 +177,7 @@ theorem wronskian_zero_from_canonical_eulerProducts
         reducedAuxiliaryForm ℓ H ((m : ℤ) ^ 2) = 0)
     (t : PowerSeries (ZMod ℓ)) (A B : Polynomial (ZMod ℓ))
     (htrans : Transcendental (ZMod ℓ) t)
-    (ht : PowerSeries.derivative (ZMod ℓ) t ≠ 0)
+    (ht : PowerSeries.derivative (R := ZMod ℓ) t ≠ 0)
     (hB : Polynomial.aeval t B ≠ 0)
     (hquotient :
       Polynomial.aeval (t : LaurentSeries (ZMod ℓ)) A /
@@ -209,13 +224,13 @@ theorem wronskian_zero_from_canonical_eulerProducts
             (positiveEulerExponent H m)).mp hz
         · exact dvd_zero ℓ
   have hnumerator :
-      PowerSeries.derivative (ZMod ℓ)
+      PowerSeries.derivative (R := ZMod ℓ)
           (eulerProductPlus H : PowerSeries (ZMod ℓ)) = 0 :=
     SptCM.stabilizedEulerProduct_derivative_eq_zero ℓ
       (eulerProductPlus H) id (positiveEulerExponent H)
       hspec.1 (fun m => (hdiv m).imp_right And.left)
   have hdenominator :
-      PowerSeries.derivative (ZMod ℓ)
+      PowerSeries.derivative (R := ZMod ℓ)
           (eulerProductMinus H : PowerSeries (ZMod ℓ)) = 0 :=
     SptCM.stabilizedEulerProduct_derivative_eq_zero ℓ
       (eulerProductMinus H) id (negativeEulerExponent H)
@@ -227,7 +242,7 @@ theorem wronskian_zero_from_canonical_eulerProducts
       t (eulerProductPlus H) (eulerProductMinus H) A B hB
       hspec.2.2.2.2.2.1.ne_zero hquotient
   exact SptCM.wronskian_zero_of_borcherds_quotient
-    (PowerSeries.derivative (ZMod ℓ)) t A B htrans ht
+    (PowerSeries.derivative (R := ZMod ℓ)) t A B htrans ht
     (eulerProductPlus H) (eulerProductMinus H)
     hspec.2.2.2.2.2.1.ne_zero hcross hnumerator hdenominator
 

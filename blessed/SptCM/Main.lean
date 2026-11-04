@@ -1,5 +1,13 @@
-import blessed.SptCM.Interfaces
-import blessed.SptCM.Lemmas.Polynomial
+module
+
+public import blessed.SptCM.Interfaces
+public import blessed.SptCM.Lemmas.Polynomial
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 namespace SptCM
 

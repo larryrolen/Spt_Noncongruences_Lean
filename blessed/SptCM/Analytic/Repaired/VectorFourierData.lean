@@ -1,5 +1,13 @@
-import blessed.SptCM.Analytic.Repaired.AuxiliaryForms
-import blessed.SptCM.Analytic.Repaired.WeilGenerators
+module
+
+public import blessed.SptCM.Analytic.Repaired.AuxiliaryForms
+public import blessed.SptCM.Analytic.Repaired.WeilGenerators
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Exact Fourier data of the four-component Borcherds input
@@ -15,12 +23,14 @@ open SptCM.Analytic
 
 /-- The integral twelve-component coefficient function `H v`, where
 `v = e₁ - e₅ - e₇ + e₁₁`. -/
+@[expose]
 def fourComponentHSeries (H : HForm ℤ) : ℤ → Fin 12 → ℤ :=
   fun r s => H r * chiTwelveResidue s
 
 /-- Exact coefficient content needed from the four-component input: zero
 constant coefficient, and a single integral negative index `-n` whose vector
 is `e₁-e₅-e₇+e₁₁`. -/
+@[expose]
 def HasFourComponentFourierData (n : ℕ) (V : ℤ → Fin 12 → ℤ) : Prop :=
   (∀ s, V 0 s = 0) ∧
     ∀ r : ℤ, r < 0 → ∀ s,
@@ -59,6 +69,7 @@ theorem auxiliaryHn_fourComponent_fourierData
 
 /-- Integral vector Fourier series attached to an actual four-component
 input.  The finite sign vector is fixed by the type of input. -/
+@[expose]
 def FourComponentInput.vectorSeries {Form : Type*}
     (F : FourComponentInput Form) : ℤ → Fin 12 → ℤ :=
   fourComponentHSeries F.scalarSeries

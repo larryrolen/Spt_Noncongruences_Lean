@@ -1,7 +1,15 @@
-import blessed.SptCM.Analytic.Repaired.UniformNormalizedProduct
-import blessed.SptCM.Repair.ActualWronskianContradiction
-import blessed.SptCM.Literature.Repair.PublicLedger
-import blessed.SptCM.Repair.FinalAssembly
+module
+
+public import blessed.SptCM.Analytic.Repaired.UniformNormalizedProduct
+public import blessed.SptCM.Repair.ActualWronskianContradiction
+public import blessed.SptCM.Literature.Repair.PublicLedger
+public import blessed.SptCM.Repair.FinalAssembly
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Large-prime exclusion from source-facing analytic data

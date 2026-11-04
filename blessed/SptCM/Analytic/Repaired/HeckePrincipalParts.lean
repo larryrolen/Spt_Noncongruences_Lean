@@ -1,5 +1,13 @@
-import blessed.SptCM.Analytic.Repaired.Grid
-import Mathlib.Tactic
+module
+
+public import blessed.SptCM.Analytic.Repaired.Grid
+public import Mathlib.Tactic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Exact principal-part calculations for the paper's Hecke identities
@@ -15,6 +23,7 @@ open SptCM.Analytic
 
 /-- The mock form `f` has its only negative coefficient at index `-1`, with
 coefficient one. -/
+@[expose]
 def HasMockPrincipalPart {K : Type*} [Ring K] (f : QSeries K) : Prop :=
   ∀ r : ℤ, r < 0 → f r = if r = -1 then 1 else 0
 
@@ -39,6 +48,7 @@ theorem fSeries_cast_hasMockPrincipalPart
   by_cases hr1 : r = -1 <;> simp [hr1]
 
 /-- The actual left side of the `f`-Hecke identity in the coefficient model. -/
+@[expose]
 def fHeckeDifference {K : Type*} [Field K]
     (p : ℕ) (chiP : K) (legendre : ℤ → K) (f : QSeries K) : QSeries K :=
   fun r => heckeThreeHalf p chiP legendre f r -
@@ -46,6 +56,7 @@ def fHeckeDifference {K : Type*} [Field K]
 
 /-- Mathlib's Legendre symbol, cast to the coefficient field used by the
 Hecke coefficient formula. -/
+@[expose]
 def heckeLegendreCast {K : Type*} [Field K] (p : ℕ) [Fact p.Prime]
     (r : ℤ) : K :=
   (legendreSym p r : ℤ)

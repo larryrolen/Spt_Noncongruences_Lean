@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.Repaired.HauptmodulCoordinate
-import blessed.SptCM.CM.ClassPolynomials
+module
+
+public import blessed.SptCM.CM.Repaired.HauptmodulCoordinate
+public import blessed.SptCM.CM.ClassPolynomials
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The actual CM points and Hauptmodul values
@@ -21,6 +29,7 @@ namespace SptCM.CM.Repaired
 noncomputable section
 
 /-- The canonical complex CM point attached to a raw oriented quadratic form. -/
+@[expose]
 def rawCMPoint {n r : ℕ} (Q : RawOrientedForm n r) : ℂ :=
   ((-(Q.1.b : ℂ)) + Complex.I * Real.sqrt n) / (2 * (Q.1.a : ℂ))
 
@@ -43,6 +52,7 @@ theorem rawCMPoint_im_pos {n r : ℕ} (hn : 0 < n)
   exact div_pos hsqrt (by positivity)
 
 /-- The actual upper-half-plane CM point of a raw oriented form. -/
+@[expose]
 def rawCMUpperHalfPlane {n r : ℕ} (hn : 0 < n)
     (Q : RawOrientedForm n r) : UpperHalfPlane :=
   ⟨rawCMPoint Q, rawCMPoint_im_pos hn Q⟩
@@ -50,6 +60,7 @@ def rawCMUpperHalfPlane {n r : ℕ} (hn : 0 < n)
 /-- Values of a function on raw CM points are invariant under one concrete
 `Γ₀(6)` change of variables.  This is the exact hypothesis needed for descent,
 not an arbitrary function on the quotient. -/
+@[expose]
 def RawCMValueInvariant {n r : ℕ} (F : UpperHalfPlane → ℂ) : Prop :=
   ∀ (hn : 0 < n) (Q Q' : RawOrientedForm n r),
     gammaZeroSixRelated n r Q Q' →
@@ -69,6 +80,7 @@ theorem rawCMValue_eq_of_eqvGen {n r : ℕ} (F : UpperHalfPlane → ℂ)
     (fun _ _ _ _ _ ih₁ ih₂ => ih₁.trans ih₂)
 
 /-- The value induced on the actual quotient of oriented forms. -/
+@[expose]
 def orientedCMValue {n r : ℕ} (F : UpperHalfPlane → ℂ)
     (hF : RawCMValueInvariant (n := n) (r := r) F) (hn : 0 < n) :
     orientedForms n r → ℂ :=
@@ -85,6 +97,7 @@ canonical CM point. -/
       F (rawCMUpperHalfPlane hn Q) := rfl
 
 /-- Rolen's genuine eta-quotient value on the actual oriented form classes. -/
+@[expose]
 def actualOrientedHauptmodulValue {n r : ℕ}
     (hInv : RawCMValueInvariant (n := n) (r := r) analyticHauptmodul) (hn : 0 < n) :
     orientedForms n r → ℂ :=

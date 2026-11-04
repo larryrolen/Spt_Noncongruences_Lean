@@ -1,6 +1,14 @@
-import blessed.SptCM.Analytic.Repaired.HeckePrincipalParts
-import blessed.SptCM.Analytic.Repaired.GridHeckePrincipalParts
-import blessed.SptCM.Analytic.ChiTwelve
+module
+
+public import blessed.SptCM.Analytic.Repaired.HeckePrincipalParts
+public import blessed.SptCM.Analytic.Repaired.GridHeckePrincipalParts
+public import blessed.SptCM.Analytic.ChiTwelve
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Source-faithful application of the I05 Hecke inputs
@@ -18,6 +26,7 @@ open SptCM.RolenLiterature
 
 /-- The actual Legendre symbol made total in the index `p`; all I05 uses
 specialize it at a prime. -/
+@[expose]
 def actualHeckeLegendre {K : Type*} [Field K] (p : ℕ) (r : ℤ) : K :=
   if hp : p.Prime then
     letI : Fact p.Prime := ⟨hp⟩
@@ -46,6 +55,7 @@ theorem actualHeckeLegendre_square {K : Type*} [Field K]
   simp [actualHeckeLegendre, hp, heckeLegendreCast_square]
 
 /-- The actual normalized left side of the `f`-Hecke identity. -/
+@[expose]
 def actualFHeckeLeft {K : Type*} [Field K] [CharZero K]
     (G : PublishedMockModularGrid K) (p : ℕ) : QSeries K :=
   fun r => (p : K)⁻¹ *
@@ -53,16 +63,19 @@ def actualFHeckeLeft {K : Type*} [Field K] [CharZero K]
       (fun s => (fSeries s : K)) r
 
 /-- The actual right side of the normalized `f`-Hecke identity. -/
+@[expose]
 def actualFHeckeRight {K : Type*} [Field K]
     (G : PublishedMockModularGrid K) (p : ℕ) : QSeries K :=
   G.grid p
 
 /-- The actual normalized left side of the grid Hecke recurrence. -/
+@[expose]
 def actualGridHeckeLeft {K : Type*} [Field K]
     (G : PublishedMockModularGrid K) (m p : ℕ) : QSeries K :=
   normalizedGridHeckeLeft p m G.chi (actualHeckeLegendre p) G.grid
 
 /-- The actual right side of the normalized grid Hecke recurrence. -/
+@[expose]
 def actualGridHeckeRight {K : Type*} [Field K]
     (G : PublishedMockModularGrid K) (m p : ℕ) : QSeries K :=
   G.grid (m * p)
@@ -103,6 +116,7 @@ theorem publishedChi_sq {K : Type*} [Field K]
 /-- The exact qualification record for the concrete sides is assembled from
 only the cited modular/shadow qualification input and internally checked
 principal parts. -/
+@[expose]
 def actualHeckeQualificationData {K : Type*} [Field K] [CharZero K]
     (G : PublishedMockModularGrid K) (Q : SourceI05Qualification G) :
     HeckeQualificationData G where

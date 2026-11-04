@@ -1,8 +1,16 @@
-import blessed.SptCM.Analytic.Repaired.AuxiliaryForms
-import blessed.SptCM.Analytic.PaperCoefficientModels
-import blessed.SptCM.Analytic.DualityPairing
-import blessed.SptCM.Literature.RolenLiterature
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+module
+
+public import blessed.SptCM.Analytic.Repaired.AuxiliaryForms
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+public import blessed.SptCM.Analytic.DualityPairing
+public import blessed.SptCM.Literature.RolenLiterature
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The internal constant-term cancellation in the Stokes pairing
@@ -20,12 +28,14 @@ open scoped BigOperators
 /-- The genuinely coefficient-theoretic constant term of `H f`, written as a
 finite convolution once `H` has no terms below `-n` and `f` has no negative
 terms below `-1`. -/
+@[expose]
 noncomputable def finiteMockProductConstantTerm (n : ℕ) (H : HForm ℤ) : ℤ :=
   ∑ r ∈ Finset.Icc (-(n : ℤ)) 1, H r * aCoeff (-r)
 
 /-- The two possible contributions to `[q⁰](H_n f)`: the polar coefficient
 of `H_n` paired with `a(n)`, and its index-one coefficient paired with the
 unique negative coefficient `a(-1)` of `f`. -/
+@[expose]
 def hnMockProductConstantTerm (n : ℕ) (H : HForm ℤ) : ℤ :=
   H (-(n : ℤ)) * aCoeff n + H 1 * aCoeff (-1)
 
@@ -87,6 +97,7 @@ theorem auxiliaryHn_mockProductConstantTerm_eq_zero
 /-! ## The actual finite-height application -/
 
 /-- The numerical shadow factor in the paper's Stokes formula. -/
+@[expose]
 noncomputable def publishedShadowScale : ℝ :=
   3 * Real.sqrt 6 / Real.pi
 
@@ -106,6 +117,7 @@ structure HnStokesInput (Completion : Type*) where
 holomorphic boundary term are fixed definitions: only the genuinely analytic
 qualification, truncated integrals, errors, and regularized values are
 parameters. -/
+@[expose]
 noncomputable def hnFiniteHeightStokesModel
     {Completion : Type*}
     (qualified : HnStokesInput Completion → Prop)
@@ -123,6 +135,7 @@ noncomputable def hnFiniteHeightStokesModel
 
 /-- The actual pair consisting of the triangularly constructed `H_n` and a
 chosen Bringmann completion. -/
+@[expose]
 noncomputable def actualHnStokesInput
     {Form Completion : Type*} (E : EtaJPowerBasis Form)
     (k : ℕ) (F : Completion) : HnStokesInput Completion where

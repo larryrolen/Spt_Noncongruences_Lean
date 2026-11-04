@@ -1,5 +1,13 @@
-import blessed.SptCM.Analytic.Repaired.WeilGenerators
-import Mathlib.Tactic
+module
+
+public import blessed.SptCM.Analytic.Repaired.WeilGenerators
+public import Mathlib.Tactic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Finite Atkin--Lehner cusp calculation
@@ -12,20 +20,24 @@ regularized-pairing bridge.
 namespace SptCM.Analytic.Repaired
 
 /-- The four divisors indexing the cusps of squarefree level six. -/
+@[expose]
 def IsLevelSixDivisor (c : ℕ) : Prop :=
   c = 1 ∨ c = 2 ∨ c = 3 ∨ c = 6
 
 /-- Multiplier description of the simultaneous congruences
 `σ_c(r) ≡ -r (mod 2c)` and `σ_c(r) ≡ r (mod 12/c)` at level six. -/
+@[expose]
 def atkinLehnerMultiplier (c : ℕ) : ℕ :=
   if c = 1 then 1 else if c = 2 then 7 else if c = 3 then 5 else 11
 
 /-- The Atkin--Lehner permutation `σ_c` on `ℤ/12ℤ`. -/
+@[expose]
 def atkinLehnerSigma (c : ℕ) (r : Fin 12) : Fin 12 :=
   ⟨(atkinLehnerMultiplier c * r.val) % 12, Nat.mod_lt _ (by norm_num)⟩
 
 /-- The sign occurring on the four-component vector: `+,-,-,+` for
 `c=1,2,3,6`. -/
+@[expose]
 def atkinLehnerEigenvalue (c : ℕ) : ℤ :=
   if c = 2 ∨ c = 3 then -1 else 1
 
@@ -70,6 +82,7 @@ theorem fourComponentVector_atkinLehner (c : ℕ)
   ring
 
 /-- Pointwise contraction of the four-component vector against a theta vector. -/
+@[expose]
 def fourComponentThetaContraction (z : ℂ) (theta : Fin 12 → ℂ) : ℂ :=
   ∑ r, fourComponentVector z r * theta r
 
@@ -87,17 +100,20 @@ theorem fourComponentThetaContraction_atkinLehner
       chiTwelveResidue, Fin.sum_univ_succ] <;> ring
 
 /-- The signed component theta series appearing in Euler's eta identity. -/
+@[expose]
 def signedComponentThetaSeries {V : Type*} [AddCommMonoid V] [Module ℂ V]
     (theta : Fin 12 → V) : V :=
   ∑ r, (chiTwelveResidue r : ℂ) • theta r
 
 /-- Exact general Euler theta identity in a complex series model.  This is the
 standard scalar identity, not a cusp contraction or Weyl-vector assertion. -/
+@[expose]
 def EtaComponentThetaIdentity {V : Type*} [AddCommMonoid V] [Module ℂ V]
     (theta : Fin 12 → V) (eta : V) : Prop :=
   signedComponentThetaSeries theta = (2 : ℂ) • eta
 
 /-- The componentwise regularized pairing at the cusp indexed by `c`. -/
+@[expose]
 def regularizedCuspThetaContraction {V : Type*} [AddCommMonoid V] [Module ℂ V]
     (pairing : V →ₗ[ℂ] ℂ) (c : ℕ) (theta : Fin 12 → V) : ℂ :=
   ∑ r, (chiTwelveResidue r : ℂ) * pairing (theta (atkinLehnerSigma c r))

@@ -1,8 +1,16 @@
-import blessed.SptCM.Definitions
-import blessed.SptCM.Analytic.ChiTwelve
-import blessed.SptCM.PaperInterfaces
-import blessed.SptCM.Analytic.ThetaHecke
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+module
+
+public import blessed.SptCM.Definitions
+public import blessed.SptCM.Analytic.ChiTwelve
+public import blessed.SptCM.PaperInterfaces
+public import blessed.SptCM.Analytic.ThetaHecke
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Paper-specific coefficient series and theta-cycle deductions
@@ -17,11 +25,13 @@ namespace SptCM.Analytic
 open SptCM.PaperInterfaces
 
 /-- The ordinary partition number, using Mathlib's finite type of partitions. -/
+@[expose]
 def partitionNumber (n : ℕ) : ℕ := Fintype.card (Nat.Partition n)
 
 /-- The coefficient `a(r)` of the smallest-parts mock modular form.
 The supported nonnegative indices satisfy `r ≡ 23 (mod 24)` and correspond to
 `r = 24n - 1`; the principal coefficient at `r = -1` is specified separately. -/
+@[expose]
 def aCoeff (r : ℤ) : ℤ :=
   if r = -1 then 1
   else if 0 ≤ r ∧ r % 24 = 23 then
@@ -65,19 +75,23 @@ theorem aCoeff_mod_eq_neg_twelve_spt
   rw [hzero', zero_mul, sub_zero]
 
 /-- The coefficient-function model of `f = Σ a(r) q^(r/24)`. -/
+@[expose]
 def fSeries : QSeries ℤ := aCoeff
 
 /-- Coefficientwise reduction of `f` modulo `ℓ`. -/
+@[expose]
 def fSeriesMod (ℓ : ℕ) : QSeries (ZMod ℓ) :=
   fun r => (aCoeff r : ZMod ℓ)
 
 /-- `Θ = q d/dq` on series indexed by the numerator of `r/24`.
 Accordingly, the coefficient at index `r` is multiplied by `r/24`. -/
+@[expose]
 def thetaSeriesOp (ℓ : ℕ) [Fact ℓ.Prime] :
     QSeries (ZMod ℓ) → QSeries (ZMod ℓ) :=
   fun g r => ((r : ZMod ℓ) / (24 : ZMod ℓ)) * g r
 
 /-- The coefficientwise closed form of the `k`-fold theta operator. -/
+@[expose]
 def thetaPowerSeriesOp (ℓ k : ℕ) [Fact ℓ.Prime] :
     QSeries (ZMod ℓ) → QSeries (ZMod ℓ) :=
   fun g r => (((r : ZMod ℓ) / (24 : ZMod ℓ)) ^ k) * g r
@@ -104,6 +118,7 @@ theorem thetaSeriesOp_iterate (ℓ k : ℕ) [Fact ℓ.Prime]
       (((r : ZMod ℓ) / (24 : ZMod ℓ)) ^ k) * g r := rfl
 
 /-- The `U_ℓ` operator on the integral-index coefficient model. -/
+@[expose]
 def uSeriesOp {R : Type*} (ℓ : ℕ) (g : QSeries R) : QSeries R :=
   fun r => g ((ℓ : ℤ) * r)
 
@@ -113,6 +128,7 @@ def uSeriesOp {R : Type*} (ℓ : ℕ) (g : QSeries R) : QSeries R :=
 /-- The exact elementary coefficient bridge needed to identify canonical
 smallest-parts congruences with `U_ℓ`-vanishing.  Its proof is the remaining
 integer reindexing/substitution calculation involving `canonicalResidue`. -/
+@[expose]
 def CanonicalUCoefficientInput (ℓ : ℕ) : Prop :=
   SptCM.CanonicalCongruencePrime ℓ ↔
     ∀ r : ℤ, fSeriesMod ℓ ((ℓ : ℤ) * r) = 0
@@ -325,11 +341,10 @@ theorem canonicalCongruencePrime_iff_uSeriesOp_eq_zero_exact
     rw [aCoeff_mod_eq_neg_twelve_spt ℓ n hnpos ⟨r, hr⟩] at hcoeff
     have htwelve : (-12 : ZMod ℓ) ≠ 0 := by
       intro hzero
-      have hd : (ℓ : ℤ) ∣ (-12 : ℤ) := by
-        rw [← CharP.intCast_eq_zero_iff (R := ZMod ℓ)]
-        simpa using hzero
-      have hd' : (ℓ : ℤ) ∣ 12 := by
-        simpa using dvd_neg.mpr hd
+      have h12 : (12 : ZMod ℓ) = 0 := neg_eq_zero.mp hzero
+      have hdNat : ℓ ∣ 12 := (ZMod.natCast_eq_zero_iff 12 ℓ).mp h12
+      have hd' : (ℓ : ℤ) ∣ 12 := by exact_mod_cast hdNat
+      have hd : (ℓ : ℤ) ∣ (-12 : ℤ) := dvd_neg.mpr hd'
       have hle : (ℓ : ℤ) ≤ 12 := Int.le_of_dvd (by norm_num) hd'
       have hle' : ℓ ≤ 12 := by exact_mod_cast hle
       interval_cases ℓ
@@ -341,11 +356,13 @@ theorem canonicalCongruencePrime_iff_uSeriesOp_eq_zero_exact
     simpa [n] using hspt
 
 /-- The scalar `(-24/ℓ)` appearing in the theta-cycle theorem. -/
+@[expose]
 def thetaCycleEigenvalue (ℓ : ℕ) [Fact ℓ.Prime] : ZMod ℓ :=
   (legendreSym ℓ (-24) : ℤ)
 
 /-- The precise conditional form of the Ahlgren--Kim input consumed by the
 paper: reduced `U_ℓ`-vanishing implies the stated theta-cycle eigenrelation. -/
+@[expose]
 def AhlgrenKimThetaCycleFromUInput (ℓ : ℕ) [Fact ℓ.Prime] : Prop :=
   uSeriesOp ℓ (fSeriesMod ℓ) = 0 →
     PaperInterfaces.AhlgrenKimThetaCycleInput ℓ
@@ -395,6 +412,7 @@ theorem theta_cycle_of_canonical_exact
 /-- The exact Euler-criterion calculation used at inert indices.  It is kept
 separate from the cited theta-cycle input so that no analytic assertion is
 hidden inside the coefficient argument. -/
+@[expose]
 def EulerInertMismatchInput (ℓ : ℕ) [Fact ℓ.Prime] : Prop :=
   ∀ r : ℤ, legendreSym ℓ (-r) = -1 →
     (((r : ZMod ℓ) / (24 : ZMod ℓ)) ^ ((ℓ - 1) / 2)) ≠

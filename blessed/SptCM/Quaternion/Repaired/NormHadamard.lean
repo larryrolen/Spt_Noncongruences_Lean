@@ -1,5 +1,13 @@
-import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
-import Mathlib.Tactic
+module
+
+public import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
+public import Mathlib.Tactic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The norm table and Hadamard application in I20
@@ -58,6 +66,7 @@ structure LevelSixLocalIndexData
 
 /-- The covolume of the level-six preserving order computed from its three
 local factors. -/
+@[expose]
 noncomputable def LevelSixLocalIndexData.orderCovolume
     {ℓ : ℕ}
     {Curve Subgroup Order Lattice D : Type*}

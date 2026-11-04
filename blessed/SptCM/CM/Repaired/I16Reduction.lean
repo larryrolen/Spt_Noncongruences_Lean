@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.Repaired.I16Coordinates
-import blessed.SptCM.Repair.CMPolynomialReduction
+module
+
+public import blessed.SptCM.CM.Repaired.I16Coordinates
+public import blessed.SptCM.Repair.CMPolynomialReduction
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Coefficient reduction of the sound actual class-polynomial descent
@@ -22,6 +30,7 @@ variable {n h : ℕ} {C : ActualOrientedCMCoordinates n h}
 
 /-- The sound coefficient descent, viewed as the generic integral polynomial
 pair used by the algebraic-closure reduction criterion. -/
+@[expose]
 def integralPolynomialPair : SptCM.IntegralOrientedClassPolynomials n where
   numerator := D.A
   denominator := D.B
@@ -38,6 +47,7 @@ theorem actualRootReductionSpec
 
 /-- Coefficientwise reductions of the sound descended numerator and
  denominator polynomials at a prime away from six. -/
+@[expose]
 def actualReducedClassPolynomials
     (ℓ : ℕ) (h6 : IsUnit (6 : ZMod ℓ)) :
     (ZMod ℓ)[X] × (ZMod ℓ)[X] :=

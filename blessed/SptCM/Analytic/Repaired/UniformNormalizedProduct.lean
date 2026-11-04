@@ -1,4 +1,12 @@
-import blessed.SptCM.Analytic.Repaired.I12NormalizedProduct
+module
+
+public import blessed.SptCM.Analytic.Repaired.I12NormalizedProduct
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 set_option maxHeartbeats 4000000
 
 /-!

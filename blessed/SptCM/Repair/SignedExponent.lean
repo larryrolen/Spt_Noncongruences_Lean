@@ -1,4 +1,12 @@
-import blessed.SptCM.Analytic.PaperCoefficientModels
+module
+
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Signed Euler exponents
@@ -10,19 +18,23 @@ negative parts are natural exponents for numerator and denominator products.
 namespace SptCM.Repair
 
 /-- The signed integer exponent occurring in the Borcherds product. -/
+@[expose]
 def signedEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℤ :=
   SptCM.Analytic.chi12 (m : ℤ) * H ((m : ℤ) ^ 2)
 
 /-- Positive part of the signed Euler exponent. -/
+@[expose]
 def positiveEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℕ :=
   (signedEulerExponent H m).toNat
 
 /-- Negative part of the signed Euler exponent. -/
+@[expose]
 def negativeEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℕ :=
   (-signedEulerExponent H m).toNat
 
 /-- The complete, pointwise specification of the positive/negative
 decomposition used to construct the two Euler products. -/
+@[expose]
 def SignedExponentSpec (H : ℤ → ℤ) (m : ℕ) : Prop :=
   ((positiveEulerExponent H m : ℤ) -
       (negativeEulerExponent H m : ℤ) = signedEulerExponent H m) ∧

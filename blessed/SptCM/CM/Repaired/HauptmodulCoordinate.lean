@@ -1,6 +1,14 @@
-import blessed.SptCM.Literature.RolenLiterature
-import blessed.SptCM.CM.ClassPolynomials
-import Mathlib.NumberTheory.ModularForms.DedekindEta
+module
+
+public import blessed.SptCM.Literature.RolenLiterature
+public import blessed.SptCM.CM.ClassPolynomials
+public import Mathlib.NumberTheory.ModularForms.DedekindEta
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The level-six eta quotient: finite Ligozat calculations
@@ -23,6 +31,7 @@ open SptCM.RolenLiterature
 
 /-- Rolen's analytic Hauptmodul using Mathlib's actual Dedekind eta
 function, rather than an arbitrary function named `eta`. -/
+@[expose]
 noncomputable def analyticHauptmodul (τ : UpperHalfPlane) : ℂ :=
   SptCM.hauptmodul ModularForm.eta τ
 
@@ -61,18 +70,22 @@ structure LevelSixEtaExponents where
   atSix : ℤ
 
 /-- The exponent vector of Rolen's Hauptmodul. -/
+@[expose]
 def hauptmodulExponents : LevelSixEtaExponents :=
   ⟨5, -1, 1, -5⟩
 
 /-- Twice the eta-quotient weight. -/
+@[expose]
 def etaWeightNumerator (e : LevelSixEtaExponents) : ℤ :=
   e.atOne + e.atTwo + e.atThree + e.atSix
 
 /-- The first Ligozat congruence sum `Σ δ r_δ`. -/
+@[expose]
 def firstLigozatSum (e : LevelSixEtaExponents) : ℤ :=
   e.atOne + 2 * e.atTwo + 3 * e.atThree + 6 * e.atSix
 
 /-- The second Ligozat congruence sum `Σ (6/δ) r_δ`. -/
+@[expose]
 def secondLigozatSum (e : LevelSixEtaExponents) : ℤ :=
   6 * e.atOne + 3 * e.atTwo + 2 * e.atThree + e.atSix
 
@@ -90,6 +103,7 @@ def secondLigozatSum (e : LevelSixEtaExponents) : ℤ :=
 
 /-- The rational character parameter
 `∏ δ^{r_δ} = 2⁻⁶3⁻⁴`. -/
+@[expose]
 def hauptmodulCharacterParameter : ℚ :=
   1 / (2 ^ 6 * 3 ^ 4)
 
@@ -101,6 +115,7 @@ theorem hauptmodul_character_parameter_isSquare :
 
 /-- Ligozat's order formula at the cusp represented by denominator `c ∣ 6`.
 The four summands are indexed by `δ = 1,2,3,6`. -/
+@[expose]
 def ligozatCuspOrder (e : LevelSixEtaExponents) (c : ℕ) : ℚ :=
   (6 : ℚ) / 24 *
     (((Nat.gcd c 1 : ℚ) ^ 2 * e.atOne) /

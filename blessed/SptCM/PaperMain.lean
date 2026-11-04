@@ -1,13 +1,22 @@
-import blessed.SptCM.PaperInterfaces
-import blessed.SptCM.Analytic.ThetaHecke
-import blessed.SptCM.Analytic.DualityPairing
-import blessed.SptCM.Analytic.PaperConstructions
-import blessed.SptCM.Arithmetic.SmallDiscriminant
-import blessed.SptCM.CM.ClassPolynomials
-import blessed.SptCM.CM.Borcherds
-import blessed.SptCM.Quaternion.Separation
-import blessed.SptCM.Lemmas.VolumeArithmetic
-import blessed.SptCM.Main
+module
+
+public import blessed.SptCM.PaperInterfaces
+public import blessed.SptCM.Analytic.ThetaHecke
+public import blessed.SptCM.Analytic.DualityPairing
+public import blessed.SptCM.Analytic.PaperConstructions
+public import blessed.SptCM.Arithmetic.SmallDiscriminant
+public import blessed.SptCM.CM.ClassPolynomials
+public import blessed.SptCM.CM.Borcherds
+public import blessed.SptCM.Quaternion.Separation
+public import blessed.SptCM.Lemmas.VolumeArithmetic
+public import blessed.SptCM.Main
+
+public section
+
+-- Keep the existing ring operations on ZMod; the generic group reconstruction
+-- introduced in this Mathlib version creates an incompatible negation instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Paper-level assembly from granular interfaces
@@ -28,6 +37,7 @@ namespace PaperComponents
 
 /-- The diagonal theta power, bundled as the linear map needed by the abstract
 Hecke-chain lemma. -/
+@[expose]
 def thetaPowerSeriesLinearMap (ℓ k : ℕ) [Fact ℓ.Prime] :
     Analytic.QSeries (ZMod ℓ) →ₗ[ZMod ℓ] Analytic.QSeries (ZMod ℓ) where
   toFun := Analytic.thetaPowerSeriesOp ℓ k
@@ -91,7 +101,7 @@ structure InfiniteProductObstructionData
   t : ∀ ℓ n, PowerSeries (ZMod ℓ)
   tTranscendental : ∀ ℓ n, Transcendental (ZMod ℓ) (t ℓ n)
   thetaT_ne_zero : ∀ ℓ n,
-    PowerSeries.derivative (ZMod ℓ) (t ℓ n) ≠ 0
+    PowerSeries.derivative (R := ZMod ℓ) (t ℓ n) ≠ 0
   classDenominator_ne_zero : ∀ ℓ n, aeval (t ℓ n) (B ℓ n) ≠ 0
   denominator_ne_zero : ∀ ℓ n, denominator ℓ n ≠ 0
   Input : ℕ → ℕ → Type
@@ -149,18 +159,21 @@ structure InfiniteProductObstructionData
 
 /-- The output of the theta-cycle, grid-support, and coefficient-duality
 argument at one prime and discriminant. -/
+@[expose]
 def SquareCoefficientSupport (coefficient : ℕ → ℕ → ℤ) (ℓ n : ℕ) : Prop :=
   ∀ m : ℕ, Nat.Coprime m (6 * ℓ) →
     (ℓ : ℤ) ∣ coefficient n m
 
 /-- The paper-internal analytic component: canonicality and admissibility
 force the square-coefficient support condition used in the product. -/
+@[expose]
 def ThetaDualityComponent (coefficient : ℕ → ℕ → ℤ) : Prop :=
   ∀ ℓ n, CanonicalCongruencePrime ℓ → Admissible ℓ n →
     SquareCoefficientSupport coefficient ℓ n
 
 /-- The paper-internal Borcherds/Frobenius bridge, separated from the theta
 and duality argument that establishes its premise. -/
+@[expose]
 def BorcherdsWronskianBridge (coefficient : ℕ → ℕ → ℤ)
     (A B : (ℓ n : ℕ) → Polynomial (ZMod ℓ)) : Prop :=
   ∀ ℓ n, Admissible ℓ n → SquareCoefficientSupport coefficient ℓ n →
@@ -168,6 +181,7 @@ def BorcherdsWronskianBridge (coefficient : ℕ → ℕ → ℤ)
 
 /-- The paper-internal volume component: the numerical collision bound
 forces the chosen geometric collision predicate to fail. -/
+@[expose]
 def QuaternionicSeparationComponent
     (collisionFree : ℕ → ℕ → Prop) : Prop :=
   ∀ ℓ n, ℓ.Prime → Admissible ℓ n → (n + 1) ^ 2 < 24 * ℓ →
@@ -175,6 +189,7 @@ def QuaternionicSeparationComponent
 
 /-- The integral-coordinate bridge from geometric noncollision to polynomial
 coprimality. -/
+@[expose]
 def CoordinateCoprimalityBridge
     (collisionFree : ℕ → ℕ → Prop)
     (A B : (ℓ n : ℕ) → Polynomial (ZMod ℓ)) : Prop :=
@@ -182,21 +197,25 @@ def CoordinateCoprimalityBridge
     IsCoprime (A ℓ n) (B ℓ n)
 
 /-- Monicity of the numerator oriented class polynomial. -/
+@[expose]
 def NumeratorMonicityComponent
     (A : (ℓ n : ℕ) → Polynomial (ZMod ℓ)) : Prop :=
   ∀ ℓ n, (A ℓ n).Monic
 
 /-- Monicity of the denominator oriented class polynomial. -/
+@[expose]
 def DenominatorMonicityComponent
     (B : (ℓ n : ℕ) → Polynomial (ZMod ℓ)) : Prop :=
   ∀ ℓ n, (B ℓ n).Monic
 
 /-- Degree calculation for the numerator orientations `1` and `11`. -/
+@[expose]
 def NumeratorDegreeComponent (h : ℕ → ℕ)
     (A : (ℓ n : ℕ) → Polynomial (ZMod ℓ)) : Prop :=
   ∀ ℓ n, (A ℓ n).natDegree = 2 * h n
 
 /-- Degree calculation for the denominator orientations `5` and `7`. -/
+@[expose]
 def DenominatorDegreeComponent (h : ℕ → ℕ)
     (B : (ℓ n : ℕ) → Polynomial (ZMod ℓ)) : Prop :=
   ∀ ℓ n, (B ℓ n).natDegree = 2 * h n

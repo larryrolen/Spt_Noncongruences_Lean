@@ -1,5 +1,13 @@
-import blessed.SptCM.Analytic.Repaired.I05HeckeApplication
-import blessed.SptCM.Analytic.PaperCoefficientModels
+module
+
+public import blessed.SptCM.Analytic.Repaired.I05HeckeApplication
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Characteristic reduction of the source Hecke identities
@@ -15,10 +23,12 @@ namespace SptCM.Analytic.Repaired
 open SptCM.Analytic SptCM.RolenLiterature
 
 /-- Coefficientwise casting of an integral Fourier series. -/
+@[expose]
 def castIntegralSeries (K : Type*) [Ring K] (f : QSeries ℤ) : QSeries K :=
   fun r => (f r : K)
 
 /-- The actual integral quadratic symbol occurring in the Hecke formulas. -/
+@[expose]
 def integralHeckeLegendre (p : ℕ) (r : ℤ) : ℤ :=
   if hp : p.Prime then
     let _ : Fact p.Prime := ⟨hp⟩
@@ -45,11 +55,13 @@ structure IntegralGridRealization where
 
 /-- Reduction of the unique integral grid, rather than a fresh arbitrary grid
 over the finite field. -/
+@[expose]
 def IntegralGridRealization.modGrid (D : IntegralGridRealization) (ℓ m : ℕ) :
     QSeries (ZMod ℓ) :=
   castIntegralSeries (ZMod ℓ) (D.grid m)
 
 /-- The integral expansion of the first displayed Hecke expression. -/
+@[expose]
 def integralFHeckeDifference (p : ℕ) : QSeries ℤ := fun r =>
   fSeries ((p : ℤ) ^ 2 * r) +
     (chi12 (p : ℤ) : ℤ) * integralHeckeLegendre p (-r) * fSeries r +
@@ -106,6 +118,7 @@ theorem mod_f_hecke_identity
     using hr
 
 /-- Integral coefficient formula underlying the weight `3/2` Hecke operator. -/
+@[expose]
 def integralHeckeThreeHalf (p : ℕ) (chiP : ℤ) (legendre : ℤ → ℤ)
     (g : QSeries ℤ) : QSeries ℤ := fun r =>
   g ((p : ℤ) ^ 2 * r) + chiP * legendre (-r) * g r +
@@ -122,6 +135,7 @@ lemma cast_integralHeckeThreeHalf
   by_cases hdiv : ((p : ℤ) ^ 2) ∣ r <;> simp [hdiv]
 
 /-- Integral version of the conventionally zero divided-index grid term. -/
+@[expose]
 def integralGridDivisorTerm (D : IntegralGridRealization) (m p : ℕ) :
     QSeries ℤ :=
   if p ∣ m then D.grid (m / p) else 0
@@ -137,6 +151,7 @@ lemma cast_integralGridDivisorTerm
     simp [integralGridDivisorTerm, gridDivisorTerm, hpm, castIntegralSeries]
 
 /-- The integral right side of the second displayed I05 identity. -/
+@[expose]
 def integralGridHeckeRight (D : IntegralGridRealization) (m p : ℕ) :
     QSeries ℤ := fun r =>
   (p : ℤ) * D.grid (m * p) r +
@@ -282,6 +297,7 @@ theorem actualHecke_thetaCycle_commute
 
 /-- Membership in the paper's theta-cycle eigenspace, stated directly on the
 coefficient series used throughout this development. -/
+@[expose]
 def HasPaperThetaCycle (ℓ : ℕ) [Fact ℓ.Prime]
     (g : QSeries (ZMod ℓ)) : Prop :=
   thetaPowerSeriesOp ℓ ((ℓ - 1) / 2) g = thetaCycleEigenvalue ℓ • g

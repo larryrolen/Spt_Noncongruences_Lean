@@ -1,5 +1,13 @@
-import blessed.SptCM.Repair.AdmissibleRange
-import blessed.SptCM.Repair.LaurentTranscendence
+module
+
+public import blessed.SptCM.Repair.AdmissibleRange
+public import blessed.SptCM.Repair.LaurentTranscendence
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Laurent-series Hauptmodul interface
@@ -11,12 +19,14 @@ Laurent series rather than incorrectly as a power series.
 namespace SptCM.Repair
 
 /-- The principal part `t(q) = q⁻¹ - 5 + O(q)` of the level-six Hauptmodul. -/
+@[expose]
 def HasHauptmodulPrincipalPart {K : Type*} [Ring K]
     (t : LaurentSeries K) : Prop :=
   t.coeff (-1) = 1 ∧ t.coeff 0 = -5 ∧
     ∀ z : ℤ, z < -1 → t.coeff z = 0
 
 /-- The reciprocal coordinate has expansion `u = q + O(q²)`. -/
+@[expose]
 def HasReciprocalHauptmodulExpansion {K : Type*} [Ring K]
     (u : PowerSeries K) : Prop :=
   PowerSeries.coeff 0 u = 0 ∧ PowerSeries.coeff 1 u = 1

@@ -1,9 +1,17 @@
-import blessed.SptCM.Repair.AdmissibleRange
-import blessed.SptCM.Repair.GridSupport
-import blessed.SptCM.Repair.SignedExponent
-import blessed.SptCM.Repair.LaurentHauptmodul
-import blessed.SptCM.CM.Borcherds
-import blessed.SptCM.Analytic.Repaired.EulerProducts
+module
+
+public import blessed.SptCM.Repair.AdmissibleRange
+public import blessed.SptCM.Repair.GridSupport
+public import blessed.SptCM.Repair.SignedExponent
+public import blessed.SptCM.Repair.LaurentHauptmodul
+public import blessed.SptCM.CM.Borcherds
+public import blessed.SptCM.Analytic.Repaired.EulerProducts
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Sound local analytic obstruction interface
@@ -16,6 +24,7 @@ Signed exponents and the Euler mismatch are derived rather than postulated.
 namespace SptCM.Repair
 
 /-- The diagonal theta power as a linear map on coefficient series. -/
+@[expose]
 def thetaPowerLinearMap (ℓ k : ℕ) [Fact ℓ.Prime] :
     SptCM.Analytic.QSeries (ZMod ℓ) →ₗ[ZMod ℓ]
       SptCM.Analytic.QSeries (ZMod ℓ) where
@@ -49,6 +58,7 @@ structure SoundAnalyticObstructionData
   hauptmodul : LaurentHauptmodulData ℓ n hrange
 
 /-- The numerator is the canonical stabilized product, not caller data. -/
+@[expose]
 noncomputable def SoundAnalyticObstructionData.numerator
     {ℓ n : ℕ} [Fact ℓ.Prime] {hrange : AnalyticAdmissible ℓ n}
     (d : SoundAnalyticObstructionData ℓ n hrange) :
@@ -56,6 +66,7 @@ noncomputable def SoundAnalyticObstructionData.numerator
   eulerProductPlus d.H
 
 /-- The denominator is likewise the canonical stabilized product. -/
+@[expose]
 noncomputable def SoundAnalyticObstructionData.denominator
     {ℓ n : ℕ} [Fact ℓ.Prime] {hrange : AnalyticAdmissible ℓ n}
     (d : SoundAnalyticObstructionData ℓ n hrange) :
