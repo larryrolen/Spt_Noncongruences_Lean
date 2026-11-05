@@ -2,7 +2,7 @@
   "assembled_by": "Axiom Prover",
   "schema_version": 1,
   "target": "The SPT canonical congruence primes are exactly 5, 7, and 13.",
-  "policy": "Only E1-E11 may remain unproved; every Rolen-specific specialization must be derived in Lean.",
+  "policy": "E1-E11 are explicit premises, not global axioms. E8 and the analytic/model compatibility interfaces include additional unproved application inputs, not verified specializations of cited theorems. The conditional endpoint does not establish those inputs.",
   "inputs": [
     {
       "id": "E1",
@@ -76,8 +76,8 @@
     },
     {
       "id": "E8",
-      "source": "Standard CM, ideal-class, class-field, potential-good-reduction, and Deuring reduction theorems in the precise oriented level-six forms recorded in Lean",
-      "citation_status": "Exact theorem-level citations for every oriented and integral-closure formulation are required before release. The residue theorem is typed on integralClosure AwaySix L; a residue homomorphism from the characteristic-zero field L is impossible.",
+      "source": "No theorem-level source is certified for the exact E8 interfaces. CM, ideal-class, class-field and reduction theory are background motivation only.",
+      "citation_status": "The exact oriented level-six, integral CM reciprocity, good-reduction and integral-closure residue formulations are assumed in this conditional development. No claim is made that a cited theorem supplies them. Instantiation requires separate proofs or source-checked derivations.",
       "lean_declarations": [
         "SptCM.RolenLiterature.E8NegativeQuadraticOrderDomain",
         "SptCM.RolenLiterature.E8ReducedFormClassification",
@@ -87,8 +87,23 @@
         "SptCM.RolenLiterature.CMPotentialGoodReduction",
         "SptCM.RolenLiterature.DeuringInertSupersingular",
         "SptCM.RolenLiterature.CMSpecializationInjective",
-        "SptCM.RolenLiterature.Repair.E8AwaySixIntegralClosureResidueTheorem"
-      ]
+        "SptCM.RolenLiterature.Repair.E8AwaySixIntegralClosureResidueTheorem",
+        "SptCM.RolenLiterature.Repair.E8ActualReductionModel",
+        "SptCM.RolenLiterature.Repair.E8IntegralClosureResidueSpecialization",
+        "SptCM.RolenLiterature.E8OrientedQuadraticSpecialization",
+        "SptCM.RolenLiterature.E8StandardCMReduction",
+        "SptCM.CM.Repaired.E8ActualHauptmodulGoodReduction"
+      ],
+      "classification": "additional-unproved-application-inputs",
+      "scope": "Includes negative quadratic order domain and reduced-form equivalences; all four fixed-orientation class equivalences; finite Galois realizations of the actual CM coordinates with integral roots; and compatible reduction models and residue maps. These are not consequences established by this Lean development.",
+      "top_level_fields": [
+        "SptCM.RolenLiterature.Repair.UniformRolenLiterature.e8NegativeQuadraticOrderDomain",
+        "SptCM.RolenLiterature.Repair.UniformRolenLiterature.e8ReducedFormClassification",
+        "SptCM.RolenLiterature.Repair.UniformRolenLiterature.e8FourOrientedFormClassification",
+        "SptCM.RolenLiterature.Repair.UniformRolenLiterature.e8IntegralCMClassField",
+        "SptCM.RolenLiterature.Repair.UniformRolenLiterature.e8ActualReduction"
+      ],
+      "arithmetic_residue_field": "SptCM.RolenLiterature.Repair.UniformArithmeticLiterature.e8Residue"
     },
     {
       "id": "E9",

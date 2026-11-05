@@ -5,12 +5,12 @@
 ## Status of the result
 
 The theorem `SptCM.Repair.rolen_spt_classification` is a complete Lean proof
-**relative to** the source-facing literature interfaces E1–E11 and the
-standard analytic/model-comparison structures described below. These inputs
+**relative to** the literature interfaces and additional unproved application inputs E1–E11,
+together with the analytic/model-comparison structures described below. These inputs
 are represented as explicit theorem premises or fields of premise
 structures; they are not hidden global Lean axioms.
 
-## Published and standard inputs E1–E11
+## Literature and additional application inputs E1–E11
 
 ### E1 — Andrews congruences
 
@@ -82,17 +82,32 @@ multiplicities. Rigidity for nonzero rational functions, invariance under
 cancellation, the class-polynomial divisor computation, and leading
 normalization are proved internally. See `ANALYTIC_BOUNDARY.md`.
 
-### E8 — CM and reduction theory
+### E8 — Additional unproved CM application inputs
 
-Standard results on negative quadratic orders, reduced and oriented binary
-quadratic forms, ideal classes, finite Galois CM reciprocity, integral CM
-class fields, potential good reduction, Deuring inert supersingular
-reduction, and specialization injectivity, in the precise oriented level-six
-forms encoded by the Lean interfaces.
+The exact E8 interfaces are **additional unproved application assumptions**.
+CM, ideal-class, class-field and reduction theory provide background motivation;
+no theorem-level reference is certified as proving these precise interfaces.
+In particular, they are not presented as verified translations of standard
+literature theorems. The conditional classification does not establish them.
 
-The residue specialization is correctly typed on the integral closure of
-`ℤ[1/6]` in the CM field, not as a map from a characteristic-zero field to a
-positive-characteristic field.
+The following obligations remain outside the Lean proof:
+
+- Domain and reduced-form/ideal-class equivalences for the specified negative
+  quadratic orders, and all four fixed-orientation level-six equivalences.
+- Finite Galois CM reciprocity for the actual Hauptmodul coordinate families,
+  including integrality over `ℤ[1/6]` and the specified Galois actions.
+- Compatible CM reduction models, good reduction, inert supersingularity,
+  specialization injectivity, and their identifications with the actual
+  oriented coordinates.
+- Existence of a residue map on the integral closure of `ℤ[1/6]` in the
+  specified field, compatible with coefficient reduction. The domain is the
+  integral closure, not the characteristic-zero field itself.
+
+`EXTERNAL_INPUTS.json` identifies the declarations and the five corresponding
+`UniformRolenLiterature` fields. These types and all their hypotheses are
+unchanged. A future unconditional result requires constructing these inputs
+with proofs or supplying source-checked derivations; naming them E8 does not
+discharge that obligation.
 
 ### E9 — Level-six Eichler orders and covolume bound
 

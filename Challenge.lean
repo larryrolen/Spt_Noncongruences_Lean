@@ -1,7 +1,9 @@
 module
 public import Mathlib
 /-!# Conditional classification of smallest-parts congruences
-The hypotheses below are explicit literature and geometric inputs. This
+The hypotheses below are explicit literature and geometric inputs.
+E8 includes additional unproved application assumptions; exact literature
+support for its oriented CM and integral reduction interfaces is not certified. This
 statement does not claim that those inputs have been constructed in Lean.
 The smallest-parts function is defined directly from integer partitions.
 -/
@@ -31,8 +33,7 @@ section CoefficientModels
 /-- A coefficient model for the fractional-power `q`-series in Section 2; the integer key is the numerator of the exponent `n/24`. -/ abbrev QSeries (K : Type*) := ℤ → K
 /-- The principal-part predicate characterizing the canonical grid form. It states only the two negative coefficients used in the paper and vanishing of all other negative coefficients. -/ def HasGridPrincipalPart {K : Type*} [Ring K] (chi : ℕ → K) (m : ℕ) (g : QSeries K) : Prop :=
   ∀ r : ℤ, r < 0 → g r = if r = -(m : ℤ) ^ 2 then 1 else if r = -1 then -chi m else 0
-/-- The coefficient formula for the paper's weight `3/2` Hecke operator. Inadmissible divided indices contribute zero. -/ def heckeThreeHalf {K : Type*} [Field K] (ell : ℕ) (chiEll : K) (legendre : ℤ → K) (g : QSeries K) : QSeries K := fun n =>
-  g (((ell : ℤ) ^ 2) * n) + chiEll * legendre (-n) * g n + if ((ell : ℤ) ^ 2) ∣ n then (ell : K) * g (n / (ell : ℤ) ^ 2) else 0
+/-- The coefficient formula for the paper's weight `3/2` Hecke operator. Inadmissible divided indices contribute zero. -/ def heckeThreeHalf {K : Type*} [Field K] (ell : ℕ) (chiEll : K) (legendre : ℤ → K) (g : QSeries K) : QSeries K := fun n => g (((ell : ℤ) ^ 2) * n) + chiEll * legendre (-n) * g n + if ((ell : ℤ) ^ 2) ∣ n then (ell : K) * g (n / (ell : ℤ) ^ 2) else 0
 end CoefficientModels
 end SptCM.Analytic
 namespace SptCM.Analytic
@@ -131,8 +132,7 @@ open PaperInterfaces
   t : ℤ
   determinant_one : p * t - q * s = 1
   lowerLeft_dvd : (6 : ℤ) ∣ s
-/-- Change of variables of an integral binary quadratic form by a matrix `((p,q),(s,t))`. -/ def transformQuadraticForm (g : GammaZeroSixMatrix) (Q : IntegralBinaryQuadraticForm) : IntegralBinaryQuadraticForm
-    where
+/-- Change of variables of an integral binary quadratic form by a matrix `((p,q),(s,t))`. -/ def transformQuadraticForm (g : GammaZeroSixMatrix) (Q : IntegralBinaryQuadraticForm) : IntegralBinaryQuadraticForm where
   a := Q.a * g.p ^ 2 + Q.b * g.p * g.s + Q.c * g.s ^ 2
   b := 2 * Q.a * g.p * g.q + Q.b * (g.p * g.t + g.q * g.s) + 2 * Q.c * g.s * g.t
   c := Q.a * g.q ^ 2 + Q.b * g.q * g.t + Q.c * g.t ^ 2
@@ -194,8 +194,7 @@ namespace SptCM.RolenLiterature
   hasDisjointStandardCuspSections : Curve → Prop
 /-- E7: Ligozat's general modularity, character, and cusp-order theorem. -/ def LigozatEtaQuotients {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
   ∀ e, M.ligozatConditions e → M.isModularFunction (M.quotient e) ∧ (∀ c, M.cuspOrder (M.quotient e) c = M.orderFormula e c) ∧ (M.characterCriterion e → M.hasTrivialCharacter (M.quotient e))
-/-- E7: good integral model of the compactified level-six modular curve away from the level. -/ def X0SixGoodIntegralModel {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
-  ∀ X : Curve, M.isLevelSixModularCurve X → M.isIntegralModelAwayFromLevel X
+/-- E7: good integral model of the compactified level-six modular curve away from the level. -/ def X0SixGoodIntegralModel {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop := ∀ X : Curve, M.isLevelSixModularCurve X → M.isIntegralModelAwayFromLevel X
 /-- E7: smooth irreducible genus-zero geometric fibers away from six. -/ def X0SixGenusZeroFibers {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop := ∀ X : Curve, M.isLevelSixModularCurve X → M.hasGenusZeroGeometricFibers X
 /-- E7: disjointness of the four standard cusp sections away from six. -/ def X0SixDisjointCusps {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop := ∀ X : Curve, M.isLevelSixModularCurve X → M.hasDisjointStandardCuspSections X
 /-- Operations on rational functions on a proper integral curve. This is a neutral geometric model: it contains no eta quotient, CM point, Hauptmodul, or paper-specific conclusion. -/ structure IntegralCurveFunctionGeometry (Function Divisor Curve Section Expansion : Type*) where
@@ -205,30 +204,26 @@ namespace SptCM.RolenLiterature
   hasIntegralUnitExpansionAt : Function → Section → Expansion → Prop
   hasNoVerticalComponent : Function → Curve → Prop
   identifiesWithProjectiveLine : Function → Curve → Prop
-/-- General horizontal-divisor principle: on a smooth proper curve, a rational function with no interior zero or pole and cusp orders `+1,-1` has divisor the difference of those two cusp sections. -/ def E7HorizontalDivisorPrinciple {Function Divisor Curve Section Expansion Order : Type*} [Zero Order] [One Order] [Neg Order] (G : IntegralCurveFunctionGeometry Function Divisor Curve Section Expansion)
-    (isIntegralModel hasGenusZeroFibers : Curve → Prop) (isRationalFunction : Function → Prop) (cuspOrder : Function → Section → Order) : Prop :=
-  ∀ X f zero infinity,
-    isIntegralModel X →
-      hasGenusZeroFibers X → isRationalFunction f → G.hasNoInteriorZeroOrPole f X → cuspOrder f zero = 1 → cuspOrder f infinity = -1 → (∀ c, c ≠ zero → c ≠ infinity → cuspOrder f c = 0) → G.divisor f = G.sectionDifference X zero infinity
+/-- General horizontal-divisor principle: on a smooth proper curve, a rational function with no interior zero or pole and cusp orders `+1,-1` has divisor the difference of those two cusp sections. -/ def E7HorizontalDivisorPrinciple {Function Divisor Curve Section Expansion Order : Type*} [Zero Order] [One Order] [Neg Order] (G : IntegralCurveFunctionGeometry Function Divisor Curve Section Expansion) (isIntegralModel hasGenusZeroFibers : Curve → Prop) (isRationalFunction : Function → Prop)
+    (cuspOrder : Function → Section → Order) : Prop := ∀ X f zero infinity, isIntegralModel X → hasGenusZeroFibers X → isRationalFunction f → G.hasNoInteriorZeroOrPole f X → cuspOrder f zero = 1 → cuspOrder f infinity = -1 → (∀ c, c ≠ zero → c ≠ infinity → cuspOrder f c = 0) → G.divisor f = G.sectionDifference X zero infinity
 /-- General integral spreading principle: an integral unit expansion at a horizontal cusp excludes an additional vertical divisor component. -/ def E7NoVerticalComponentPrinciple {Function Divisor Curve Section Expansion : Type*} (G : IntegralCurveFunctionGeometry Function Divisor Curve Section Expansion) (isIntegralModel hasDisjointStandardCuspSections : Curve → Prop) : Prop :=
   ∀ X f zero infinity expansion, isIntegralModel X → hasDisjointStandardCuspSections X → G.divisor f = G.sectionDifference X zero infinity → G.hasIntegralUnitExpansionAt f infinity expansion → G.hasNoVerticalComponent f X
-/-- General degree-one divisor criterion on a smooth proper integral genus-zero model. -/ def E7IntegralDegreeOneCriterion {Function Divisor Curve Section Expansion : Type*} (G : IntegralCurveFunctionGeometry Function Divisor Curve Section Expansion)
-    (isIntegralModel hasGenusZeroFibers hasDisjointStandardCuspSections : Curve → Prop) : Prop :=
+/-- General degree-one divisor criterion on a smooth proper integral genus-zero model. -/ def E7IntegralDegreeOneCriterion {Function Divisor Curve Section Expansion : Type*} (G : IntegralCurveFunctionGeometry Function Divisor Curve Section Expansion) (isIntegralModel hasGenusZeroFibers hasDisjointStandardCuspSections : Curve → Prop) : Prop :=
   ∀ X f zero infinity, isIntegralModel X → hasGenusZeroFibers X → hasDisjointStandardCuspSections X → G.divisor f = G.sectionDifference X zero infinity → G.hasNoVerticalComponent f X → G.identifiesWithProjectiveLine f X
 /-- The concrete finite type counted by `negativeClassNumber`. -/ abbrev ReducedFormClasses (n : ℕ) := { i : ReducedFormIndex (Nat.sqrt (n / 3)) // IsReducedFormIndex n i }
 /-- In the odd negative-discriminant case used here, `-n` is fundamental exactly when `n` is squarefree and `n ≡ 3 (mod 4)`. -/ def IsNegativeFundamentalDiscriminant (n : ℕ) : Prop := Squarefree n ∧ n % 4 = 3
 /-- The canonical quadratic order `ℤ[(1 + √(-n))/2] = ℤ[X]/(X²-X+(n+1)/4)` in the paper's range `n ≡ 3 (mod 4)`. Using this concrete quotient prevents substitution of an unrelated domain with a conveniently chosen class number. -/ abbrev NegativeQuadraticOrder (n : ℕ) :=
   AdjoinRoot (Polynomial.X ^ 2 - Polynomial.X + Polynomial.C (((n + 1) / 4 : ℕ) : ℤ))
-/-- The standard fact that the canonical imaginary quadratic order is a domain in the negative-fundamental-discriminant range. It is separated from the form classification so callers can install the required typeclass without assuming any action or count statement. -/ def E8NegativeQuadraticOrderDomain (n : ℕ) : Prop :=
+/-- Additional unproved E8 input: the specified negative quadratic order is a domain in the fundamental-discriminant range. No theorem-level source for the exact interface is certified. -/ def E8NegativeQuadraticOrderDomain (n : ℕ) : Prop :=
   IsNegativeFundamentalDiscriminant n → Nonempty (IsDomain (NegativeQuadraticOrder n))
-/-- The standard reduced-form/proper-ideal-class classification obtained by combining the form/ideal-class correspondence allowed by E8 with the existence-and-uniqueness part of binary quadratic-form reduction allowed by E11. The completion register records that an exact bibliographic citation for this precise boundary-convention version is still required. -/ def E8ReducedFormClassification (n : ℕ) [IsDomain (NegativeQuadraticOrder n)] : Prop :=
+/-- Additional unproved E8 input: reduced forms correspond to proper ideal classes with these boundary conventions. This exact correspondence has not been proved or matched to a cited theorem. -/ def E8ReducedFormClassification (n : ℕ) [IsDomain (NegativeQuadraticOrder n)] : Prop :=
   IsNegativeFundamentalDiscriminant n → Nonempty (ClassGroup (NegativeQuadraticOrder n) ≃ ReducedFormClasses n)
 /-- The standard fixed-local-orientation refinement of the form/ideal-class correspondence. Choosing one prime above each of `2` and `3` gives four possibilities, represented by the residues `1, 11, 5, 7` modulo `12`. This datum contains neither an action nor a cardinality equation. -/ structure FourOrientedClassEquivalences (n : ℕ) [IsDomain (NegativeQuadraticOrder n)] where
   orientation1 : ClassGroup (NegativeQuadraticOrder n) ≃ orientedForms n 1
   orientation11 : ClassGroup (NegativeQuadraticOrder n) ≃ orientedForms n 11
   orientation5 : ClassGroup (NegativeQuadraticOrder n) ≃ orientedForms n 5
   orientation7 : ClassGroup (NegativeQuadraticOrder n) ≃ orientedForms n 7
-/-- Exact E8/E11 fixed-orientation classification: for a negative fundamental discriminant the four concrete `Γ₀(6)` oriented-form quotients are the four proper ideal-class torsors obtained from the choices above `2` and `3`. -/ def E8FourOrientedFormClassification (n : ℕ) [IsDomain (NegativeQuadraticOrder n)] : Prop :=
+/-- Additional unproved E8 input: the four concrete level-six oriented-form quotients are the four specified proper ideal-class torsors. Their exact equivalences require separate justification. -/ def E8FourOrientedFormClassification (n : ℕ) [IsDomain (NegativeQuadraticOrder n)] : Prop :=
   IsNegativeFundamentalDiscriminant n → n % 24 = 23 → Nonempty (FourOrientedClassEquivalences n)
 /-- Neutral CM/class-field/reduction data. -/ structure CMTheoryModel (Order IdealClass CMPoint Reduction Endomorphism : Type*) where
   acts : IdealClass → CMPoint → CMPoint
@@ -242,18 +237,16 @@ namespace SptCM.RolenLiterature
   supersingular : Reduction → Prop
   specializedAction : CMPoint → Endomorphism
   specializationInjective : CMPoint → Prop
-/-- Exact ring-theoretic output of CM specialization for the oriented quadratic-order families used at level six. The source is the concrete order `ℤ[X]/(X²-X+(n+1)/4)`. Specialization is a genuine ring homomorphism, respects quaternionic conjugation on its distinguished generator, and its image preserves the level structure. The scalar formula is the standard action of the orientation residue on the cyclic order-six subgroup. This is a general E8 interface: it contains no collision, noncommutation, volume, or separation conclusion. -/ structure E8OrientedQuadraticSpecialization (n : ℕ) {Order IdealClass CMPoint Reduction D : Type*} [DivisionRing D] [Star D] (M : CMTheoryModel Order IdealClass CMPoint Reduction D) where
+/-- Additional unproved E8 application interface: the specified quadratic-order families specialize compatibly with conjugation and the level-six structure. No collision, noncommutation, volume or separation conclusion is assumed here. -/ structure E8OrientedQuadraticSpecialization (n : ℕ) {Order IdealClass CMPoint Reduction D : Type*} [DivisionRing D] [Star D] (M : CMTheoryModel Order IdealClass CMPoint Reduction D) where
   point : ∀ r : ℕ, RawOrientedForm n r → CMPoint
   specialize : ∀ {r : ℕ}, RawOrientedForm n r → NegativeQuadraticOrder n →+* D
   specializedGenerator : ∀ {r : ℕ} (Q : RawOrientedForm n r), M.specializedAction (point r Q) = specialize Q (AdjoinRoot.root (Polynomial.X ^ 2 - Polynomial.X + Polynomial.C (((n + 1) / 4 : ℕ) : ℤ)))
-  conjugationGenerator :
-    ∀ {r : ℕ} (Q : RawOrientedForm n r),
-      star (specialize Q (AdjoinRoot.root (Polynomial.X ^ 2 - Polynomial.X + Polynomial.C (((n + 1) / 4 : ℕ) : ℤ)))) = 1 - specialize Q (AdjoinRoot.root (Polynomial.X ^ 2 - Polynomial.X + Polynomial.C (((n + 1) / 4 : ℕ) : ℤ)))
+  conjugationGenerator : ∀ {r : ℕ} (Q : RawOrientedForm n r), star (specialize Q (AdjoinRoot.root (Polynomial.X ^ 2 - Polynomial.X + Polynomial.C (((n + 1) / 4 : ℕ) : ℤ)))) = 1 - specialize Q (AdjoinRoot.root (Polynomial.X ^ 2 - Polynomial.X + Polynomial.C (((n + 1) / 4 : ℕ) : ℤ)))
   levelOrder : Subring D
   levelAction : levelOrder →+* ZMod 6
   specializedGenerator_mem_levelOrder : ∀ {r : ℕ} (Q : RawOrientedForm n r), M.specializedAction (point r Q) ∈ levelOrder
   levelAction_specializedGenerator : ∀ {r : ℕ} (Q : RawOrientedForm n r), levelAction ⟨M.specializedAction (point r Q), specializedGenerator_mem_levelOrder Q⟩ = (((r + 1) / 2 : ℕ) : ZMod 6)
-/-- The exact general CM class-field reciprocity datum for two finite CM families. The datum realizes each analytic CM value in one finite Galois extension and describes Galois action by permutations of the point families. It contains no assertion about the coefficients of either root polynomial. -/ structure E8FiniteGaloisCMReciprocity (I J L : Type*) [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] (x : I → ℂ) (y : J → ℂ) where
+/-- Additional unproved E8 application datum: the actual analytic CM values have the specified finite Galois realization and permutation actions. No coefficients of root polynomials are asserted here. -/ structure E8FiniteGaloisCMReciprocity (I J L : Type*) [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] (x : I → ℂ) (y : J → ℂ) where
   embedding : L →ₐ[ℚ] ℂ
   embedding_injective : Function.Injective embedding
   algebraicX : I → L
@@ -264,14 +257,13 @@ namespace SptCM.RolenLiterature
   permutationY : ∀ _σ : L ≃ₐ[ℚ] L, J ≃ J
   reciprocityX : ∀ (σ : L ≃ₐ[ℚ] L) i, σ (algebraicX i) = algebraicX (permutationX σ i)
   reciprocityY : ∀ (σ : L ≃ₐ[ℚ] L) j, σ (algebraicY j) = algebraicY (permutationY σ j)
-/-- The integral refinement of the finite-Galois CM reciprocity datum. Potential good reduction and regularity of the modular coordinate say that the algebraic CM values belong to the integral closure of the chosen coefficient ring in the class field. This interface records exactly that root-level conclusion, and still contains no assertion about a root-product polynomial or any of its coefficients. -/ structure E8FiniteGaloisIntegralCMReciprocity (A I J L : Type*) [CommRing A] [Field L] [Algebra A L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] (x : I → ℂ) (y : J → ℂ) extends E8FiniteGaloisCMReciprocity I J L x y where
+/-- Additional unproved E8 integral refinement: each specified CM root is integral over the chosen coefficient ring. This exact realization is assumed, not derived from a certified literature theorem. -/ structure E8FiniteGaloisIntegralCMReciprocity (A I J L : Type*) [CommRing A] [Field L] [Algebra A L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] (x : I → ℂ) (y : J → ℂ) extends E8FiniteGaloisCMReciprocity I J L x y where
   integralX : ∀ i, IsIntegral A (toE8FiniteGaloisCMReciprocity.algebraicX i)
   integralY : ∀ j, IsIntegral A (toE8FiniteGaloisCMReciprocity.algebraicY j)
-/-- E8: potential good reduction for the qualified CM points with level. -/ def CMPotentialGoodReduction {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ P, M.hasPotentiallyGoodReduction P
-/-- E8: Deuring's inert-reduction theorem. -/ def DeuringInertSupersingular {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ ℓ P, M.inertAt ℓ P → M.supersingular (M.reduction P)
-/-- E8: injectivity of the relevant CM-order action after specialization. -/ def CMSpecializationInjective {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ P, M.specializationInjective P
-/-- Compatibility conjunction for the reduction branch. -/ def E8StandardCMReduction {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
-  CMPotentialGoodReduction M ∧ DeuringInertSupersingular M ∧ CMSpecializationInjective M
+/-- Additional unproved E8 application premise: good reduction in the specified CM model. -/ def CMPotentialGoodReduction {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ P, M.hasPotentiallyGoodReduction P
+/-- Additional unproved E8 application premise motivated by Deuring reduction theory. Its exact match to this model is not certified. -/ def DeuringInertSupersingular {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ ℓ P, M.inertAt ℓ P → M.supersingular (M.reduction P)
+/-- Additional unproved E8 application premise: injectivity of the relevant CM-order action after specialization. -/ def CMSpecializationInjective {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ P, M.specializationInjective P
+/-- Compatibility conjunction for the reduction branch. -/ def E8StandardCMReduction {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := CMPotentialGoodReduction M ∧ DeuringInertSupersingular M ∧ CMSpecializationInjective M
 /-- Compatibility interface used by the existing reduction branch. Its first conjunct is intentionally *not* used for I22; the pinned declarations `E8ReducedFormClassification` and `E8IdealClassAction` above replace it there. -/ def E8StandardCM {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   (∀ O, M.actionSimplyTransitive O ∧ M.classCountCorrect O) ∧ E8StandardCMReduction M
 /-- Neutral level-order and covolume data for E9. -/ structure EichlerCovolumeModel (Curve Subgroup Order Lattice Vector : Type*) where
@@ -299,8 +291,7 @@ namespace SptCM.RolenLiterature
   topBoundaryError : Input → ℕ → ℝ
   regularizedPairing : Input → ℝ
 /-- The exact output of finite-height Stokes: the truncated-domain identity, convergence to the regularized pairing, and decay of the nonholomorphic top boundary. -/ def FiniteHeightStokesConclusion {Input : Type*} (M : FiniteHeightStokesModel Input) (x : Input) : Prop :=
-  (∀ T, M.shadowScale x * M.truncatedIntegral x T = M.holomorphicConstantTerm x + M.topBoundaryError x T) ∧
-    Filter.Tendsto (M.truncatedIntegral x) Filter.atTop (nhds (M.regularizedPairing x)) ∧ Filter.Tendsto (M.topBoundaryError x) Filter.atTop (nhds 0)
+  (∀ T, M.shadowScale x * M.truncatedIntegral x T = M.holomorphicConstantTerm x + M.topBoundaryError x T) ∧ Filter.Tendsto (M.truncatedIntegral x) Filter.atTop (nhds (M.regularizedPairing x)) ∧ Filter.Tendsto (M.topBoundaryError x) Filter.atTop (nhds 0)
 /-- E11: the general finite-height Stokes theorem, with its full numerical identity and both limiting assertions exposed. -/ def FiniteHeightStokesTheorem {Input : Type*} (M : FiniteHeightStokesModel Input) : Prop := ∀ x, M.qualified x → FiniteHeightStokesConclusion M x
 end SptCM.RolenLiterature
 namespace SptCM.Analytic.Repaired
@@ -317,8 +308,7 @@ end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.Analytic
 /-- The conventionally zero term `G_{m/p}` when `p ∤ m`. When `m=p`, this is `G₁`, so the published convention `G₁=0` gives the required cancellation. -/ def gridDivisorTerm {K : Type*} [Zero K] (G : ℕ → QSeries K) (m p : ℕ) : QSeries K := if p ∣ m then G (m / p) else 0
-/-- The source-normalized left side of Rolen's grid Hecke recurrence, solved for `G_{mp}`. -/ def normalizedGridHeckeLeft {K : Type*} [Field K] (p m : ℕ) (chi : ℕ → K) (legendre : ℤ → K) (G : ℕ → QSeries K) : QSeries K := fun r =>
-  (p : K)⁻¹ * (heckeThreeHalf p (chi p) legendre (G m) r - chi p * legendre ((m : ℤ) ^ 2) * G m r - gridDivisorTerm G m p r + (p : K) * chi m * G p r)
+/-- The source-normalized left side of Rolen's grid Hecke recurrence, solved for `G_{mp}`. -/ def normalizedGridHeckeLeft {K : Type*} [Field K] (p m : ℕ) (chi : ℕ → K) (legendre : ℤ → K) (G : ℕ → QSeries K) : QSeries K := fun r => (p : K)⁻¹ * (heckeThreeHalf p (chi p) legendre (G m) r - chi p * legendre ((m : ℤ) ^ 2) * G m r - gridDivisorTerm G m p r + (p : K) * chi m * G p r)
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.Analytic
@@ -354,8 +344,7 @@ end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open scoped BigOperators
 /-- The component vector `c (e₁ - e₅ - e₇ + e₁₁)`, evaluated on the canonical representatives of `ℤ / 12ℤ`. -/ def fourComponentVector (c : ℂ) (r : Fin 12) : ℂ := c * (chiTwelveResidue r : ℂ)
-/-- The normalized finite Fourier matrix giving the level-twelve Weil `S`-generator, with the same inverse-root convention as the Gauss sum. -/ noncomputable def levelTwelveWeilS (x : Fin 12 → ℂ) (s : Fin 12) : ℂ :=
-  (Real.sqrt 12 : ℂ)⁻¹ * ∑ r : Fin 12, inverseTwelfthRoot ^ ((r.val * s.val) % 12) * x r
+/-- The normalized finite Fourier matrix giving the level-twelve Weil `S`-generator, with the same inverse-root convention as the Gauss sum. -/ noncomputable def levelTwelveWeilS (x : Fin 12 → ℂ) (s : Fin 12) : ℂ := (Real.sqrt 12 : ℂ)⁻¹ * ∑ r : Fin 12, inverseTwelfthRoot ^ ((r.val * s.val) % 12) * x r
 /-- The common `T` multiplier of the four supported components. -/ noncomputable def levelTwelveTMultiplier : ℂ := Complex.exp (Complex.I * (Real.pi / 12 : ℂ))
 /-- The diagonal level-twelve Weil `T`-generator. The exponent is the quadratic residue `r² mod 24`; all four supported indices have residue one. -/ noncomputable def levelTwelveWeilT (x : Fin 12 → ℂ) (r : Fin 12) : ℂ := levelTwelveTMultiplier ^ ((r.val ^ 2) % 24) * x r
 /-- Exact E4 generator data for eta times an integral polynomial in `j`. The two displayed equalities are the standard scalar `S`- and `T`-laws; they are required for every polynomial, rather than merely recorded as an opaque qualification predicate. -/ structure EtaJGeneratorBasis (Form : Type*) [SMul ℂ Form] extends EtaJPowerBasis Form where
@@ -384,15 +373,13 @@ namespace SptCM.Analytic.Repaired
 /-- The signed component theta series appearing in Euler's eta identity. -/ def signedComponentThetaSeries {V : Type*} [AddCommMonoid V] [Module ℂ V] (theta : Fin 12 → V) : V := ∑ r, (chiTwelveResidue r : ℂ) • theta r
 run_cmd
   Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
-/-- Exact general Euler theta identity in a complex series model. This is the standard scalar identity, not a cusp contraction or Weyl-vector assertion. -/ def EtaComponentThetaIdentity {V : Type*} [AddCommMonoid V] [Module ℂ V] (theta : Fin 12 → V) (eta : V) : Prop :=
-  signedComponentThetaSeries theta = (2 : ℂ) • eta
+/-- Exact general Euler theta identity in a complex series model. This is the standard scalar identity, not a cusp contraction or Weyl-vector assertion. -/ def EtaComponentThetaIdentity {V : Type*} [AddCommMonoid V] [Module ℂ V] (theta : Fin 12 → V) (eta : V) : Prop := signedComponentThetaSeries theta = (2 : ℂ) • eta
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.Analytic
 open SptCM.RolenLiterature
 open scoped BigOperators
-/-- The genuinely coefficient-theoretic constant term of `H f`, written as a finite convolution once `H` has no terms below `-n` and `f` has no negative terms below `-1`. -/ noncomputable def finiteMockProductConstantTerm (n : ℕ) (H : HForm ℤ) : ℤ :=
-  ∑ r ∈ Finset.Icc (-(n : ℤ)) 1, H r * aCoeff (-r)
+/-- The genuinely coefficient-theoretic constant term of `H f`, written as a finite convolution once `H` has no terms below `-n` and `f` has no negative terms below `-1`. -/ noncomputable def finiteMockProductConstantTerm (n : ℕ) (H : HForm ℤ) : ℤ := ∑ r ∈ Finset.Icc (-(n : ℤ)) 1, H r * aCoeff (-r)
 run_cmd
   Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
 /-- The numerical shadow factor in the paper's Stokes formula. -/ noncomputable def publishedShadowScale : ℝ := 3 * Real.sqrt 6 / Real.pi
@@ -400,8 +387,8 @@ run_cmd
   index : ℕ
   coefficients : HForm ℤ
   completion : Completion
-/-- The concrete finite-height Stokes model used in the paper. Its scale and holomorphic boundary term are fixed definitions: only the genuinely analytic qualification, truncated integrals, errors, and regularized values are parameters. -/ noncomputable def hnFiniteHeightStokesModel {Completion : Type*} (qualified : HnStokesInput Completion → Prop) (truncatedIntegral topBoundaryError : HnStokesInput Completion → ℕ → ℝ) (regularizedValue : HnStokesInput Completion → ℝ) :
-    FiniteHeightStokesModel (HnStokesInput Completion) where
+/-- The concrete finite-height Stokes model used in the paper. Its scale and holomorphic boundary term are fixed definitions: only the genuinely analytic qualification, truncated integrals, errors, and regularized values are parameters. -/ noncomputable def hnFiniteHeightStokesModel {Completion : Type*} (qualified : HnStokesInput Completion → Prop) (truncatedIntegral topBoundaryError : HnStokesInput Completion → ℕ → ℝ) (regularizedValue : HnStokesInput Completion → ℝ) : FiniteHeightStokesModel (HnStokesInput Completion)
+    where
   qualified := qualified
   shadowScale := fun _ => publishedShadowScale
   truncatedIntegral := truncatedIntegral
@@ -416,8 +403,8 @@ run_cmd
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.RolenLiterature
-/-- The Weyl-vector model in which the regularized pairing is the signed sum of the twelve component pairings and the cusp theta function is obtained by the explicit Atkin--Lehner permutation. -/ def componentWeylVectorModel {Input V : Type*} [AddCommMonoid V] [Module ℂ V] (admissible : Input → Prop) (weylVector : Input → ℕ → ℂ) (pairing : Input → V →ₗ[ℂ] ℂ) (theta : Fin 12 → V) (normalization : ℂ → ℂ) :
-    WeylVectorModel Input (Fin 12 → V) ℂ ℕ where
+/-- The Weyl-vector model in which the regularized pairing is the signed sum of the twelve component pairings and the cusp theta function is obtained by the explicit Atkin--Lehner permutation. -/ def componentWeylVectorModel {Input V : Type*} [AddCommMonoid V] [Module ℂ V] (admissible : Input → Prop) (weylVector : Input → ℕ → ℂ) (pairing : Input → V →ₗ[ℂ] ℂ) (theta : Fin 12 → V) (normalization : ℂ → ℂ) : WeylVectorModel Input (Fin 12 → V) ℂ ℕ
+    where
   admissibleInput := admissible
   weylVector := weylVector
   regularizedPairing := fun F componentTheta => ∑ r, (chiTwelveResidue r : ℂ) * pairing F (componentTheta r)
@@ -501,21 +488,29 @@ open SptCM.RolenLiterature
   atSix : ℤ
 /-- The exponent vector of Rolen's Hauptmodul. -/ def hauptmodulExponents : LevelSixEtaExponents := ⟨5, -1, 1, -5⟩
 /-- Ligozat's order formula at the cusp represented by denominator `c ∣ 6`. The four summands are indexed by `δ = 1,2,3,6`. -/ def ligozatCuspOrder (e : LevelSixEtaExponents) (c : ℕ) : ℚ :=
-  (6 : ℚ) / 24 *
-    (((Nat.gcd c 1 : ℚ) ^ 2 * e.atOne) / (Nat.gcd c (6 / c) * c * 1 : ℕ) + ((Nat.gcd c 2 : ℚ) ^ 2 * e.atTwo) / (Nat.gcd c (6 / c) * c * 2 : ℕ) + ((Nat.gcd c 3 : ℚ) ^ 2 * e.atThree) / (Nat.gcd c (6 / c) * c * 3 : ℕ) +
-      ((Nat.gcd c 6 : ℚ) ^ 2 * e.atSix) / (Nat.gcd c (6 / c) * c * 6 : ℕ))
+  (6 : ℚ) / 24 * (((Nat.gcd c 1 : ℚ) ^ 2 * e.atOne) / (Nat.gcd c (6 / c) * c * 1 : ℕ) + ((Nat.gcd c 2 : ℚ) ^ 2 * e.atTwo) / (Nat.gcd c (6 / c) * c * 2 : ℕ) + ((Nat.gcd c 3 : ℚ) ^ 2 * e.atThree) / (Nat.gcd c (6 / c) * c * 3 : ℕ) + ((Nat.gcd c 6 : ℚ) ^ 2 * e.atSix) / (Nat.gcd c (6 / c) * c * 6 : ℕ))
 end SptCM.CM.Repaired
 namespace SptCM.CM.Repaired
 noncomputable section
 run_cmd
   Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
 /-- The canonical complex CM point attached to a raw oriented quadratic form. -/ def rawCMPoint {n r : ℕ} (Q : RawOrientedForm n r) : ℂ := ((-(Q.1.b : ℂ)) + Complex.I * Real.sqrt n) / (2 * (Q.1.a : ℂ))
-/-- In the paper's positive-discriminant range, the canonical point lies in `ℍ`. Positivity of `a` comes from the definition of `rawOrientedForms`. -/ theorem rawCMPoint_im_pos {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) : 0 < (rawCMPoint Q).im := by sorry
+theorem rawCMPoint_im {n r : ℕ} (Q : RawOrientedForm n r) : (rawCMPoint Q).im = Real.sqrt n / (2 * Q.1.a) := by
+  have haZ : Q.1.a ≠ 0 := ne_of_gt Q.2.2.1
+  have haR : (Q.1.a : ℝ) ≠ 0 := by exact_mod_cast haZ
+  rw [rawCMPoint, Complex.div_im]
+  simp
+  field_simp
+/-- In the paper's positive-discriminant range, the canonical point lies in `ℍ`. Positivity of `a` comes from the definition of `rawOrientedForms`. -/ theorem rawCMPoint_im_pos {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) : 0 < (rawCMPoint Q).im := by
+  rw [rawCMPoint_im]
+  have hsqrt : 0 < Real.sqrt n := Real.sqrt_pos.2 (by exact_mod_cast hn)
+  have ha : 0 < Q.1.a := Q.2.2.1
+  exact div_pos hsqrt (by positivity)
 /-- The actual upper-half-plane CM point of a raw oriented form. -/ def rawCMUpperHalfPlane {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) : UpperHalfPlane := ⟨rawCMPoint Q, rawCMPoint_im_pos hn Q⟩
 /-- Values of a function on raw CM points are invariant under one concrete `Γ₀(6)` change of variables. This is the exact hypothesis needed for descent, not an arbitrary function on the quotient. -/ def RawCMValueInvariant {n r : ℕ} (F : UpperHalfPlane → ℂ) : Prop :=
   ∀ (hn : 0 < n) (Q Q' : RawOrientedForm n r), gammaZeroSixRelated n r Q Q' → F (rawCMUpperHalfPlane hn Q) = F (rawCMUpperHalfPlane hn Q')
-/-- One-step invariance extends to the equivalence closure defining the actual orientation classes. -/ theorem rawCMValue_eq_of_eqvGen {n r : ℕ} (F : UpperHalfPlane → ℂ) (hF : RawCMValueInvariant (n := n) (r := r) F) (hn : 0 < n) {Q Q' : RawOrientedForm n r} (h : Relation.EqvGen (gammaZeroSixRelated n r) Q Q') :
-    F (rawCMUpperHalfPlane hn Q) = F (rawCMUpperHalfPlane hn Q') := by sorry
+/-- One-step invariance extends to the equivalence closure defining the actual orientation classes. -/ theorem rawCMValue_eq_of_eqvGen {n r : ℕ} (F : UpperHalfPlane → ℂ) (hF : RawCMValueInvariant (n := n) (r := r) F) (hn : 0 < n) {Q Q' : RawOrientedForm n r} (h : Relation.EqvGen (gammaZeroSixRelated n r) Q Q') : F (rawCMUpperHalfPlane hn Q) = F (rawCMUpperHalfPlane hn Q') := by
+  exact Relation.EqvGen.recOn h (fun x y hxy => hF hn x y hxy) (fun _ => rfl) (fun _ _ _ ih => ih.symm) (fun _ _ _ _ _ ih₁ ih₂ => ih₁.trans ih₂)
 /-- The value induced on the actual quotient of oriented forms. -/ def orientedCMValue {n r : ℕ} (F : UpperHalfPlane → ℂ) (hF : RawCMValueInvariant (n := n) (r := r) F) (hn : 0 < n) : orientedForms n r → ℂ :=
   Quotient.lift (fun Q : RawOrientedForm n r => F (rawCMUpperHalfPlane hn Q)) (fun _ _ h => rawCMValue_eq_of_eqvGen F hF hn h)
 /-- Rolen's genuine eta-quotient value on the actual oriented form classes. -/ def actualOrientedHauptmodulValue {n r : ℕ} (hInv : RawCMValueInvariant (n := n) (r := r) analyticHauptmodul) (hn : 0 < n) : orientedForms n r → ℂ := orientedCMValue analyticHauptmodul hInv hn
@@ -593,7 +588,25 @@ end ActualOrientedCMCoordinates
 end
 end SptCM.CM.Repaired
 namespace SptCM.Repair
-/-- A Laurent series whose coefficient at `-1` is one (and which has no terms below `-1`) is transcendental over its coefficient field. -/ theorem laurentSeries_transcendental_of_simple_pole {K : Type*} [Field K] (t : LaurentSeries K) (hcoeff : t.coeff (-1) = 1) (_hbelow : ∀ z : ℤ, z < -1 → t.coeff z = 0) : Transcendental K t := by sorry
+run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
+/-- A Laurent series whose coefficient at `-1` is one (and which has no terms below `-1`) is transcendental over its coefficient field. -/ theorem laurentSeries_transcendental_of_simple_pole {K : Type*} [Field K] (t : LaurentSeries K) (hcoeff : t.coeff (-1) = 1) (_hbelow : ∀ z : ℤ, z < -1 → t.coeff z = 0) : Transcendental K t := by
+  letI : Valuation.IsTrivialOn K (Valued.v : Valuation (LaurentSeries K) _) :=
+    Valuation.IsTrivialOn.of_le_one Valued.v fun a =>
+      (LaurentSeries.val_le_one_iff_eq_coe K _).mpr
+        ⟨PowerSeries.C a, by
+          rw [LaurentSeries.algebraMap_apply]
+          exact HahnSeries.ofPowerSeries_C a⟩
+  apply Valuation.transcendental_of_ne_one (v := (Valued.v : Valuation (LaurentSeries K) _)) K t
+  · intro ht
+    have hz : t.coeff (-1) = 0 := ht ▸ HahnSeries.coeff_zero
+    exact one_ne_zero (hcoeff.symm.trans hz)
+  · intro hv
+    obtain ⟨F, hF⟩ := (LaurentSeries.val_le_one_iff_eq_coe K t).mp (le_of_eq hv)
+    have hz : (F : LaurentSeries K).coeff (-1) = 0 :=
+      (PowerSeries.coeff_coe (f := F) (-1)).trans (if_pos (Int.negSucc_lt_zero 0))
+    exact zero_ne_one (hz.symm.trans
+      ((congrArg (fun f : LaurentSeries K => f.coeff (-1)) hF).trans hcoeff))
+
 end SptCM.Repair
 namespace SptCM.Repair
 /-- The principal part `t(q) = q⁻¹ - 5 + O(q)` of the level-six Hauptmodul. -/ def HasHauptmodulPrincipalPart {K : Type*} [Ring K] (t : LaurentSeries K) : Prop := t.coeff (-1) = 1 ∧ t.coeff 0 = -5 ∧ ∀ z : ℤ, z < -1 → t.coeff z = 0
@@ -601,12 +614,30 @@ end SptCM.Repair
 namespace SptCM.Repair
 open scoped PowerSeries
 /-- The contribution of the `m`-th Euler index to the unit part of `η(τ)^5 η(3τ) / (η(2τ) η(6τ)^5)`. -/ noncomputable def hauptmodulFormalEulerFactor (m : ℕ) : PowerSeries ℤ :=
-  (1 - PowerSeries.X ^ m) ^ 5 * (1 - PowerSeries.X ^ (3 * m)) * PowerSeries.subst (PowerSeries.X ^ (2 * m)) (PowerSeries.invOneSubPow ℤ 1 : PowerSeries ℤ) *
-    PowerSeries.subst (PowerSeries.X ^ (6 * m)) (PowerSeries.invOneSubPow ℤ 5 : PowerSeries ℤ)
+  (1 - PowerSeries.X ^ m) ^ 5 * (1 - PowerSeries.X ^ (3 * m)) * PowerSeries.subst (PowerSeries.X ^ (2 * m)) (PowerSeries.invOneSubPow ℤ 1 : PowerSeries ℤ) * PowerSeries.subst (PowerSeries.X ^ (6 * m)) (PowerSeries.invOneSubPow ℤ 5 : PowerSeries ℤ)
 /-- The coefficientwise stabilized formal Euler product for the level-six Hauptmodul's unit part. Degree `d` is read from the first `d+2` positive Euler indices, after which no omitted factor can affect it. -/ noncomputable def hauptmodulFormalEulerUnit : PowerSeries ℤ :=
   PowerSeries.mk fun d => PowerSeries.coeff d (∏ i ∈ Finset.range (d + 2), hauptmodulFormalEulerFactor (i + 1))
-/-- The formal Laurent series obtained by adjoining the net `q⁻¹` prefactor to the formal Euler unit. This is not asserted to be the analytic eta quotient's Laurent expansion. -/ noncomputable def hauptmodulFormalLaurent : LaurentSeries ℤ :=
-  HahnSeries.single (-1) 1 * (hauptmodulFormalEulerUnit : LaurentSeries ℤ)
+/-- The formal Laurent series obtained by adjoining the net `q⁻¹` prefactor to the formal Euler unit. This is not asserted to be the analytic eta quotient's Laurent expansion. -/ noncomputable def hauptmodulFormalLaurent : LaurentSeries ℤ := HahnSeries.single (-1) 1 * (hauptmodulFormalEulerUnit : LaurentSeries ℤ)
+theorem hauptmodulFormalEulerUnit_coeff_zero : PowerSeries.coeff 0 hauptmodulFormalEulerUnit = 1 := by
+  simp only [hauptmodulFormalEulerUnit, PowerSeries.coeff_mk]
+  norm_num [hauptmodulFormalEulerFactor, PowerSeries.coeff_one_mul, PowerSeries.coeff_one_pow, PowerSeries.invOneSubPow, Finset.prod_range_succ]
+theorem hauptmodulFormalEulerUnit_coeff_one : PowerSeries.coeff 1 hauptmodulFormalEulerUnit = -5 := by
+  simp only [hauptmodulFormalEulerUnit, PowerSeries.coeff_mk]
+  norm_num [hauptmodulFormalEulerFactor, PowerSeries.coeff_one_mul, PowerSeries.coeff_one_pow, PowerSeries.invOneSubPow, Finset.prod_range_succ]
+theorem hauptmodulFormalLaurent_principalPart : HasHauptmodulPrincipalPart hauptmodulFormalLaurent := by
+  refine ⟨?_, ?_, ?_⟩
+  · change (HahnSeries.single (-1) 1 * (hauptmodulFormalEulerUnit : LaurentSeries ℤ)).coeff ((0 : ℤ) + (-1)) = 1
+    rw [HahnSeries.coeff_single_mul_add]
+    simpa [PowerSeries.coeff_coe] using hauptmodulFormalEulerUnit_coeff_zero
+  · change (HahnSeries.single (-1) 1 * (hauptmodulFormalEulerUnit : LaurentSeries ℤ)).coeff ((1 : ℤ) + (-1)) = -5
+    rw [HahnSeries.coeff_single_mul_add]
+    simpa [PowerSeries.coeff_coe] using hauptmodulFormalEulerUnit_coeff_one
+  · intro z hz
+    have hz' : z + 1 < 0 := lt_sub_iff_add_lt.mp hz
+    unfold hauptmodulFormalLaurent
+    rw [← show (z + 1) + (-1) = z from add_neg_cancel_right z 1]
+    rw [HahnSeries.coeff_single_mul_add, one_mul, PowerSeries.coeff_coe]
+    simp [hz']
 end SptCM.Repair
 @[expose] public section
 namespace SptCM.Analytic.Repaired
@@ -629,12 +660,7 @@ def i12CuspWidth (c : Fin 4) : ℕ := if c = 0 then 1 else if c = 1 then 6 else 
   unitary : ∀ γ : SptCM.GammaZeroSixMatrix, ∃ u : ℂ, ‖u‖ = 1 ∧ ∀ z : ℂ, 0 < z.im → toFun (((γ.p : ℂ) * z + γ.q) / ((γ.s : ℂ) * z + γ.t)) = u * toFun z
   expansion : ∃ Y : ℝ, 0 < Y ∧ ∀ z : ℂ, Y < z.im → HasSum (fun k : ℤ => (f.coeff k : ℂ) * (Complex.exp (2 * Real.pi * Complex.I * z)) ^ k) (toFun z)
   cuspOrder : Fin 4 → ℝ
-  cuspExpansion :
-    ∀ c : Fin 4,
-      ∃ U : ℂ → ℂ,
-        AnalyticAt ℂ U 0 ∧
-          U 0 ≠ 0 ∧
-            ∃ Y : ℝ, 0 < Y ∧ ∀ z : ℂ, Y < z.im → toFun (i12CuspTransform c z) = Complex.exp (2 * Real.pi * Complex.I * (cuspOrder c : ℂ) * z / (i12CuspWidth c : ℂ)) * U (Complex.exp (2 * Real.pi * Complex.I * z / (i12CuspWidth c : ℂ)))
+  cuspExpansion : ∀ c : Fin 4, ∃ U : ℂ → ℂ, AnalyticAt ℂ U 0 ∧ U 0 ≠ 0 ∧ ∃ Y : ℝ, 0 < Y ∧ ∀ z : ℂ, Y < z.im → toFun (i12CuspTransform c z) = Complex.exp (2 * Real.pi * Complex.I * (cuspOrder c : ℂ) * z / (i12CuspWidth c : ℂ)) * U (Complex.exp (2 * Real.pi * Complex.I * z / (i12CuspWidth c : ℂ)))
 def HasI12UnitaryMeromorphicRealization (f : LaurentSeries ℚ) : Prop := Nonempty (I12UnitaryMeromorphicRealization f)
 end
 end SptCM.Analytic.Repaired
@@ -663,7 +689,15 @@ run_cmd
 /-- The actual stabilized Euler quotient attached to the scalar series of the I10 input. These are precisely the canonical products constructed in I14. -/ noncomputable def actualBorcherdsEulerQuotient {Form : Type*} (F : FourComponentInput Form) : LaurentSeries ℚ :=
   ((SptCM.Repair.eulerProductPlus F.scalarSeries : PowerSeries ℚ) : LaurentSeries ℚ) / ((SptCM.Repair.eulerProductMinus F.scalarSeries : PowerSeries ℚ) : LaurentSeries ℚ)
 /-- The exact integral Euler-product Hauptmodul, base-changed to `ℚ` for the characteristic-zero class-polynomial quotient. -/ noncomputable def actualRationalHauptmodulLaurent : LaurentSeries ℚ := HahnSeries.map SptCM.Repair.hauptmodulFormalLaurent (Int.castRingHom ℚ)
-/-- The rational base change retains the exact principal part `q⁻¹ - 5 + O(q)`. -/ theorem actualRationalHauptmodulLaurent_principalPart : SptCM.Repair.HasHauptmodulPrincipalPart actualRationalHauptmodulLaurent := by sorry
+/-- The rational base change retains the exact principal part `q⁻¹ - 5 + O(q)`. -/ theorem actualRationalHauptmodulLaurent_principalPart : SptCM.Repair.HasHauptmodulPrincipalPart actualRationalHauptmodulLaurent :=
+  by
+  rcases SptCM.Repair.hauptmodulFormalLaurent_principalPart with ⟨hneg, hzero, hbelow⟩
+  refine ⟨?_, ?_, ?_⟩
+  · simpa [actualRationalHauptmodulLaurent, HahnSeries.map_coeff] using congrArg (fun x : ℤ => (x : ℚ)) hneg
+  · simpa [actualRationalHauptmodulLaurent, HahnSeries.map_coeff] using congrArg (fun x : ℤ => (x : ℚ)) hzero
+  · intro z hz
+    rw [actualRationalHauptmodulLaurent, HahnSeries.map_coeff, hbelow z hz]
+    simp
 /-- The embedding of the rational function field in the genuine formal Hauptmodul. Its simple pole proves transcendence, so this is an injective algebra homomorphism, not an arbitrary interpretation of formal series. -/ noncomputable def rationalHauptmodulExpansion : RatFunc ℚ →+* LaurentSeries ℚ :=
   IsFractionRing.lift (A := ℚ[X]) (K := RatFunc ℚ) (L := LaurentSeries ℚ) (g := (Polynomial.aeval actualRationalHauptmodulLaurent).toRingHom)
     (by exact transcendental_iff_injective.mp (SptCM.Repair.laurentSeries_transcendental_of_simple_pole actualRationalHauptmodulLaurent actualRationalHauptmodulLaurent_principalPart.1 actualRationalHauptmodulLaurent_principalPart.2.2))
@@ -673,8 +707,7 @@ run_cmd
   | .eleven => (classPolynomial (fun i : C.orientation11.Index => SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant11 C.n_pos (C.orientation11.classes i))).rootMultiplicity z
   | .five => (classPolynomial (fun i : C.orientation5.Index => SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant5 C.n_pos (C.orientation5.classes i))).rootMultiplicity z
   | .seven => (classPolynomial (fun i : C.orientation7.Index => SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant7 C.n_pos (C.orientation7.classes i))).rootMultiplicity z
-noncomputable def fullHeegnerDivisor {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (a : I12Divisor) (z : ℂ) : ℤ :=
-  a .one * orientedCMPointDivisor C .one z + a .eleven * orientedCMPointDivisor C .eleven z + a .five * orientedCMPointDivisor C .five z + a .seven * orientedCMPointDivisor C .seven z
+noncomputable def fullHeegnerDivisor {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (a : I12Divisor) (z : ℂ) : ℤ := a .one * orientedCMPointDivisor C .one z + a .eleven * orientedCMPointDivisor C .eleven z + a .five * orientedCMPointDivisor C .five z + a .seven * orientedCMPointDivisor C .seven z
 /-- Interior divisors are functions of actual complex coordinates. Cusp orders are real because a unitary character can have nonintegral exponents. The compatibility law is needed only when every cusp order is zero. -/ structure I12MeromorphicGeometry where
   divisor : LaurentSeries ℚ → ℂ → ℤ
   cuspData : LaurentSeries ℚ → Fin 4 → ℝ
@@ -686,8 +719,8 @@ noncomputable def fullHeegnerDivisor {n h : ℕ} (C : SptCM.CM.Repaired.ActualOr
 /-- The finite CM roots are interior points, and the monic equal-degree quotient has no zero or pole at any cusp. -/ def I12ClassPolynomialCuspPrinciple (G : I12MeromorphicGeometry) : Prop :=
   ∀ {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h} (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C), G.cuspData (actualClassPolynomialLaurentQuotient D actualRationalHauptmodulLaurent) = 0
 def I12WeylCuspPrinciple {Form : Type*} (G : I12MeromorphicGeometry) (lift : FourComponentInput Form → LaurentSeries ℚ) (weylVector : FourComponentInput Form → ℕ → ℂ) : Prop := ∀ F, (∀ c, IsLevelSixDivisor c → weylVector F c = 0) → G.cuspData (lift F) = 0
-/-- E5 with the full Heegner divisor, applied after all Weyl vectors vanish. -/ noncomputable def actualI12BorcherdsModel {Form : Type*} [SMul ℂ Form] (E : EtaJGeneratorBasis Form) {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (lift : FourComponentInput Form → LaurentSeries ℚ)
-    (divisor : LaurentSeries ℚ → ℂ → ℤ) (weylVector : FourComponentInput Form → ℕ → ℂ) : BorcherdsLiftModel (FourComponentInput Form) (LaurentSeries ℚ) (ℂ → ℤ)
+/-- E5 with the full Heegner divisor, applied after all Weyl vectors vanish. -/ noncomputable def actualI12BorcherdsModel {Form : Type*} [SMul ℂ Form] (E : EtaJGeneratorBasis Form) {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (lift : FourComponentInput Form → LaurentSeries ℚ) (divisor : LaurentSeries ℚ → ℂ → ℤ)
+    (weylVector : FourComponentInput Form → ℕ → ℂ) : BorcherdsLiftModel (FourComponentInput Form) (LaurentSeries ℚ) (ℂ → ℤ)
     where
   admissibleInput := fun F => VectorInputSpec E n F ∧ (∀ c, IsLevelSixDivisor c → weylVector F c = 0)
   lift := lift
@@ -723,9 +756,7 @@ noncomputable section
   etaComponentIdentity : EtaComponentThetaIdentity componentTheta etaTheta
   normalization_zero : normalization 0 = 0
   pairingComparison :
-    ∀ (k : ℕ) (F : Completion),
-      harmonicMaass.holomorphicPart F = mockSeries →
-        harmonicMaass.shadow F = shadowNormalization etaSeries → pairing (auxiliaryFourComponentInput E k (aCoeff ((24 * k - 1 : ℕ) : ℤ))) etaTheta = (regularizedValue (actualHnStokesInput E.toEtaJPowerBasis k F) : ℂ)
+    ∀ (k : ℕ) (F : Completion), harmonicMaass.holomorphicPart F = mockSeries → harmonicMaass.shadow F = shadowNormalization etaSeries → pairing (auxiliaryFourComponentInput E k (aCoeff ((24 * k - 1 : ℕ) : ℤ))) etaTheta = (regularizedValue (actualHnStokesInput E.toEtaJPowerBasis k F) : ℂ)
   genusZeroDescent : I12GenusZeroDescentPrinciple geometry
   classPolynomialCusp : I12ClassPolynomialCuspPrinciple geometry
   weylCusp : I12WeylCuspPrinciple geometry lift weylVector
@@ -735,10 +766,8 @@ namespace SptCM.CM.Repaired
 noncomputable section
 open SptCM.RolenLiterature
 /-- A function on the upper half-plane obeys the level-six modular transformation law on CM points. This is the source-faithful E4/E7 boundary: it is uniform in the discriminant and orientation, and says only that the function is unchanged by a single `Γ₀(6)` change of variables. -/ def GammaZeroSixCMTransformationLaw (F : UpperHalfPlane → ℂ) : Prop :=
-  ∀ {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) (g : GammaZeroSixMatrix) (hmem : transformQuadraticForm g Q.1 ∈ rawOrientedForms n r),
-    F (rawCMUpperHalfPlane hn Q) = F (rawCMUpperHalfPlane hn (⟨transformQuadraticForm g Q.1, hmem⟩ : RawOrientedForm n r))
-/-- The exact E4/E7 application needed here: Rolen's eta quotient has the level-six transformation law. This proposition is the smallest additional literature input absent from the older predicate-only E4/E7 models. -/ abbrev E4E7AnalyticHauptmodulTransformation : Prop :=
-  GammaZeroSixCMTransformationLaw analyticHauptmodul
+  ∀ {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) (g : GammaZeroSixMatrix) (hmem : transformQuadraticForm g Q.1 ∈ rawOrientedForms n r), F (rawCMUpperHalfPlane hn Q) = F (rawCMUpperHalfPlane hn (⟨transformQuadraticForm g Q.1, hmem⟩ : RawOrientedForm n r))
+/-- The exact E4/E7 application needed here: Rolen's eta quotient has the level-six transformation law. This proposition is the smallest additional literature input absent from the older predicate-only E4/E7 models. -/ abbrev E4E7AnalyticHauptmodulTransformation : Prop := GammaZeroSixCMTransformationLaw analyticHauptmodul
 end
 end SptCM.CM.Repaired
 namespace SptCM.RolenLiterature.Repair
@@ -749,9 +778,8 @@ open SptCM.CM.Repaired
   compatible : residue.comp (algebraMap AwaySix (integralClosure AwaySix L)) = (algebraMap (ZMod ℓ) k).comp coefficientReduction
 run_cmd
   Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
-/-- Source-faithful E8 lying-over/residue theorem in precisely the good-prime coefficient ring needed by the paper. The theorem only produces a residue map on the integral closure. Root collisions and polynomial separation are not part of this external statement. -/ def E8AwaySixIntegralClosureResidueTheorem : Prop :=
-  ∀ (ℓ : ℕ) [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ)) (L : Type) (_ : Field L) (_ : Algebra AwaySix L) (_ : Algebra ℚ L) (_ : FiniteDimensional ℚ L),
-    Nonempty (E8IntegralClosureResidueSpecialization L (AlgebraicClosure (ZMod ℓ)) ℓ (SptCM.awaySixReduction ℓ h6))
+/-- Additional unproved E8 lying-over/residue application input in precisely the good-prime coefficient ring needed by the paper. The theorem only produces a residue map on the integral closure. Root collisions and polynomial separation are not part of this external statement. -/ def E8AwaySixIntegralClosureResidueTheorem : Prop :=
+  ∀ (ℓ : ℕ) [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ)) (L : Type) (_ : Field L) (_ : Algebra AwaySix L) (_ : Algebra ℚ L) (_ : FiniteDimensional ℚ L), Nonempty (E8IntegralClosureResidueSpecialization L (AlgebraicClosure (ZMod ℓ)) ℓ (SptCM.awaySixReduction ℓ h6))
 /-- Atomic public ledger entries which are already independent of any choice of analytic or geometric model. The more elaborate E3--E9 and E11 results remain parameterized by their source models in `RolenLiterature`; this record must not turn those application models into arbitrary universally quantified claims. -/ structure UniformArithmeticLiterature where
   e1 : E1AndrewsCongruences
   e2Finite : E2AhlgrenKimFiniteExclusion
@@ -819,19 +847,16 @@ open SptCM.RolenLiterature
   squaredNorm_eq : ∀ x, EC.squaredNorm x = 2 * (reducedNorm x : ℝ)
   independent_of_linearIndependent : ∀ a b c d, LinearIndependent ℚ ![a, b, c, d] → EC.independent a b c d
   covolume_nonnegative : ∀ a b c d, 0 ≤ EC.covolume (EC.span a b c d)
-  /-- The (reduced-discriminant) local index of an Eichler order. -/ localIndex : Order → ℕ
-  /-- The local contributions at the primes dividing the level. -/ localIndexAtTwo : Order → ℕ
+  /-- The (reduced-discriminant) local index of an Eichler order. -/   localIndex : Order → ℕ
+  /-- The local contributions at the primes dividing the level. -/   localIndexAtTwo : Order → ℕ
   localIndexAtThree : Order → ℕ
-  /-- The covolume of a maximal order in the ambient quaternion algebra. -/ maximalOrderCovolume : Curve → ℝ
-  /-- General local-to-global index factorization for a level-six Eichler order; all local factors away from `2` and `3` are units. -/ levelSix_localIndex_factorization : ∀ O, EC.isEichlerOfLevelSix O → localIndex O = localIndexAtTwo O * localIndexAtThree O
-  /-- Preserving the distinguished line at `2` has local index `2`. -/ levelSix_localIndexAtTwo : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtTwo O = 2
-  /-- Preserving the distinguished line at `3` has local index `3`. -/ levelSix_localIndexAtThree : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtThree O = 3
-  /-- General discriminant normalization for a maximal order in the supersingular quaternion algebra. -/ maximalOrderCovolume_eq_characteristic : ∀ E, maximalOrderCovolume E = characteristic E
-  /-- General finite-index scaling law for the lattice of an Eichler order. -/ orderLattice_covolume : ∀ E C, EC.isEichlerOfLevelSix (EC.preservingOrder E C) → EC.covolume (orderLattice (EC.preservingOrder E C)) = localIndex (EC.preservingOrder E C) * maximalOrderCovolume E
-  span_covolume_lower :
-    ∀ E C a b c d,
-      EC.independent a b c d →
-        inOrder (EC.preservingOrder E C) a → inOrder (EC.preservingOrder E C) b → inOrder (EC.preservingOrder E C) c → inOrder (EC.preservingOrder E C) d → EC.covolume (orderLattice (EC.preservingOrder E C)) ≤ EC.covolume (EC.span a b c d)
+  /-- The covolume of a maximal order in the ambient quaternion algebra. -/   maximalOrderCovolume : Curve → ℝ
+  /-- General local-to-global index factorization for a level-six Eichler order; all local factors away from `2` and `3` are units. -/   levelSix_localIndex_factorization : ∀ O, EC.isEichlerOfLevelSix O → localIndex O = localIndexAtTwo O * localIndexAtThree O
+  /-- Preserving the distinguished line at `2` has local index `2`. -/   levelSix_localIndexAtTwo : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtTwo O = 2
+  /-- Preserving the distinguished line at `3` has local index `3`. -/   levelSix_localIndexAtThree : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtThree O = 3
+  /-- General discriminant normalization for a maximal order in the supersingular quaternion algebra. -/   maximalOrderCovolume_eq_characteristic : ∀ E, maximalOrderCovolume E = characteristic E
+  /-- General finite-index scaling law for the lattice of an Eichler order. -/   orderLattice_covolume : ∀ E C, EC.isEichlerOfLevelSix (EC.preservingOrder E C) → EC.covolume (orderLattice (EC.preservingOrder E C)) = localIndex (EC.preservingOrder E C) * maximalOrderCovolume E
+  span_covolume_lower : ∀ E C a b c d, EC.independent a b c d → inOrder (EC.preservingOrder E C) a → inOrder (EC.preservingOrder E C) b → inOrder (EC.preservingOrder E C) c → inOrder (EC.preservingOrder E C) d → EC.covolume (orderLattice (EC.preservingOrder E C)) ≤ EC.covolume (EC.span a b c d)
 namespace EichlerLatticeArithmetic
 end EichlerLatticeArithmetic
 end
@@ -840,9 +865,8 @@ namespace SptCM.CM.Repaired
 noncomputable section
 open SptCM.RolenLiterature
 open SptCM.RolenLiterature.Repair
-/-- The good-reduction evaluation law for the actual Hauptmodul on oriented CM points. If an integral class-field element has the analytic Hauptmodul value at a raw CM point, then its residue is the regular coordinate of the reduction of that same CM point. This is uniform in the orientation and raw form and contains no collision, action, commutator, covolume, or separation assertion. -/ structure E8ActualHauptmodulGoodReduction {n h ℓ : ℕ} (C : ActualOrientedCMCoordinates n h) {L k Order IdealClass CMPoint Reduction D : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] [Field k] [Algebra (ZMod ℓ) k]
-    [DivisionRing D] [Star D] (F : C.IntegralFiniteGaloisRealization L) {coefficientReduction : SptCM.AwaySix →+* ZMod ℓ} (Sres : E8IntegralClosureResidueSpecialization L k ℓ coefficientReduction)
-    (CM : CMTheoryModel Order IdealClass CMPoint Reduction D) (E8Q : E8OrientedQuadraticSpecialization n CM) where
+/-- The good-reduction evaluation law for the actual Hauptmodul on oriented CM points. If an integral class-field element has the analytic Hauptmodul value at a raw CM point, then its residue is the regular coordinate of the reduction of that same CM point. This is uniform in the orientation and raw form and contains no collision, action, commutator, covolume, or separation assertion. -/ structure E8ActualHauptmodulGoodReduction {n h ℓ : ℕ} (C : ActualOrientedCMCoordinates n h) {L k Order IdealClass CMPoint Reduction D : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] [Field k] [Algebra (ZMod ℓ) k] [DivisionRing D] [Star D]
+    (F : C.IntegralFiniteGaloisRealization L) {coefficientReduction : SptCM.AwaySix →+* ZMod ℓ} (Sres : E8IntegralClosureResidueSpecialization L k ℓ coefficientReduction) (CM : CMTheoryModel Order IdealClass CMPoint Reduction D) (E8Q : E8OrientedQuadraticSpecialization n CM) where
   coordinate : Reduction → k
   coordinate_injective : Function.Injective coordinate
   reduction_evaluation : ∀ (r : ℕ) (Q : SptCM.RawOrientedForm n r) (z : integralClosure SptCM.AwaySix L), F.embedding z.1 = analyticHauptmodul (rawCMUpperHalfPlane C.n_pos Q) → coordinate (CM.reduction (E8Q.point r Q)) = Sres.residue z
@@ -863,9 +887,8 @@ noncomputable section
 open SptCM.RolenLiterature
 open SptCM.RolenLiterature.Repair
 namespace E8ActualHauptmodulGoodReduction
-variable {n h ℓ : ℕ} {C : ActualOrientedCMCoordinates n h} {L k Order IdealClass CMPoint Reduction D : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] [Field k] [Algebra (ZMod ℓ) k] [DivisionRing D] [Star D]
-  {coefficientReduction : SptCM.AwaySix →+* ZMod ℓ} {F : C.IntegralFiniteGaloisRealization L} {Sres : E8IntegralClosureResidueSpecialization L k ℓ coefficientReduction} {CM : CMTheoryModel Order IdealClass CMPoint Reduction D}
-  {E8Q : E8OrientedQuadraticSpecialization n CM}
+variable {n h ℓ : ℕ} {C : ActualOrientedCMCoordinates n h} {L k Order IdealClass CMPoint Reduction D : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] [Field k] [Algebra (ZMod ℓ) k] [DivisionRing D] [Star D] {coefficientReduction : SptCM.AwaySix →+* ZMod ℓ}
+  {F : C.IntegralFiniteGaloisRealization L} {Sres : E8IntegralClosureResidueSpecialization L k ℓ coefficientReduction} {CM : CMTheoryModel Order IdealClass CMPoint Reduction D} {E8Q : E8OrientedQuadraticSpecialization n CM}
 end E8ActualHauptmodulGoodReduction
 end
 end SptCM.CM.Repaired
@@ -893,8 +916,8 @@ end SptCM.CM.Repaired
 namespace SptCM.RolenLiterature.Repair
 noncomputable section
 open SptCM.CM.Repaired
-/-- The carrier models supplied by the good-reduction and inertness part of E8 at one eligible prime and discriminant. This record stops strictly before the Eichler-order argument: it contains no subgroup, covolume, collision, separation, or Wronskian datum. -/ structure E8ActualReductionModel {n h ℓ : ℕ} [Fact ℓ.Prime] (C : ActualOrientedCMCoordinates n h) {L : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] (F : C.IntegralFiniteGaloisRealization L)
-    (h6 : IsUnit (6 : ZMod ℓ)) (Sres : E8IntegralClosureResidueSpecialization L (AlgebraicClosure (ZMod ℓ)) ℓ (SptCM.awaySixReduction ℓ h6)) where
+/-- The carrier models supplied by the good-reduction and inertness part of E8 at one eligible prime and discriminant. This record stops strictly before the Eichler-order argument: it contains no subgroup, covolume, collision, separation, or Wronskian datum. -/ structure E8ActualReductionModel {n h ℓ : ℕ} [Fact ℓ.Prime] (C : ActualOrientedCMCoordinates n h) {L : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] (F : C.IntegralFiniteGaloisRealization L) (h6 : IsUnit (6 : ZMod ℓ))
+    (Sres : E8IntegralClosureResidueSpecialization L (AlgebraicClosure (ZMod ℓ)) ℓ (SptCM.awaySixReduction ℓ h6)) where
   Order : Type
   IdealClass : Type
   CMPoint : Type
@@ -908,8 +931,7 @@ open SptCM.CM.Repaired
   orientedQuadratic : E8OrientedQuadraticSpecialization n CM
   goodReduction : E8ActualHauptmodulGoodReduction C F Sres CM orientedQuadratic
   rawPointInert : ∀ (r : ℕ) (Q : SptCM.RawOrientedForm n r), CM.inertAt ℓ (orientedQuadratic.point r Q)
-/-- The source-facing E9 model and the comparison maps which say that its curve, level structure, and preserving order are the ones occurring in the E8 specialization. Its characteristic law is stated for every point of the fiber, and its order comparison for every CM point; the application-specific `hchar`, `hcyclic`, and `hlevelOrder` functions are derived below. The fields are general Arpin/Goren--Lauter and integral-lattice laws. In particular, no distinguished pair of endomorphisms and no volume inequality is stored here. -/ structure E9ActualLevelSixModel {n ℓ : ℕ} {Order IdealClass CMPoint Reduction Dq : Type*} [DivisionRing Dq] [Star Dq] [Algebra ℚ Dq] (CM : CMTheoryModel Order IdealClass CMPoint Reduction Dq)
-    (E8Q : E8OrientedQuadraticSpecialization n CM) where
+/-- The source-facing E9 model and the comparison maps which say that its curve, level structure, and preserving order are the ones occurring in the E8 specialization. Its characteristic law is stated for every point of the fiber, and its order comparison for every CM point; the application-specific `hchar`, `hcyclic`, and `hlevelOrder` functions are derived below. The fields are general Arpin/Goren--Lauter and integral-lattice laws. In particular, no distinguished pair of endomorphisms and no volume inequality is stored here. -/ structure E9ActualLevelSixModel {n ℓ : ℕ} {Order IdealClass CMPoint Reduction Dq : Type*} [DivisionRing Dq] [Star Dq] [Algebra ℚ Dq] (CM : CMTheoryModel Order IdealClass CMPoint Reduction Dq) (E8Q : E8OrientedQuadraticSpecialization n CM) where
   Subgroup : Type
   Lattice : Type
   covolumeModel : EichlerCovolumeModel Reduction Subgroup (Subring Dq) Lattice Dq
@@ -936,20 +958,17 @@ end E9ActualLevelSixModel
       Squarefree n →
         n % 24 = 23 →
           ∀ C : ActualOrientedCMCoordinates n h,
-            ∃ (L : Type) (_ : Field L) (_ : Algebra ℚ L) (_ : FiniteDimensional ℚ L) (_ : IsGalois ℚ L),
-              Nonempty (E8FiniteGaloisIntegralCMReciprocity AwaySix (C.orientation1.Index ⊕ C.orientation11.Index) (C.orientation5.Index ⊕ C.orientation7.Index) L C.numeratorRoot C.denominatorRoot)
+            ∃ (L : Type) (_ : Field L) (_ : Algebra ℚ L) (_ : FiniteDimensional ℚ L) (_ : IsGalois ℚ L), Nonempty (E8FiniteGaloisIntegralCMReciprocity AwaySix (C.orientation1.Index ⊕ C.orientation11.Index) (C.orientation5.Index ⊕ C.orientation7.Index) L C.numeratorRoot C.denominatorRoot)
   e8ActualReduction :
-    ∀ {n ℓ : ℕ} [Fact ℓ.Prime] (hsquarefree : Squarefree n) (hmod : n % 24 = 23) (hinert : legendreSym ℓ (-(n : ℤ)) = -1) (C : ActualOrientedCMCoordinates n (SptCM.negativeClassNumber n)) (L : Type) (_ : Field L) (_ : Algebra ℚ L)
-      (_ : FiniteDimensional ℚ L) (_ : IsGalois ℚ L) (F : C.IntegralFiniteGaloisRealization L) (h6 : IsUnit (6 : ZMod ℓ)) (Sres : E8IntegralClosureResidueSpecialization L (AlgebraicClosure (ZMod ℓ)) ℓ (SptCM.awaySixReduction ℓ h6)),
-      Nonempty (E8ActualReductionModel C F h6 Sres)
+    ∀ {n ℓ : ℕ} [Fact ℓ.Prime] (hsquarefree : Squarefree n) (hmod : n % 24 = 23) (hinert : legendreSym ℓ (-(n : ℤ)) = -1) (C : ActualOrientedCMCoordinates n (SptCM.negativeClassNumber n)) (L : Type) (_ : Field L) (_ : Algebra ℚ L) (_ : FiniteDimensional ℚ L) (_ : IsGalois ℚ L)
+      (F : C.IntegralFiniteGaloisRealization L) (h6 : IsUnit (6 : ZMod ℓ)) (Sres : E8IntegralClosureResidueSpecialization L (AlgebraicClosure (ZMod ℓ)) ℓ (SptCM.awaySixReduction ℓ h6)), Nonempty (E8ActualReductionModel C F h6 Sres)
   e9ActualLevelSix :
-    ∀ {n h ℓ : ℕ} [Fact ℓ.Prime] (C : ActualOrientedCMCoordinates n h) (Order IdealClass CMPoint Reduction Dq : Type) (_ : DivisionRing Dq) (_ : Star Dq) (_ : Algebra ℚ Dq) (CM : CMTheoryModel Order IdealClass CMPoint Reduction Dq)
-      (E8Q : E8OrientedQuadraticSpecialization n CM), Nonempty (E9ActualLevelSixModel (ℓ := ℓ) CM E8Q)
+    ∀ {n h ℓ : ℕ} [Fact ℓ.Prime] (C : ActualOrientedCMCoordinates n h) (Order IdealClass CMPoint Reduction Dq : Type) (_ : DivisionRing Dq) (_ : Star Dq) (_ : Algebra ℚ Dq) (CM : CMTheoryModel Order IdealClass CMPoint Reduction Dq) (E8Q : E8OrientedQuadraticSpecialization n CM),
+      Nonempty (E9ActualLevelSixModel (ℓ := ℓ) CM E8Q)
 end
 end SptCM.RolenLiterature.Repair
 namespace SptCM.Repair
 open SptCM.Analytic SptCM.Analytic.Repaired SptCM.CM.Repaired
-theorem rolen_spt_classification {Form Product Completion Series V : Type*} [SMul ℂ Form] [AddCommMonoid V] [Module ℂ V] (lit : SptCM.RolenLiterature.Repair.UniformRolenLiterature) (E : EtaJGeneratorBasis Form)
-    (Analytic : UniformActualNormalizedProductPackage Form Completion Series V E) (Grid : IntegralGridRealization) (Mult : WeightTwoMultiplicationTheory ℚ Form Product E Grid.rationalGrid) :
-    ∀ ℓ : ℕ, SptCM.CanonicalCongruencePrime ℓ ↔ ℓ = 5 ∨ ℓ = 7 ∨ ℓ = 13 := by sorry
+theorem rolen_spt_classification {Form Product Completion Series V : Type*} [SMul ℂ Form] [AddCommMonoid V] [Module ℂ V] (lit : SptCM.RolenLiterature.Repair.UniformRolenLiterature) (E : EtaJGeneratorBasis Form) (Analytic : UniformActualNormalizedProductPackage Form Completion Series V E)
+    (Grid : IntegralGridRealization) (Mult : WeightTwoMultiplicationTheory ℚ Form Product E Grid.rationalGrid) : ∀ ℓ : ℕ, SptCM.CanonicalCongruencePrime ℓ ↔ ℓ = 5 ∨ ℓ = 7 ∨ ℓ = 13 := by sorry
 end SptCM.Repair

@@ -1,7 +1,7 @@
 {
   "schema": "escher.blueprint.v1",
   "source": "blueprint/blueprint.tex",
-  "source_sha256": "6aabbd3113a5616d56e3ace41ddfbc1c6b32b8f7957670cb5996b73ba2a9e1e2",
+  "source_sha256": "956885b1268ef56319c19056cd3c5561c35ee5e0b559b9b0b42dcad7301ed8aa",
   "title": "Blueprint for the Completion of the Rolen SPT Formalization",
   "target_tag": "thm_main",
   "nodes": [
@@ -363,7 +363,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.CMClassAction",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_cm_class_count",
@@ -378,7 +379,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.CMClassCount",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_quadratic_order_domain",
@@ -393,7 +395,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.E8NegativeQuadraticOrderDomain",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_reduced_form_classification",
@@ -408,7 +411,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.E8ReducedFormClassification",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_oriented_form_classification",
@@ -423,7 +427,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.E8FourOrientedFormClassification",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_cm_good_reduction",
@@ -438,7 +443,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.CMPotentialGoodReduction",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_deuring",
@@ -453,7 +459,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.DeuringInertSupersingular",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_cm_specialization_injective",
@@ -468,7 +475,8 @@
       "proof_uses": [],
       "notation_uses": [],
       "lean": "SptCM.RolenLiterature.CMSpecializationInjective",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "def_ext_arpin",
@@ -3302,7 +3310,8 @@
       ],
       "notation_uses": [],
       "lean": "SptCM.Repair.EichlerLatticeArithmetic.actual_specialized_actions_volume_of_E8_E9",
-      "leanok": true
+      "leanok": true,
+      "input_status": "Additional unproved application assumption. No theorem-level source for the exact encoded interface is certified."
     },
     {
       "tag": "prop_class_poly_separation",
@@ -6745,5 +6754,6 @@
       "def_ext_stokes",
       "def_rolen_literature"
     ]
-  }
+  },
+  "conditional_scope": "Only the canonical classification is selected for Palomar; supporting lemmas are prerequisites. E8 interfaces are additional unproved application assumptions without certified theorem-level sources. The exact Lean hypotheses are unchanged."
 }

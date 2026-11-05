@@ -382,20 +382,13 @@ abbrev NegativeQuadraticOrder (n : ℕ) :=
     (Polynomial.X ^ 2 - Polynomial.X +
       Polynomial.C (((n + 1) / 4 : ℕ) : ℤ))
 
-/-- The standard fact that the canonical imaginary quadratic order is a
-domain in the negative-fundamental-discriminant range.  It is separated from
-the form classification so callers can install the required typeclass
-without assuming any action or count statement. -/
+/-- Additional unproved E8 input: the specified negative quadratic order is a domain in the fundamental-discriminant range. No theorem-level source for the exact interface is certified. -/
 @[expose]
 def E8NegativeQuadraticOrderDomain (n : ℕ) : Prop :=
   IsNegativeFundamentalDiscriminant n →
     Nonempty (IsDomain (NegativeQuadraticOrder n))
 
-/-- The standard reduced-form/proper-ideal-class classification obtained by
-combining the form/ideal-class correspondence allowed by E8 with the
-existence-and-uniqueness part of binary quadratic-form reduction allowed by
-E11.  The completion register records that an exact bibliographic citation
-for this precise boundary-convention version is still required. -/
+/-- Additional unproved E8 input: reduced forms correspond to proper ideal classes with these boundary conventions. This exact correspondence has not been proved or matched to a cited theorem. -/
 @[expose]
 def E8ReducedFormClassification (n : ℕ)
     [IsDomain (NegativeQuadraticOrder n)] : Prop :=
@@ -413,9 +406,7 @@ structure FourOrientedClassEquivalences (n : ℕ)
   orientation5 : ClassGroup (NegativeQuadraticOrder n) ≃ orientedForms n 5
   orientation7 : ClassGroup (NegativeQuadraticOrder n) ≃ orientedForms n 7
 
-/-- Exact E8/E11 fixed-orientation classification: for a negative fundamental
-discriminant the four concrete `Γ₀(6)` oriented-form quotients are the four
-proper ideal-class torsors obtained from the choices above `2` and `3`. -/
+/-- Additional unproved E8 input: the four concrete level-six oriented-form quotients are the four specified proper ideal-class torsors. Their exact equivalences require separate justification. -/
 @[expose]
 def E8FourOrientedFormClassification (n : ℕ)
     [IsDomain (NegativeQuadraticOrder n)] : Prop :=
@@ -459,15 +450,7 @@ structure CMTheoryModel (Order IdealClass CMPoint Reduction Endomorphism : Type*
   specializedAction : CMPoint → Endomorphism
   specializationInjective : CMPoint → Prop
 
-/-- Exact ring-theoretic output of CM specialization for the oriented
-quadratic-order families used at level six.  The source is the concrete order
-`ℤ[X]/(X²-X+(n+1)/4)`.  Specialization is a genuine ring homomorphism,
-respects quaternionic conjugation on its distinguished generator, and its
-image preserves the level structure.  The scalar formula is the standard
-action of the orientation residue on the cyclic order-six subgroup.
-
-This is a general E8 interface: it contains no collision, noncommutation,
-volume, or separation conclusion. -/
+/-- Additional unproved E8 application interface: the specified quadratic-order families specialize compatibly with conjugation and the level-six structure. No collision, noncommutation, volume or separation conclusion is assumed here. -/
 structure E8OrientedQuadraticSpecialization
     (n : ℕ)
     {Order IdealClass CMPoint Reduction D : Type*}
@@ -518,10 +501,7 @@ def CMClassCount
   ∀ O, M.classCountCorrect O
 
 
-/-- The exact general CM class-field reciprocity datum for two finite CM
-families.  The datum realizes each analytic CM value in one finite Galois
-extension and describes Galois action by permutations of the point families.
-It contains no assertion about the coefficients of either root polynomial. -/
+/-- Additional unproved E8 application datum: the actual analytic CM values have the specified finite Galois realization and permutation actions. No coefficients of root polynomials are asserted here. -/
 structure E8FiniteGaloisCMReciprocity
     (I J L : Type*) [Field L] [Algebra ℚ L]
     [FiniteDimensional ℚ L] [IsGalois ℚ L]
@@ -539,12 +519,7 @@ structure E8FiniteGaloisCMReciprocity
   reciprocityY : ∀ (σ : L ≃ₐ[ℚ] L) j,
     σ (algebraicY j) = algebraicY (permutationY σ j)
 
-/-- The integral refinement of the finite-Galois CM reciprocity datum.
-Potential good reduction and regularity of the modular coordinate say that
-the algebraic CM values belong to the integral closure of the chosen
-coefficient ring in the class field.  This interface records exactly that
-root-level conclusion, and still contains no assertion about a root-product
-polynomial or any of its coefficients. -/
+/-- Additional unproved E8 integral refinement: each specified CM root is integral over the chosen coefficient ring. This exact realization is assumed, not derived from a certified literature theorem. -/
 structure E8FiniteGaloisIntegralCMReciprocity
     (A I J L : Type*) [CommRing A] [Field L] [Algebra A L]
     [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L]
@@ -602,21 +577,21 @@ structure E8GoodReductionRegularEvaluation
   potentialGoodReduction : ∀ P, Qualified P → GoodInteriorPoint P
   regularEvaluation : ∀ P, GoodInteriorPoint P → value P ∈ S
 
-/-- E8: potential good reduction for the qualified CM points with level. -/
+/-- Additional unproved E8 application premise: good reduction in the specified CM model. -/
 @[expose]
 def CMPotentialGoodReduction
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   ∀ P, M.hasPotentiallyGoodReduction P
 
-/-- E8: Deuring's inert-reduction theorem. -/
+/-- Additional unproved E8 application premise motivated by Deuring reduction theory. Its exact match to this model is not certified. -/
 @[expose]
 def DeuringInertSupersingular
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}
     (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   ∀ ℓ P, M.inertAt ℓ P → M.supersingular (M.reduction P)
 
-/-- E8: injectivity of the relevant CM-order action after specialization. -/
+/-- Additional unproved E8 application premise: injectivity of the relevant CM-order action after specialization. -/
 @[expose]
 def CMSpecializationInjective
     {Order IdealClass CMPoint Reduction Endomorphism : Type*}

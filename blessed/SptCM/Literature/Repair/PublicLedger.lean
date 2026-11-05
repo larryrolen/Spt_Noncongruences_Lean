@@ -160,9 +160,11 @@ theorem preservingOrder_covolume_eq
 
 end E9ActualLevelSixModel
 
-/-- Public, discriminant-uniform literature data which do not depend on an
+/-- Public, discriminant-uniform conditional data which do not depend on an
 implementation choice for the analytic Borcherds and quaternionic models.
 
+The E8 fields are additional unproved application inputs, not certified
+translations of cited CM theorems; see EXTERNAL_INPUTS.json.
 The class-field field is dependent on the *actual* coordinate family.  This
 is essential: it prevents a single unrelated pair of CM-value families from
 being used for every discriminant. -/

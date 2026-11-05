@@ -2,16 +2,17 @@
 
 This package states the canonical congruence-prime classification from Larry
 Rolen's [paper](https://arxiv.org/abs/2610.27145v1), relative to the explicit
-literature and analytic-model interfaces listed in `ASSUMPTIONS.md` and
+literature, application, and analytic-model interfaces listed in `ASSUMPTIONS.md` and
 `EXTERNAL_INPUTS.json`. The primes are exactly 5, 7, and 13. It does not
-formalize all of those external inputs. The exact theorem-level citations for
-E8 remain an acknowledged documentation gap.
+formalize all of those external inputs. The exact E8 interfaces are additional unproved application assumptions;
+CM literature is background motivation, not certified support for these forms.
 
 `Challenge.lean` defines the mathematical statement and every project-specific
 premise without importing the proof library. `Solution.lean` imports the original
-proof. `comparator.json` selects the classification and four supporting
-geometric and Laurent-series lemmas used to form its definitions; their Challenge proofs are
-intentional holes. The Solution proofs use only `propext`, `Classical.choice`,
+proof. `comparator.json` selects only the main classification theorem. The supporting
+geometric and Laurent-series lemmas are proved prerequisites in Challenge;
+they are not separate selected research results. The sole intentional proof
+hole is the classification theorem. The Solution proofs use only `propext`, `Classical.choice`,
 and `Quot.sound`.
 
 The preparation upgrades Lean and Mathlib to 4.35.0-rc2, ports the library to

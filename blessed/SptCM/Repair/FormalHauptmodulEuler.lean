@@ -51,7 +51,7 @@ private theorem coeff_hauptmodulFormalEulerUnit (d : ℕ) :
 /-- The formal unit Euler product is normalized. -/
 theorem hauptmodulFormalEulerUnit_coeff_zero :
     PowerSeries.coeff 0 hauptmodulFormalEulerUnit = 1 := by
-  rw [coeff_hauptmodulFormalEulerUnit]
+  simp only [hauptmodulFormalEulerUnit, PowerSeries.coeff_mk]
   norm_num [hauptmodulFormalEulerFactor, PowerSeries.coeff_one_mul, PowerSeries.coeff_one_pow,
     PowerSeries.invOneSubPow, Finset.prod_range_succ]
 
@@ -68,7 +68,7 @@ theorem hauptmodulFormalEulerUnit_isUnit :
 index contributes in degree one. -/
 theorem hauptmodulFormalEulerUnit_coeff_one :
     PowerSeries.coeff 1 hauptmodulFormalEulerUnit = -5 := by
-  rw [coeff_hauptmodulFormalEulerUnit]
+  simp only [hauptmodulFormalEulerUnit, PowerSeries.coeff_mk]
   norm_num [hauptmodulFormalEulerFactor, PowerSeries.coeff_one_mul, PowerSeries.coeff_one_pow,
     PowerSeries.invOneSubPow, Finset.prod_range_succ]
 
@@ -110,9 +110,9 @@ theorem hauptmodulFormalLaurent_principalPart :
     simpa [PowerSeries.coeff_coe] using
       hauptmodulFormalEulerUnit_coeff_one
   · intro z hz
-    have hz' : z + 1 < 0 := by omega
+    have hz' : z + 1 < 0 := lt_sub_iff_add_lt.mp hz
     unfold hauptmodulFormalLaurent
-    rw [← show (z + 1) + (-1) = z by omega]
+    rw [← show (z + 1) + (-1) = z from add_neg_cancel_right z 1]
     rw [HahnSeries.coeff_single_mul_add, one_mul, PowerSeries.coeff_coe]
     simp [hz']
 

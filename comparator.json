@@ -2,11 +2,7 @@
   "challenge_module": "Challenge",
   "solution_module": "Solution",
   "theorem_names": [
-    "SptCM.Repair.rolen_spt_classification",
-    "SptCM.CM.Repaired.rawCMPoint_im_pos",
-    "SptCM.CM.Repaired.rawCMValue_eq_of_eqvGen",
-    "SptCM.Repair.laurentSeries_transcendental_of_simple_pole",
-    "SptCM.Analytic.Repaired.actualRationalHauptmodulLaurent_principalPart"
+    "SptCM.Repair.rolen_spt_classification"
   ],
   "permitted_axioms": [
     "propext",

@@ -2,17 +2,20 @@
 # Registration requires the full Palomar workflow and editorial review.
 version: v0.4
 project:
-  name: "Canonical congruences for the smallest parts function, conditional on literature inputs"
+  name: "Canonical congruences for the smallest parts function, conditional on explicit inputs"
   description: >-
     This development formalizes the classification of canonical congruence
     primes for Andrews' smallest-parts function: the primes are exactly 5, 7,
     and 13. A canonical congruence uses the residue inverse to 24 modulo a
-    prime at least five. The formal endpoint takes explicit literature and
+    prime at least five. The formal endpoint takes explicit literature, application, and
     analytic-model hypotheses, documented as E1-E11 in ASSUMPTIONS.md and
     EXTERNAL_INPUTS.json. The development derives the normalized
     Borcherds/class-polynomial product identity, the Wronskian obstruction,
     large-prime exclusion, and final classification relative to those inputs.
-    It does not supply formal proofs of all the external literature inputs.
+    It does not supply formal proofs of all the external inputs. The E8
+    interfaces are additional unproved application assumptions, not certified
+    translations of cited CM results. Only the main classification is selected;
+    routine supporting lemmas are proved prerequisites.
     The analytic boundary includes explicit genus-zero descent for genuine
     unitary meromorphic functions with zero cusp orders. Full point-divisor
     rigidity for nonzero rational functions is proved internally.
@@ -32,8 +35,9 @@ sources:
     note: >-
       The formalization is conditional on the explicit literature and model
       interfaces. The complete external-input register and source locators
-      are maintained in ASSUMPTIONS.md and EXTERNAL_INPUTS.json. Some exact
-      theorem-level citations for E8 remain marked as requiring verification.
+      are maintained in ASSUMPTIONS.md and EXTERNAL_INPUTS.json. E8 is
+      explicitly classified as additional unproved application inputs; general
+      CM literature is not claimed to establish the exact encoded interfaces.
 classification:
   arxiv:
     - math.NT

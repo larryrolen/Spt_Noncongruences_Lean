@@ -70,10 +70,11 @@ theorem E8IntegralClosureResidueSpecialization.reduce_algebraMap
       algebraMap (ZMod ℓ) k (coefficientReduction a) := by
   exact DFunLike.congr_fun S.compatible a
 
-/-- Source-faithful E8 lying-over/residue theorem in precisely the good-prime
+/-- Additional unproved E8 lying-over/residue application input in the good-prime
 coefficient ring needed by the paper.  The theorem only produces a residue
 map on the integral closure.  Root collisions and polynomial separation are
-not part of this external statement. -/
+not part of this external statement. No theorem-level source for this exact
+formulation is certified; see EXTERNAL_INPUTS.json. -/
 @[expose]
 def E8AwaySixIntegralClosureResidueTheorem : Prop :=
   ∀ (ℓ : ℕ) [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ))

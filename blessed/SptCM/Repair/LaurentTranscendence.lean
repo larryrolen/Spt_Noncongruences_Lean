@@ -1,10 +1,12 @@
 module
 
-public import Mathlib.RingTheory.LaurentSeries
-public import Mathlib.RingTheory.Valuation.IsTrivialOn
-public import Mathlib.RingTheory.Valuation.Integers
+public import Mathlib
 
-public section
+@[expose] public section
+
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
+run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
 
 
 /-!
@@ -29,16 +31,16 @@ theorem laurentSeries_transcendental_of_simple_pole
       (LaurentSeries.val_le_one_iff_eq_coe K _).mpr
         ⟨PowerSeries.C a, by
           rw [LaurentSeries.algebraMap_apply]
-          simp⟩
+          exact HahnSeries.ofPowerSeries_C a⟩
   apply Valuation.transcendental_of_ne_one (v := (Valued.v : Valuation (LaurentSeries K) _)) K t
   · intro ht
-    have hc := congrArg (fun f : LaurentSeries K => f.coeff (-1)) ht
-    simp [hcoeff] at hc
+    have hz : t.coeff (-1) = 0 := ht ▸ HahnSeries.coeff_zero
+    exact one_ne_zero (hcoeff.symm.trans hz)
   · intro hv
-    have hle : Valued.v t ≤ 1 := le_of_eq hv
-    obtain ⟨F, hF⟩ := (LaurentSeries.val_le_one_iff_eq_coe K t).mp hle
-    have hc := congrArg (fun f : LaurentSeries K => f.coeff (-1)) hF
-    rw [PowerSeries.coeff_coe] at hc
-    simpa [hcoeff] using hc
+    obtain ⟨F, hF⟩ := (LaurentSeries.val_le_one_iff_eq_coe K t).mp (le_of_eq hv)
+    have hz : (F : LaurentSeries K).coeff (-1) = 0 :=
+      (PowerSeries.coeff_coe (f := F) (-1)).trans (if_pos (Int.negSucc_lt_zero 0))
+    exact zero_ne_one (hz.symm.trans
+      ((congrArg (fun f : LaurentSeries K => f.coeff (-1)) hF).trans hcoeff))
 
 end SptCM.Repair
