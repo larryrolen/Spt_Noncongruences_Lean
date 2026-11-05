@@ -38,6 +38,147 @@ sources:
       are maintained in ASSUMPTIONS.md and EXTERNAL_INPUTS.json. E8 is
       explicitly classified as additional unproved application inputs; general
       CM literature is not claimed to establish the exact encoded interfaces.
+  # These works supply external inputs to the conditional result. Their
+  # theorems are not proved by this development, so their relationship is other,
+  # not formalizes or independently-proves. E-labels refer to the assumption
+  # register in this same pinned source revision.
+  - title: "The number of smallest parts in the partitions of n"
+    authors: [George E. Andrews]
+    id: "https://doi.org/10.1515/CRELLE.2008.083"
+    type: paper
+    location: "J. Reine Angew. Math. 624 (2008), 133-142; congruences at 5, 7, and 13"
+    relationship: other
+    note: >-
+      External theorem input E1: the three smallest-parts congruences are
+      explicit premises. See ASSUMPTIONS.md and EXTERNAL_INPUTS.json for their
+      Lean declarations and their use in the conditional classification.
+  - title: "Congruences for a mock modular form on SL_2(Z) and the smallest parts function"
+    authors: [Scott Ahlgren, Byungchan Kim]
+    id: "https://doi.org/10.1016/j.jnt.2017.11.013"
+    type: paper
+    location: "J. Number Theory 189 (2018), 81-89; Theorem 3 and Proposition 6"
+    relationship: other
+    note: >-
+      External theorem inputs E2: finite exclusion and the theta-cycle
+      implication, represented by E2AhlgrenKimFiniteExclusion and
+      E2AhlgrenKimThetaCycle. Their typed hypotheses remain explicit premises.
+  - title: "On the explicit construction of higher deformations of partition statistics"
+    authors: [Kathrin Bringmann]
+    id: "https://doi.org/10.1215/00127094-2008-035"
+    type: paper
+    location: "Duke Math. J. 144 (2008), 195-233"
+    relationship: other
+    note: >-
+      External analytic input E3: the harmonic Maass completion associated
+      with the smallest-parts generating function. BringmannCompletion and
+      the analytic realization data remain explicit inputs to the development.
+  - title: "Harmonic Maass Forms and Mock Modular Forms: Theory and Applications"
+    authors: [Kathrin Bringmann, Amanda Folsom, Ken Ono, Larry Rolen]
+    id: "https://doi.org/10.1090/coll/064"
+    type: book
+    location: "AMS Colloquium Publications 64 (2017); differential operators and Hecke theory"
+    relationship: other
+    note: >-
+      Source treatment for the external Hecke/shadow laws in E3 and the
+      harmonic-Maass framework used by E4. The model-comparison premises in
+      UniformActualNormalizedProductPackage are not discharged by this citation;
+      see the pinned assumption register and ANALYTIC_BOUNDARY.md.
+  - title: "Mock modular grids and Hecke relations for mock modular forms"
+    authors: [Scott Ahlgren, Byungchan Kim]
+    id: "https://doi.org/10.1515/forum-2012-0011"
+    type: paper
+    location: "Forum Math. 26 (2014), no. 4, 1261-1287"
+    relationship: other
+    note: >-
+      External grid input E4, represented by PublishedMockModularGrid and
+      IntegralGridRealization. The encoded normalization, principal parts,
+      multiplier, and range are explicit interface requirements; the cited
+      grid theorem is not proved internally.
+  - title: "Heegner divisors, L-functions and harmonic weak Maass forms"
+    authors: [Jan Hendrik Bruinier, Ken Ono]
+    id: "https://doi.org/10.4007/annals.2010.172.2135"
+    type: paper
+    location: "Ann. of Math. 172 (2010), 2135-2181; Theorem 6.1"
+    relationship: other
+    note: >-
+      External Borcherds-lift input E5. The prefactor-free product application
+      is restricted to inputs with every Weyl vector zero; E6 and the internal
+      pairing computation supply that condition before E5 is applied.
+  - title: "Algebraic formulas for the coefficients of mock theta functions and Weyl vectors of Borcherds products"
+    authors: [Jan Hendrik Bruinier, Markus Schwagenscheidt]
+    id: "https://doi.org/10.1016/j.jalgebra.2016.12.034"
+    type: paper
+    location: "J. Algebra 478 (2017), 38-57; equation (11)"
+    relationship: other
+    note: >-
+      External Weyl-vector formula E6, represented by
+      E6BruinierSchwagenscheidt. The required pairing and cusp conventions
+      remain part of the explicit analytic interface.
+  - title: "Courbes modulaires de genre 1"
+    authors: [Gérard Ligozat]
+    id: "https://doi.org/10.24033/msmf.178"
+    type: book
+    location: "Bulletin de la Société mathématique de France, Mémoire 43 (1975)"
+    relationship: other
+    note: >-
+      External eta-quotient input in E7: modularity, character, and cusp orders.
+      This citation does not certify every integral-model or analytic descent
+      interface in E7. Those additional premises are identified separately in
+      ASSUMPTIONS.md, EXTERNAL_INPUTS.json, and ANALYTIC_BOUNDARY.md.
+  - title: "Adding Level Structure to Supersingular Elliptic Curve Isogeny Graphs"
+    authors: [Sarah Arpin]
+    id: "https://doi.org/10.5802/jtnb.1283"
+    type: paper
+    location: "J. Théor. Nombres Bordeaux 36 (2024), no. 2, 405-443"
+    relationship: other
+    note: >-
+      External Eichler-order input E9, represented by ArpinLevelSix, for the
+      order preserving a cyclic subgroup of order six. Application-specific
+      local factors and the collision contradiction are derived in Lean.
+  - title: "Class Invariants for Quartic CM Fields"
+    authors: [Eyal Z. Goren, Kristin E. Lauter]
+    id: "https://doi.org/10.5802/aif.2264"
+    type: paper
+    location: "Ann. Inst. Fourier 57 (2007), no. 2, 457-480; quaternionic covolume argument"
+    relationship: other
+    note: >-
+      External covolume/Hadamard input E9, represented by GorenLauterHadamard.
+      The application-specific noncommutation and volume contradiction are
+      derived internally, relative to this explicit general inequality.
+  - title: "On the maximum number of consecutive integers on which a character is constant"
+    authors: [Enrique Treviño]
+    id: "https://campus.lakeforest.edu/trevino/RevisedMcGownBurgess.pdf"
+    type: paper
+    location: "Mosc. J. Comb. Number Theory 2 (2012), no. 1, 56-72; Theorem 1, as corrected in 2017"
+    relationship: other
+    note: >-
+      External character-bound input E10. This work must be read together
+      with the separately listed corrigendum; the development uses its
+      corrected all-odd-prime constant 3.38, not the original bound.
+  - title: 'Corrigendum to "On the maximum number of consecutive integers on which a character is constant"'
+    authors: [Enrique Treviño]
+    id: "https://campus.lakeforest.edu/trevino/CorrigendumConstantCharacter.pdf"
+    type: paper
+    location: "Mosc. J. Comb. Number Theory 7 (2017), no. 3; corrected Theorem 1"
+    relationship: other
+    note: >-
+      Material correction to E10: for a nonprincipal character of odd prime
+      modulus p, the constant interval has length at most 3.38 p^(1/4) log p.
+      This is the bound encoded by E10TrevinoCorrected and used by the
+      first-nonresidue argument.
+  - title: "Classical modular, quadratic-form, and residue-theoretic inputs"
+    type: folklore
+    location: "ASSUMPTIONS.md, E4, E7, and E11; EXTERNAL_INPUTS.json, corresponding declaration lists"
+    relationship: other
+    note: >-
+      Other material external inputs are recorded as standard theory without
+      a single bibliographic source: eta, j, Eisenstein and residue theory;
+      integral modular-curve geometry; quadratic-form reduction, reciprocity,
+      Euler criterion, cusp classification, and finite-height Stokes calculus.
+      This entry records their provenance status, not a theorem-level source
+      certification. Exact application and analytic compatibility obligations
+      remain explicit. E8 remains additional unproved application inputs with
+      no certified theorem-level reference, as detailed in the same register.
 classification:
   arxiv:
     - math.NT
