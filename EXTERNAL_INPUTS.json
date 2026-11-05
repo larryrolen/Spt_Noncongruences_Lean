@@ -47,7 +47,8 @@
       "source": "J. H. Bruinier and K. Ono, Ann. of Math. 172 (2010), Theorem 6.1",
       "lean_declarations": [
         "SptCM.RolenLiterature.E5BruinierOno"
-      ]
+      ],
+      "application_scope": "The prefactor-free product model is applied only to vector inputs with every Weyl vector zero, established using E6 before applying E5."
     },
     {
       "id": "E6",
@@ -66,8 +67,12 @@
         "SptCM.RolenLiterature.X0SixDisjointCusps",
         "SptCM.RolenLiterature.E7HorizontalDivisorPrinciple",
         "SptCM.RolenLiterature.E7NoVerticalComponentPrinciple",
-        "SptCM.RolenLiterature.E7IntegralDegreeOneCriterion"
-      ]
+        "SptCM.RolenLiterature.E7IntegralDegreeOneCriterion",
+        "SptCM.Analytic.Repaired.I12GenusZeroDescentPrinciple",
+        "SptCM.Analytic.Repaired.I12MeromorphicGeometry"
+      ],
+      "analytic_scope": "Includes explicit genus-zero descent for actual unitary meromorphic realizations with zero cusp orders, and full point-divisor/cusp compatibility. These remain unproved analytic inputs. Rational-function divisor rigidity is proved internally; see ANALYTIC_BOUNDARY.md.",
+      "citation_status": "The precise analytic descent formulation is explained in ANALYTIC_BOUNDARY.md; its generic geometric and rational-coefficient descent steps remain source-facing proof obligations, not a claimed verbatim Ligozat theorem."
     },
     {
       "id": "E8",

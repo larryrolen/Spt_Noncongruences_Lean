@@ -9,8 +9,8 @@ E8 remain an acknowledged documentation gap.
 
 `Challenge.lean` defines the mathematical statement and every project-specific
 premise without importing the proof library. `Solution.lean` imports the original
-proof. `comparator.json` selects the classification and two supporting geometric
-lemmas used to form its definitions; the corresponding Challenge proofs are
+proof. `comparator.json` selects the classification and four supporting
+geometric and Laurent-series lemmas used to form its definitions; their Challenge proofs are
 intentional holes. The Solution proofs use only `propext`, `Classical.choice`,
 and `Quot.sound`.
 
@@ -19,8 +19,17 @@ public modules and exposed definitions, and adapts changed library interfaces.
 It disables an overlapping generic additive-group instance where necessary to
 retain the standard ring structure. No literature premise is removed.
 
+The analytic boundary uses actual meromorphic functions with a unitary
+Gamma_0(6) transformation law and convergent Laurent and cusp expansions.
+Divisors retain each complex Hauptmodul coordinate and its multiplicity.
+Rigidity for nonzero rational functions is proved in Lean from polynomial
+factorization; it is not a universal assumption about formal Laurent series.
+The explicit `I12GenusZeroDescentPrinciple` remains an unproved analytic
+input connecting zero cusp orders to rationality in the Hauptmodul.
+See `ANALYTIC_BOUNDARY.md` for the exact scope and justification.
+
 The Challenge is formatted compactly to meet Palomar's 1,000-line limit.
-Its eight `run_cmd` commands clear Lean's elaboration-only auxiliary-lemma
+Its `run_cmd` commands clear Lean's elaboration-only auxiliary-lemma
 cache at selected original file boundaries. This preserves the generated proof
 names used by the original definitions when those definitions are collected in
 one file. These commands neither add axioms nor change the proof checker.

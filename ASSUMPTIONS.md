@@ -44,6 +44,11 @@ The endpoint exposes this material through `EtaJGeneratorBasis`,
 The general Bruinier–Ono Borcherds-lift theorem from J. H. Bruinier and
 K. Ono, *Ann. of Math.* 172 (2010), Theorem 6.1.
 
+The normalized E5 application is qualified by vanishing of all four Weyl
+vectors. E6 and the checked pairing computation establish this condition
+before E5 is used. The prefactor-free Euler expansion is not asserted for
+arbitrary vector inputs with potentially nonzero cusp exponents.
+
 ### E6 — Weyl-vector formula
 
 The Bruinier–Schwagenscheidt Weyl-vector formula from J. H. Bruinier and
@@ -60,6 +65,22 @@ Ligozat's eta-quotient results (G. Ligozat, *Courbes modulaires de genre 1*,
 1975) and standard integral modular-curve facts for X₀(6) away from 6,
 including genus-zero fibers, disjoint cusps, horizontal divisors, absence of
 unwanted vertical components, and the integral degree-one criterion.
+
+The normalized-product argument additionally exposes the standard
+genus-zero descent theorem as `I12GenusZeroDescentPrinciple`. Its domain is
+fixed by `I12UnitaryMeromorphicRealization`: actual meromorphic functions on
+the upper half-plane with unitary Gamma_0(6) transformations, convergent
+q-expansions, and convergent expansions at all four cusps. The theorem says
+that zero cusp orders imply rationality in the actual Hauptmodul.
+This analytic descent theorem remains an explicit, unproved input.
+It does not assert the Borcherds/class-polynomial identity.
+
+`I12MeromorphicGeometry` ties the interior divisor to actual meromorphic
+orders at each Hauptmodul coordinate and ties cusp data to the analytic
+expansions. Its rational-function compatibility law uses full point
+multiplicities. Rigidity for nonzero rational functions, invariance under
+cancellation, the class-polynomial divisor computation, and leading
+normalization are proved internally. See `ANALYTIC_BOUNDARY.md`.
 
 ### E8 — CM and reduction theory
 

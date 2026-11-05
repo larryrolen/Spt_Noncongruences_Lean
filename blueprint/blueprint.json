@@ -1,7 +1,7 @@
 {
   "schema": "escher.blueprint.v1",
   "source": "blueprint/blueprint.tex",
-  "source_sha256": "d393ed182436c5ab60f64d09cf2b5fd4d3aad00f3183b4b82dfaa81305aa6450",
+  "source_sha256": "6aabbd3113a5616d56e3ace41ddfbc1c6b32b8f7957670cb5996b73ba2a9e1e2",
   "title": "Blueprint for the Completion of the Rolen SPT Formalization",
   "target_tag": "thm_main",
   "nodes": [
@@ -3715,8 +3715,8 @@
       "section": "Pairing and Borcherds specialization: I09--I14",
       "source_line": 1732,
       "source_order": 206,
-      "statement_latex": "For the actual vector input, Bruinier--Ono's predicted divisor is\n$D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$, with every multiplicity equal to one.",
-      "proof_latex": "Match every negative Fourier coefficient and discriminant convention in the general divisor formula.",
+      "statement_latex": "For the actual vector input, the full interior divisor of the Bruinier--Ono lift is the signed sum $D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$ at the actual complex Hauptmodul coordinates, retaining every point and its multiplicity.",
+      "proof_latex": "Read the four orientation coefficients from the principal part, then apply them to the corresponding finite CM point divisors. The full numerator and denominator root multiplicities give the signed divisor.",
       "statement_uses": [
         "def_oriented_forms",
         "def_vector_input_spec"
@@ -3726,7 +3726,7 @@
         "prop_i10_vector_input"
       ],
       "notation_uses": [],
-      "lean": "SptCM.Analytic.Repaired.prop_i12_heegner_divisor",
+      "lean": "SptCM.Analytic.Repaired.actualI12Lift_divisor_eq_full",
       "leanok": true
     },
     {
@@ -3734,42 +3734,36 @@
       "kind": "proposition",
       "title": "I12: divisor of the class-polynomial quotient",
       "section": "Pairing and Borcherds specialization: I09--I14",
-      "source_line": 1740,
+      "source_line": 1739,
       "source_order": 207,
-      "statement_latex": "For any meromorphic geometry satisfying the uniform finite-root-product divisor interpretation law, the genuine quotient $A_n(t)/B_n(t)$ formed from the descended class polynomials and the exact rational Euler-product Hauptmodul has divisor\n$D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$.",
-      "proof_latex": "The uniform interpretation law identifies its divisor with the root divisor.  The actual numerator roots have orientations $1,11$, the actual denominator roots have orientations $5,7$, and the internally computed signs give the displayed signed divisor.",
+      "statement_latex": "Under the explicit rational-function divisor compatibility and zero-cusp-order inputs, the genuine quotient $A_n(t)/B_n(t)$ has the full divisor of its actual numerator roots minus its actual denominator roots, at every complex coordinate.",
+      "proof_latex": "Embed the rational function field using the transcendence of the formal Hauptmodul. Cancellation preserves the signed root multiplicities. The descended coefficient polynomials map to the actual complex root products, so their full divisors agree.",
       "statement_uses": [
         "def_class_poly_a",
         "def_class_poly_b",
         "def_hauptmodul"
       ],
       "proof_uses": [
-        "prop_i12_heegner_divisor",
         "prop_i15_actual_coordinate",
         "prop_i16_class_polynomials"
       ],
       "notation_uses": [],
-      "lean": "SptCM.Analytic.Repaired.actualClassPolynomialLaurentQuotient_divisor_eq_signed",
+      "lean": "SptCM.Analytic.Repaired.classPolynomialQuotient_divisor",
       "leanok": true
     },
     {
       "tag": "lem_i12_cusp_rigidity",
       "kind": "lemma",
-      "title": "I12: no cusp contribution and rigidity",
+      "title": "I12: rational-function rigidity and normalization",
       "section": "Pairing and Borcherds specialization: I09--I14",
-      "source_line": 1748,
+      "source_line": 1746,
       "source_order": 208,
-      "statement_latex": "Assume the general root-product divisor law, the general interpretation of vanishing Weyl vectors as zero cusp data, and compact-curve divisor rigidity.  For the actual input, the Borcherds lift is a rational scalar multiple of the genuine class-polynomial Laurent quotient.",
-      "proof_latex": "Apply E6 to the verified component-theta contraction and zero regularized pairing to derive vanishing of every level-six Weyl vector.  The Weyl interpretation law gives zero cusp data for the lift, while the equal-degree interior root-product law gives zero cusp data for the class quotient.  Their divisors agree by the preceding proposition, so compact-curve rigidity supplies the scalar multiple.",
+      "statement_latex": "Let $f,g$ belong to the rational function field embedded at the actual Hauptmodul. If their full divisors agree, their cusp orders vanish, and both Laurent constant coefficients are one, then $f=g$. Rigidity is not assumed for arbitrary formal Laurent series.",
+      "proof_latex": "The constant coefficients exclude zero functions. Equal full root divisors give equal root multisets for the cross-multiplied polynomials. Polynomial factorization gives a nonzero rational scalar, and the two constant coefficients force it to be one.",
       "statement_uses": [],
-      "proof_uses": [
-        "def_ext_x0_six_genus_zero",
-        "def_ext_x0_six_integral",
-        "prop_i11_weyl_zero",
-        "prop_i12_class_quotient_divisor"
-      ],
+      "proof_uses": [],
       "notation_uses": [],
-      "lean": "SptCM.Analytic.Repaired.i12_cusp_rigidity",
+      "lean": "SptCM.Analytic.Repaired.eq_of_rational_divisors_and_normalization",
       "leanok": true
     },
     {
@@ -3777,7 +3771,7 @@
       "kind": "lemma",
       "title": "I12: leading normalization",
       "section": "Pairing and Borcherds specialization: I09--I14",
-      "source_line": 1754,
+      "source_line": 1752,
       "source_order": 209,
       "statement_latex": "After base-changing the exact integral Euler-product Hauptmodul to $\\mathbb Q((q))$, the coefficient of $q^0$ in the actual quotient $A_n(t)/B_n(t)$ is one; the coefficient of $q^0$ in the canonical stabilized Borcherds Euler quotient is also one.",
       "proof_latex": "Reverse the two monic equal-degree polynomials, cancel their common power of $t$, and evaluate the resulting power-series units at $t^{-1}$.  The principal part $t=q^{-1}-5+O(q)$ makes $t^{-1}$ have positive order, while both reversed polynomials have constant coefficient one.  On the Borcherds side, the canonical numerator and denominator power series both have constant coefficient one, and this remains true for their quotient after embedding into Laurent series.",
@@ -3800,10 +3794,10 @@
       "kind": "proposition",
       "title": "I12: normalized Borcherds product identity",
       "section": "Pairing and Borcherds specialization: I09--I14",
-      "source_line": 1761,
+      "source_line": 1759,
       "source_order": 210,
-      "statement_latex": "Under the general divisor, cusp-order, leading-value, and compact-curve rigidity interpretation laws, for squarefree $n\\equiv23\\pmod{24}$ the genuine descended class-polynomial quotient in the exact rational Euler-product Hauptmodul satisfies\n\\[\n\\frac{A_n(t(\\tau))}{B_n(t(\\tau))}=\\prod_{m\\ge1}(1-q^m)^{\\chi_{12}(m)h_n(m^2)}\n\\]\nas a Laurent-series identity.",
-      "proof_latex": "Apply the general Bruinier--Ono theorem to the verified vector-valued input.  Zero Weyl vectors remove cusp exponents.  Check the signed Heegner divisor with multiplicity one, identify it with the divisor of the class-polynomial quotient, and use divisor-zero rigidity.  Monicity and equal degree make the remaining scalar one.",
+      "statement_latex": "Assume the explicit analytic realization, full divisor and cusp compatibility, and genus-zero descent inputs. The descent domain consists of actual unitary meromorphic functions with convergent Laurent and cusp expansions; zero cusp orders imply rationality in the Hauptmodul. Then for squarefree $n\\equiv23\\pmod{24}$, the genuine descended class-polynomial quotient satisfies $A_n(t)/B_n(t)=\\prod_{m\\ge1}(1-q^m)^{\\chi_{12}(m)h_n(m^2)}$ as a Laurent-series identity. The general analytic descent theorem remains a premise; rational-function rigidity is proved in Lean.",
+      "proof_latex": "E6 first establishes zero Weyl vectors. The E5 product model is applied only on this qualified domain, where the cusp prefactor is absent; it supplies the analytic realization, full Heegner divisor and canonical Euler expansion. The cusp interpretation gives zero cusp orders. Apply the explicit genus-zero descent theorem to place the lift in the rational function field. The class quotient is rational by construction and has the same full divisor. The checked rational-function rigidity and leading normalizations give equality.",
       "statement_uses": [
         "def_class_poly_a",
         "def_class_poly_b",
@@ -3826,7 +3820,7 @@
       "kind": "proposition",
       "title": "I14: actual stabilized Euler products",
       "section": "Pairing and Borcherds specialization: I09--I14",
-      "source_line": 1774,
+      "source_line": 1766,
       "source_order": 211,
       "statement_latex": "The fixed pair $(P_n^+,P_n^-)$ satisfies $\\mathsf{EulerProductSpec}$.",
       "proof_latex": "For a fixed coefficient degree, factors whose index exceeds that degree contribute one, so a finite truncation computes the coefficient.  Apply the signed-exponent decomposition factor by factor.  Every truncation has constant term one, hence the denominator is nonzero.",
@@ -3847,7 +3841,7 @@
       "kind": "lemma",
       "title": "Quotient derivative forces Wronskian zero",
       "section": "Pairing and Borcherds specialization: I09--I14",
-      "source_line": 1783,
+      "source_line": 1775,
       "source_order": 212,
       "statement_latex": "Let $t$ be transcendental over a coefficient ring with nonzero derivative.\nIf\n\\[\n  A(t)\\,P^- = P^+\\,B(t),\n\\]\n$P^-\\ne0$, and both $P^+$ and $P^-$ have zero derivative, then\n$\\Wr(A,B)=0$.",
       "proof_latex": "Differentiate the quotient identity, use the two derivative vanishings, and\napply the chain rule.  Cancel the nonzero denominator and derivative of $t$;\ntranscendence makes polynomial evaluation at $t$ injective.",
@@ -3864,7 +3858,7 @@
       "kind": "proposition",
       "title": "Canonicality forces Wronskian zero",
       "section": "Pairing and Borcherds specialization: I09--I14",
-      "source_line": 1799,
+      "source_line": 1791,
       "source_order": 213,
       "statement_latex": "If $\\Can(\\ell)$ and $\\Adm(\\ell,n)$, then $\\Wr(\\bar A_{\\ell,n},\\bar B_{\\ell,n})=0$ in $\\F_\\ell[T]$.",
       "proof_latex": "Apply the specialized canonical-Euler-product Wronskian theorem.  For each Euler factor, either $\\ell$ divides its index or inert square-coefficient vanishing makes its signed exponent divisible by $\\ell$.  Frobenius makes both stabilized products have zero derivative.  Differentiate the normalized quotient identity, cross-multiply using the nonzero denominator, and cancel $\\Theta t_q$.  Injective Laurent substitution forces the polynomial Wronskian to vanish.",
@@ -3892,7 +3886,7 @@
       "kind": "definition",
       "title": "First exceptional progression index",
       "section": "Small discriminants and final assembly",
-      "source_line": 1810,
+      "source_line": 1802,
       "source_order": 214,
       "statement_latex": "For prime $\\ell$, let $k_\\ell$ be the least $k\\ge1$ for which $\\left(\\frac{1-24k}{\\ell}\\right)\\ne1$.",
       "proof_latex": null,
@@ -3907,7 +3901,7 @@
       "kind": "lemma",
       "title": "Treviño interval bound",
       "section": "Small discriminants and final assembly",
-      "source_line": 1814,
+      "source_line": 1806,
       "source_order": 215,
       "statement_latex": "For every prime $\\ell\\ge10^{11}$, $k_\\ell\\le3.38\\ell^{1/4}\\log\\ell+1$.",
       "proof_latex": "Before the first exceptional index, quadratic reciprocity turns the progression into consecutive values on which the genuine Legendre character is constant.  This character is nonprincipal, so the corrected Treviño theorem gives the stated length bound.",
@@ -3927,7 +3921,7 @@
       "kind": "lemma",
       "title": "Explicit numerical cutoff",
       "section": "Small discriminants and final assembly",
-      "source_line": 1822,
+      "source_line": 1814,
       "source_order": 216,
       "statement_latex": "If $\\ell\\ge10^{11}$, then $81.12\\ell^{1/4}\\log\\ell+24<\\sqrt{24\\ell}$.",
       "proof_latex": "Divide by $\\sqrt{24\\ell}$, prove both summands decrease for $\\ell>e^4$, and verify the endpoint using $\\log(10^{11})<26$, $(10^{11})^{1/4}>560$, and $\\sqrt{24}>4.8$.",
@@ -3942,7 +3936,7 @@
       "kind": "lemma",
       "title": "Minimal exceptional index is inert",
       "section": "Small discriminants and final assembly",
-      "source_line": 1828,
+      "source_line": 1820,
       "source_order": 217,
       "statement_latex": "Assuming the corrected Treviño estimate E10, for\n$n=24k_\\ell-1$ and prime $\\ell\\ge10^{11}$,\n$\\left(\\frac{-n}{\\ell}\\right)=-1$.",
       "proof_latex": "The numerical bound gives $0<n<\\ell$.  Thus the exceptional Legendre symbol is nonzero, and minimality says that it must equal $-1$.",
@@ -3964,7 +3958,7 @@
       "kind": "lemma",
       "title": "Minimal inert index is squarefree",
       "section": "Small discriminants and final assembly",
-      "source_line": 1838,
+      "source_line": 1830,
       "source_order": 218,
       "statement_latex": "Assuming the corrected Treviño estimate E10, for\n$n=24k_\\ell-1$ and prime $\\ell\\ge10^{11}$, $n$ is squarefree.",
       "proof_latex": "If $u^2\\mid n$ with $u>1$, then $u^2\\equiv1\\pmod{24}$.  Multiplicativity of the Legendre symbol makes $n/u^2$ a smaller inert progression term, contradicting the minimality of $k_\\ell$.",
@@ -3986,7 +3980,7 @@
       "kind": "lemma",
       "title": "Class-number positivity",
       "section": "Small discriminants and final assembly",
-      "source_line": 1847,
+      "source_line": 1839,
       "source_order": 219,
       "statement_latex": "For squarefree $n\\equiv23\\pmod{24}$, $0<h(-n)$.",
       "proof_latex": "The principal form supplies a proper ideal class, and I22 identifies the reduced-form count with the ordinary class number.",
@@ -4004,7 +3998,7 @@
       "kind": "lemma",
       "title": "Elementary class-number bound",
       "section": "Small discriminants and final assembly",
-      "source_line": 1854,
+      "source_line": 1846,
       "source_order": 220,
       "statement_latex": "For squarefree $n\\equiv23\\pmod{24}$, $h(-n)<n$.",
       "proof_latex": "A reduced positive form has $1\\le a\\le\\lfloor\\sqrt{n/3}\\rfloor$ and $|b|\\le a$.  Counting all possible pairs gives an upper bound below $n$ for $n\\ge23$, and I22 identifies this count with the ordinary class number.",
@@ -4022,7 +4016,7 @@
       "kind": "lemma",
       "title": "Small admissible discriminant",
       "section": "Small discriminants and final assembly",
-      "source_line": 1861,
+      "source_line": 1853,
       "source_order": 221,
       "statement_latex": "Every prime $\\ell\\ge10^{11}$ admits $n$ satisfying $\\mathsf{SmallDisc}(\\ell,n)$.",
       "proof_latex": "Take $n=24k_\\ell-1$.  Squarefreeness and inertness follow from minimality.  The Treviño and numerical bounds give $n+1<\\sqrt{24\\ell}$.  The class-number estimate and $\\ell>96$ give $0<2h(-n)<\\ell$.",
@@ -4046,7 +4040,7 @@
       "kind": "proposition",
       "title": "No large canonical prime",
       "section": "Small discriminants and final assembly",
-      "source_line": 1870,
+      "source_line": 1862,
       "source_order": 222,
       "statement_latex": "Given the uniform E1--E11 literature ledger and the source-facing analytic\nmodels for the published grid, Stokes pairing, and general Borcherds lift, if\n$\\ell\\ge10^{11}$ is prime, then $\\neg\\Can(\\ell)$.",
       "proof_latex": "Assume canonicality and choose the small admissible $n$.  The normalized product and Frobenius argument make the reduced Wronskian zero, while CM separation and the degree bound make it nonzero, a contradiction.",
@@ -4068,7 +4062,7 @@
       "kind": "definition",
       "title": "Public release proposition",
       "section": "Small discriminants and final assembly",
-      "source_line": 1882,
+      "source_line": 1874,
       "source_order": 223,
       "statement_latex": "$\\mathsf{ReleaseStatement}$ is the proposition $\\forall\\ell,\\ \\Can(\\ell)\\leftrightarrow(\\ell=5\\lor\\ell=7\\lor\\ell=13)$.",
       "proof_latex": null,
@@ -4085,7 +4079,7 @@
       "kind": "proposition",
       "title": "I23: discharge all paper-specific endpoint premises",
       "section": "Small discriminants and final assembly",
-      "source_line": 1888,
+      "source_line": 1880,
       "source_order": 224,
       "statement_latex": "From a value of the uniform E1--E11 literature ledger and the source-facing\nanalytic model package one can prove $\\mathsf{ReleaseStatement}$ without an\n\\texttt{InfiniteProductObstructionData}, arbitrary class-polynomial families,\na normalized-product premise, or a collision-data argument.",
       "proof_latex": "The internal constructions above produce the actual grid, $H_n$, Laurent Hauptmodul, class polynomials, Euler products, and CM specialization.  Large primes are excluded by the two Wronskian conclusions.  Ahlgren--Kim handles the remaining finite range, and Andrews proves canonicality for $5,7,13$.",
@@ -4114,7 +4108,7 @@
       "kind": "theorem",
       "title": "Classification of canonical congruence primes",
       "section": "Small discriminants and final assembly",
-      "source_line": 1913,
+      "source_line": 1905,
       "source_order": 225,
       "statement_latex": "For every value of the uniform E1--E11 literature ledger, every compatible\nsource-facing analytic model package, and every natural number $\\ell$,\n\\[\n\\Can(\\ell)\\quad\\Longleftrightarrow\\quad \\ell=5\\ \\lor\\ \\ell=7\\ \\lor\\ \\ell=13.\n\\]",
       "proof_latex": "The public-endpoint proposition supplies the classification from exactly the literature record.",
@@ -6293,37 +6287,12 @@
     },
     {
       "from": "prop_i12_class_quotient_divisor",
-      "to": "prop_i12_heegner_divisor",
-      "kind": "proof"
-    },
-    {
-      "from": "prop_i12_class_quotient_divisor",
       "to": "prop_i15_actual_coordinate",
       "kind": "proof"
     },
     {
       "from": "prop_i12_class_quotient_divisor",
       "to": "prop_i16_class_polynomials",
-      "kind": "proof"
-    },
-    {
-      "from": "lem_i12_cusp_rigidity",
-      "to": "def_ext_x0_six_genus_zero",
-      "kind": "proof"
-    },
-    {
-      "from": "lem_i12_cusp_rigidity",
-      "to": "def_ext_x0_six_integral",
-      "kind": "proof"
-    },
-    {
-      "from": "lem_i12_cusp_rigidity",
-      "to": "prop_i11_weyl_zero",
-      "kind": "proof"
-    },
-    {
-      "from": "lem_i12_cusp_rigidity",
-      "to": "prop_i12_class_quotient_divisor",
       "kind": "proof"
     },
     {

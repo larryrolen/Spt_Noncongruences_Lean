@@ -29,8 +29,8 @@ noncomputable section
 set_option maxHeartbeats 2000000
 
 /-- Uniform analytic source data for the actual auxiliary forms.  All fields
-are either general external theorems (E3, E5, E6 and the finite-height Stokes
-principle) or application comparisons between the concrete models.  In
+are either general external theorems (E3, E5, E6, genus-zero descent and
+the finite-height Stokes principle) or comparisons between concrete models. In
 particular, this structure has no field asserting a product identity,
 Wronskian statement, polynomial separation, or prime classification. -/
 structure UniformActualNormalizedProductPackage
@@ -55,12 +55,11 @@ structure UniformActualNormalizedProductPackage
     (hnFiniteHeightStokesModel stokesQualified truncatedIntegral
       topBoundaryError regularizedValue)
   lift : FourComponentInput Form → LaurentSeries ℚ
-  unitary : LaurentSeries ℚ → Prop
   geometry : I12MeromorphicGeometry
-    (LaurentSeries ℚ) I12Divisor I12Divisor ℚ
-  bruinierOno : ∀ n : ℕ, E5BruinierOno
-    (actualI12BorcherdsModel E n lift geometry.divisor unitary)
   weylVector : FourComponentInput Form → ℕ → ℂ
+  bruinierOno : ∀ {n h : ℕ}
+    (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h), E5BruinierOno
+    (actualI12BorcherdsModel E C lift geometry.divisor weylVector)
   pairing : FourComponentInput Form → V →ₗ[ℂ] ℂ
   componentTheta : Fin 12 → V
   etaTheta : V
@@ -79,11 +78,7 @@ structure UniformActualNormalizedProductPackage
           (aCoeff ((24 * k - 1 : ℕ) : ℤ))) etaTheta =
       (regularizedValue
         (actualHnStokesInput E.toEtaJPowerBasis k F) : ℂ)
-  divisorRigidity : I12DivisorRigidityPrinciple geometry
-  leadingValue : I12LeadingValuePrinciple geometry
-  leadingCoefficient : ∀ f : LaurentSeries ℚ,
-    geometry.leadingValue f = f.coeff 0
-  classPolynomialDivisor : I12ClassPolynomialDivisorPrinciple geometry
+  genusZeroDescent : I12GenusZeroDescentPrinciple geometry
   classPolynomialCusp : I12ClassPolynomialCuspPrinciple geometry
   weylCusp : I12WeylCuspPrinciple geometry lift weylVector
 
@@ -128,12 +123,11 @@ theorem UniformActualNormalizedProductPackage.normalizedIdentityOfIndexEq
     rw [hcomparison, hpairingReal]
     norm_num
   exact actualClassPolynomialLaurentQuotient_eq_canonicalEulerQuotient
-    E D P.lift P.unitary P.geometry (P.bruinierOno n)
+    E D P.lift P.geometry P.weylVector (P.bruinierOno C)
     (auxiliaryFourComponentInput E k (aCoeff (n : ℤ)))
-    (by omega) hA P.weylVector P.pairing P.componentTheta P.etaTheta
+    (by omega) hA P.pairing P.componentTheta P.etaTheta
     P.normalization (P.bruinierSchwagenscheidt n)
-    P.etaComponentIdentity hpairing P.normalization_zero P.divisorRigidity
-    P.leadingValue P.leadingCoefficient P.classPolynomialDivisor
+    P.etaComponentIdentity hpairing P.normalization_zero P.genusZeroDescent
     P.classPolynomialCusp P.weylCusp
 
 /-- The preceding theorem at a literal triangular index. -/

@@ -9,6 +9,9 @@ public import blessed.SptCM.CM.Repaired.I16Reduction
 public import blessed.SptCM.Repair.I21ActualLaurentModel
 public import Mathlib.RingTheory.HahnSeries.HEval
 public import Mathlib.Algebra.Polynomial.Reverse
+public import blessed.SptCM.Repair.LaurentTranscendence
+public import blessed.SptCM.Analytic.Repaired.I12RationalRigidity
+public import blessed.SptCM.Analytic.Repaired.I12UnitaryAnalytic
 
 public section
 
@@ -386,287 +389,271 @@ theorem i12_leading_normalization
   ⟨actualClassPolynomialLaurentQuotient_leading_normalization D,
     actualBorcherdsEulerQuotient_coeff_zero F⟩
 
-/-- Predicted divisor read from the unique negative coefficient. -/
+/-- The embedding of the rational function field in the genuine formal
+Hauptmodul. Its simple pole proves transcendence, so this is an injective
+algebra homomorphism, not an arbitrary interpretation of formal series. -/
 @[expose]
-def actualPredictedHeegnerDivisor {Form : Type*} (n : ℕ) :
-    FourComponentInput Form → I12Divisor :=
-  fun F => heegnerDivisorFromSeries n F.vectorSeries
+noncomputable def rationalHauptmodulExpansion :
+    RatFunc ℚ →+* LaurentSeries ℚ :=
+  IsFractionRing.lift (A := ℚ[X]) (K := RatFunc ℚ) (L := LaurentSeries ℚ)
+    (g := (Polynomial.aeval actualRationalHauptmodulLaurent).toRingHom)
+    (by
+      exact transcendental_iff_injective.mp
+        (SptCM.Repair.laurentSeries_transcendental_of_simple_pole
+          actualRationalHauptmodulLaurent
+          actualRationalHauptmodulLaurent_principalPart.1
+          actualRationalHauptmodulLaurent_principalPart.2.2))
 
-/-- E5 applied to the actual I10 input and the fixed canonical stabilized
-Euler quotient.  The expansion predicate is no longer caller-selectable. -/
-@[expose]
-def actualI12BorcherdsModel {Form : Type*} [SMul ℂ Form]
-    (E : EtaJGeneratorBasis Form) (n : ℕ)
-    (lift : FourComponentInput Form → LaurentSeries ℚ)
-    (divisor : LaurentSeries ℚ → I12Divisor)
-    (unitary : LaurentSeries ℚ → Prop) :
-    BorcherdsLiftModel (FourComponentInput Form) (LaurentSeries ℚ) I12Divisor where
-  admissibleInput := VectorInputSpec E n
-  lift := lift
-  divisor := divisor
-  predictedDivisor := actualPredictedHeegnerDivisor n
-  hasUnitaryCharacter := unitary
-  hasProductExpansion := fun F g => g = actualBorcherdsEulerQuotient F
+set_option maxHeartbeats 2000000 in
+theorem rationalHauptmodulExpansion_polynomial (p : ℚ[X]) :
+    rationalHauptmodulExpansion (algebraMap ℚ[X] (RatFunc ℚ) p) =
+      Polynomial.aeval actualRationalHauptmodulLaurent p := by
+  unfold rationalHauptmodulExpansion
+  rw [IsFractionRing.lift_algebraMap]
+  rfl
 
-/-- The source-faithful E5 consequence that is currently available: its lift
-has the actual canonical stabilized Euler expansion.  This deliberately does
-not identify the lift with the class-polynomial quotient; that requires the
-missing internal divisor/rigidity/leading calculations, not an enlarged E7. -/
-theorem actualI12Lift_eq_canonicalEulerQuotient
-    {Form : Type*} [SMul ℂ Form] {n : ℕ}
-    (E : EtaJGeneratorBasis Form)
-    (lift : FourComponentInput Form → LaurentSeries ℚ)
-    (divisor : LaurentSeries ℚ → I12Divisor)
-    (unitary : LaurentSeries ℚ → Prop)
-    (hE5 : E5BruinierOno
-      (actualI12BorcherdsModel E n lift divisor unitary))
-    (F : FourComponentInput Form) (hF : VectorInputSpec E n F) :
-    lift F = actualBorcherdsEulerQuotient F := by
-  simpa [actualI12BorcherdsModel] using (hE5 F hF).2.2
-
-/-- E5 and the actual negative Fourier coefficient determine the lift's
-divisor, with no paper-specific divisor assertion stored in a record. -/
-theorem actualI12Lift_divisor_eq_signed
-    {Form : Type*} [SMul ℂ Form] {n : ℕ}
-    (E : EtaJGeneratorBasis Form)
-    (lift : FourComponentInput Form → LaurentSeries ℚ)
-    (divisor : LaurentSeries ℚ → I12Divisor)
-    (unitary : LaurentSeries ℚ → Prop)
-    (hE5 : E5BruinierOno
-      (actualI12BorcherdsModel E n lift divisor unitary))
-    (F : FourComponentInput Form) (hn : 0 < n)
-    (hF : VectorInputSpec E n F) :
-    divisor (lift F) = signedHeegnerDivisor := by
-  have hdiv := (hE5 F hF).1
-  change divisor (lift F) = actualPredictedHeegnerDivisor n F at hdiv
-  rw [hdiv]
-  exact prop_i12_heegner_divisor hn hF
-
-/-! ### Explicit divisor-rigidity-normalization assembly
-
-The following structure contains only geometric operations.  The general
-rigidity and leading-value laws are quantified separately, so there is no
-application object with a field equal to the desired product identity. -/
-
-/-- Neutral operations on the meromorphic functions used in I12. -/
-structure I12MeromorphicGeometry (Function Divisor CuspData Scalar : Type*) where
-  divisor : Function → Divisor
-  cuspData : Function → CuspData
-  leadingValue : Function → Scalar
-
-/-- Geometric interpretation of finite root products: evaluating the actual
-class-polynomial quotient in the exact Hauptmodul has precisely the signed
-root divisor computed from its numerator and denominator factors.  This is
-quantified over every descended class-polynomial specification and does not
-assume the final Borcherds-product identity. -/
-@[expose]
-def I12ClassPolynomialDivisorPrinciple
-    (G : I12MeromorphicGeometry
-      (LaurentSeries ℚ) I12Divisor I12Divisor ℚ) : Prop :=
-  ∀ {n h : ℕ}
+/-- Every class-polynomial quotient belongs to the rational function field. -/
+theorem classPolynomialQuotient_is_rational {n h : ℕ}
     {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
-    (_D : SptCM.CM.Repaired.ActualClassPolynomialSpec C),
-    G.divisor (actualClassPolynomialLaurentQuotient
-      _D actualRationalHauptmodulLaurent) =
-        actualClassPolynomialRootDivisor
+    (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C) :
+    ∃ r : RatFunc ℚ, rationalHauptmodulExpansion r =
+      actualClassPolynomialLaurentQuotient D actualRationalHauptmodulLaurent := by
+  refine ⟨algebraMap ℚ[X] (RatFunc ℚ) (D.A.map awaySixToRat) /
+    algebraMap ℚ[X] (RatFunc ℚ) (D.B.map awaySixToRat), ?_⟩
+  simp only [map_div₀, rationalHauptmodulExpansion_polynomial,
+    actualClassPolynomialLaurentQuotient]
 
-/-- The finite CM roots are interior points, so the equal-degree
-class-polynomial quotient has no cusp contribution.  As above, this is a
-uniform geometric interpretation law, not the desired product equality. -/
+/-- The complete divisor of a single oriented CM family, retaining the
+Hauptmodul coordinate of every point and its multiplicity. -/
 @[expose]
-def I12ClassPolynomialCuspPrinciple
-    (G : I12MeromorphicGeometry
-      (LaurentSeries ℚ) I12Divisor I12Divisor ℚ) : Prop :=
-  ∀ {n h : ℕ}
-    {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
-    (_D : SptCM.CM.Repaired.ActualClassPolynomialSpec C),
+noncomputable def orientedCMPointDivisor {n h : ℕ}
+    (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h)
+    (o : I12Orientation) (z : ℂ) : ℤ :=
+  match o with
+  | .one => (classPolynomial (fun i : C.orientation1.Index =>
+      SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant1 C.n_pos
+        (C.orientation1.classes i))).rootMultiplicity z
+  | .eleven => (classPolynomial (fun i : C.orientation11.Index =>
+      SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant11 C.n_pos
+        (C.orientation11.classes i))).rootMultiplicity z
+  | .five => (classPolynomial (fun i : C.orientation5.Index =>
+      SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant5 C.n_pos
+        (C.orientation5.classes i))).rootMultiplicity z
+  | .seven => (classPolynomial (fun i : C.orientation7.Index =>
+      SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant7 C.n_pos
+        (C.orientation7.classes i))).rootMultiplicity z
+
+@[expose]
+noncomputable def fullHeegnerDivisor {n h : ℕ}
+    (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h)
+    (a : I12Divisor) (z : ℂ) : ℤ :=
+  a .one * orientedCMPointDivisor C .one z +
+    a .eleven * orientedCMPointDivisor C .eleven z +
+    a .five * orientedCMPointDivisor C .five z +
+    a .seven * orientedCMPointDivisor C .seven z
+
+/-- Multiplicities of the actual numerator roots minus those of the actual
+denominator roots. Different discriminants no longer receive the same divisor. -/
+@[expose]
+noncomputable def fullClassPolynomialDivisor {n h : ℕ}
+    (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (z : ℂ) : ℤ :=
+  (C.actualNumeratorPolynomial.rootMultiplicity z : ℤ) -
+    (C.actualDenominatorPolynomial.rootMultiplicity z : ℤ)
+
+theorem fullHeegnerDivisor_signed {n h : ℕ}
+    (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) :
+    fullHeegnerDivisor C signedHeegnerDivisor = fullClassPolynomialDivisor C := by
+  funext z
+  simp only [fullHeegnerDivisor, signedHeegnerDivisor, I12Orientation.sign,
+    one_mul, neg_one_mul, fullClassPolynomialDivisor,
+    SptCM.CM.Repaired.ActualOrientedCMCoordinates.actualNumeratorPolynomial,
+    SptCM.CM.Repaired.ActualOrientedCMCoordinates.actualDenominatorPolynomial,
+    classPolynomial, Fintype.prod_sum_type]
+  rw [Polynomial.rootMultiplicity_mul (by
+    exact mul_ne_zero (classPolynomial_monic _).ne_zero (classPolynomial_monic _).ne_zero),
+    Polynomial.rootMultiplicity_mul (by
+      exact mul_ne_zero (classPolynomial_monic _).ne_zero (classPolynomial_monic _).ne_zero)]
+  simp only [orientedCMPointDivisor, classPolynomial, Nat.cast_add,
+    SptCM.CM.Repaired.ActualOrientedCMCoordinates.numeratorRoot,
+    SptCM.CM.Repaired.ActualOrientedCMCoordinates.denominatorRoot]
+  ring
+
+/-- Interior divisors are functions of actual complex coordinates. Cusp
+orders are real because a unitary character can have nonintegral exponents.
+The compatibility law is needed only when every cusp order is zero. -/
+structure I12MeromorphicGeometry where
+  divisor : LaurentSeries ℚ → ℂ → ℤ
+  cuspData : LaurentSeries ℚ → Fin 4 → ℝ
+  analyticCuspOrders : ∀ f (R : I12UnitaryMeromorphicRealization f),
+    cuspData f = R.cuspOrder
+  analyticDivisor : ∀ f (R : I12UnitaryMeromorphicRealization f)
+    (τ : UpperHalfPlane),
+    divisor f (SptCM.CM.Repaired.analyticHauptmodul τ) =
+      (meromorphicOrderAt R.toFun (τ : ℂ)).untop₀
+  rationalDivisor : ∀ r : RatFunc ℚ, r ≠ 0 →
+    cuspData (rationalHauptmodulExpansion r) = 0 →
+    divisor (rationalHauptmodulExpansion r) = rationalFunctionDivisor r
+
+/-- Explicit analytic descent input: a nonzero weight-zero meromorphic form
+with unitary character and zero cusp orders on the compact genus-zero curve
+is rational in its Hauptmodul. The analytic domain is fixed by convergent
+expansions and actual meromorphic functions, rather than a caller-selected
+predicate. This general descent theorem remains an explicit analytic input;
+it involves no CM polynomials or target identity. -/
+@[expose]
+def I12GenusZeroDescentPrinciple (G : I12MeromorphicGeometry) : Prop :=
+  ∀ f, HasI12UnitaryMeromorphicRealization f → G.cuspData f = 0 → f ≠ 0 →
+    ∃ r : RatFunc ℚ, rationalHauptmodulExpansion r = f
+
+/-- The finite CM roots are interior points, and the monic equal-degree
+quotient has no zero or pole at any cusp. -/
+@[expose]
+def I12ClassPolynomialCuspPrinciple (G : I12MeromorphicGeometry) : Prop :=
+  ∀ {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
+    (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C),
     G.cuspData (actualClassPolynomialLaurentQuotient
-      _D actualRationalHauptmodulLaurent) = 0
+      D actualRationalHauptmodulLaurent) = 0
 
-/-- General interpretation of Weyl vectors as cusp orders of a Borcherds
-lift: vanishing at all four level-six cusps forces trivial cusp data. -/
 @[expose]
-def I12WeylCuspPrinciple
-    {Form : Type*}
-    (G : I12MeromorphicGeometry
-      (LaurentSeries ℚ) I12Divisor I12Divisor ℚ)
+def I12WeylCuspPrinciple {Form : Type*} (G : I12MeromorphicGeometry)
     (lift : FourComponentInput Form → LaurentSeries ℚ)
     (weylVector : FourComponentInput Form → ℕ → ℂ) : Prop :=
-  ∀ F, (∀ c, IsLevelSixDivisor c → weylVector F c = 0) →
-    G.cuspData (lift F) = 0
+  ∀ F, (∀ c, IsLevelSixDivisor c → weylVector F c = 0) → G.cuspData (lift F) = 0
 
-/-- The divisor of the genuine class-polynomial Laurent quotient is the
-signed Heegner divisor.  The only boundary input is the uniform
-root-product/divisor interpretation law; the Rolen-specific sign calculation
-is internal. -/
-theorem actualClassPolynomialLaurentQuotient_divisor_eq_signed
-    {n h : ℕ}
-    {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
-    (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C)
-    (G : I12MeromorphicGeometry
-      (LaurentSeries ℚ) I12Divisor I12Divisor ℚ)
-    (hClassDivisor : I12ClassPolynomialDivisorPrinciple G) :
-    G.divisor (actualClassPolynomialLaurentQuotient
-      D actualRationalHauptmodulLaurent) = signedHeegnerDivisor := by
-  rw [hClassDivisor D]
-  exact actualClassPolynomialRootDivisor_eq_signed D
-
-/-- General compact-curve rigidity: two meromorphic functions with the same
-horizontal divisor and cusp data differ by a scalar. -/
+/-- E5 with the full, discriminant-dependent Heegner divisor, applied only
+after all Weyl vectors vanish so that the product has no cusp prefactor. -/
 @[expose]
-def I12DivisorRigidityPrinciple
-    {Function Divisor CuspData Scalar : Type*}
-    [Field Scalar] [Field Function] [Algebra Scalar Function]
-    (G : I12MeromorphicGeometry Function Divisor CuspData Scalar) : Prop :=
-  ∀ f g, G.divisor f = G.divisor g → G.cuspData f = G.cuspData g →
-    ∃ c : Scalar, f = algebraMap Scalar Function c * g
-
-/-- General compatibility of the leading value with scalar multiplication. -/
-@[expose]
-def I12LeadingValuePrinciple
-    {Function Divisor CuspData Scalar : Type*}
-    [Field Scalar] [Field Function] [Algebra Scalar Function]
-    (G : I12MeromorphicGeometry Function Divisor CuspData Scalar) : Prop :=
-  ∀ c : Scalar, ∀ f,
-    G.leadingValue (algebraMap Scalar Function c * f) =
-      c * G.leadingValue f
-
-/-- Equal divisors and cusp data give a scalar multiple; equal normalized
-leading values force that scalar to be one. -/
-theorem eq_of_I12_divisor_rigidity_and_normalization
-    {Function Divisor CuspData Scalar : Type*}
-    [Field Scalar] [Field Function] [Algebra Scalar Function]
-    (G : I12MeromorphicGeometry Function Divisor CuspData Scalar)
-    (hRigidity : I12DivisorRigidityPrinciple G)
-    (hLeading : I12LeadingValuePrinciple G)
-    (f g : Function)
-    (hdivisor : G.divisor f = G.divisor g)
-    (hcusp : G.cuspData f = G.cuspData g)
-    (hf : G.leadingValue f = 1)
-    (hg : G.leadingValue g = 1) :
-    f = g := by
-  obtain ⟨c, hc⟩ := hRigidity f g hdivisor hcusp
-  have hc_one : c = 1 := by
-    have h := congrArg G.leadingValue hc
-    rw [hLeading, hf, hg, mul_one] at h
-    exact h.symm
-  subst c
-  simpa using hc
-
-/-- I12 cusp rigidity derived from E6 rather than a cusp-equality
-assumption.  The component calculation makes every Weyl vector vanish; the
-two general interpretation laws turn this and the interior CM-root
-calculation into equal divisor and cusp data, so compact-curve rigidity gives
-a scalar multiple. -/
-theorem i12_cusp_rigidity
-    {Form V : Type*} [SMul ℂ Form]
-    [AddCommMonoid V] [Module ℂ V] {n h : ℕ}
-    (E : EtaJGeneratorBasis Form)
-    {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
-    (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C)
+noncomputable def actualI12BorcherdsModel {Form : Type*} [SMul ℂ Form]
+    (E : EtaJGeneratorBasis Form) {n h : ℕ}
+    (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h)
     (lift : FourComponentInput Form → LaurentSeries ℚ)
-    (G : I12MeromorphicGeometry
-      (LaurentSeries ℚ) I12Divisor I12Divisor ℚ)
-    (F : FourComponentInput Form) (hF : VectorInputSpec E n F)
-    (weylVector : FourComponentInput Form → ℕ → ℂ)
-    (pairing : FourComponentInput Form → V →ₗ[ℂ] ℂ)
-    (theta : Fin 12 → V) (eta : V) (normalization : ℂ → ℂ)
-    (hE6 : E6BruinierSchwagenscheidt
-      (componentWeylVectorModel (VectorInputSpec E n) weylVector pairing
-        theta normalization))
-    (heta : EtaComponentThetaIdentity theta eta)
-    (hpairing : pairing F eta = 0)
-    (hnormalization : normalization 0 = 0)
-    (hClassDivisor : I12ClassPolynomialDivisorPrinciple G)
-    (hClassCusp : I12ClassPolynomialCuspPrinciple G)
-    (hWeylCusp : I12WeylCuspPrinciple G lift weylVector)
-    (hliftDivisor : G.divisor (lift F) = signedHeegnerDivisor)
-    (hRigidity : I12DivisorRigidityPrinciple G) :
-    ∃ c : ℚ, lift F = algebraMap ℚ (LaurentSeries ℚ) c *
-      actualClassPolynomialLaurentQuotient
-        D actualRationalHauptmodulLaurent := by
-  have hweyl : ∀ c, IsLevelSixDivisor c → weylVector F c = 0 :=
-    componentWeylVectors_eq_zero (VectorInputSpec E n) weylVector pairing
-      theta eta normalization hE6 heta F hF hpairing hnormalization
-  have hliftCusp : G.cuspData (lift F) = 0 := hWeylCusp F hweyl
-  have hclassCusp :
-      G.cuspData (actualClassPolynomialLaurentQuotient
-        D actualRationalHauptmodulLaurent) = 0 :=
-    hClassCusp D
-  have hclassDivisor :
-      G.divisor (actualClassPolynomialLaurentQuotient
-        D actualRationalHauptmodulLaurent) = signedHeegnerDivisor :=
-    actualClassPolynomialLaurentQuotient_divisor_eq_signed
-      D G hClassDivisor
-  apply hRigidity
-  · exact hliftDivisor.trans hclassDivisor.symm
-  · exact hliftCusp.trans hclassCusp.symm
+    (divisor : LaurentSeries ℚ → ℂ → ℤ)
+    (weylVector : FourComponentInput Form → ℕ → ℂ) :
+    BorcherdsLiftModel (FourComponentInput Form) (LaurentSeries ℚ) (ℂ → ℤ) where
+  admissibleInput := fun F => VectorInputSpec E n F ∧
+    (∀ c, IsLevelSixDivisor c → weylVector F c = 0)
+  lift := lift
+  divisor := divisor
+  predictedDivisor := fun F => fullHeegnerDivisor C
+    (heegnerDivisorFromSeries n F.vectorSeries)
+  hasUnitaryCharacter := HasI12UnitaryMeromorphicRealization
+  hasProductExpansion := fun F g => g = actualBorcherdsEulerQuotient F
 
-/-- The exact normalized I12 identity under general, source-faithful
-geometric interpretation laws.  E5 supplies the lift divisor and canonical
-Euler expansion; E6 and the component calculation supply vanishing Weyl
-vectors; the root-product and Weyl interpretation principles supply the
-divisor/cusp comparison; and both leading normalizations are derived
-internally.  No desired equality or leading-value conclusion is assumed. -/
+theorem actualI12Lift_divisor_eq_full {Form : Type*} [SMul ℂ Form] {n h : ℕ}
+    (E : EtaJGeneratorBasis Form)
+    (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h)
+    (lift : FourComponentInput Form → LaurentSeries ℚ)
+    (G : I12MeromorphicGeometry)
+    (weylVector : FourComponentInput Form → ℕ → ℂ)
+    (hE5 : E5BruinierOno (actualI12BorcherdsModel E C lift G.divisor weylVector))
+    (F : FourComponentInput Form) (hn : 0 < n) (hF : VectorInputSpec E n F)
+    (hweyl : ∀ c, IsLevelSixDivisor c → weylVector F c = 0) :
+    G.divisor (lift F) = fullClassPolynomialDivisor C := by
+  have hdiv := (hE5 F ⟨hF, hweyl⟩).1
+  change G.divisor (lift F) =
+    fullHeegnerDivisor C (heegnerDivisorFromSeries n F.vectorSeries) at hdiv
+  rw [prop_i12_heegner_divisor hn hF, fullHeegnerDivisor_signed] at hdiv
+  exact hdiv
+
+theorem awaySixToRat_toComplex :
+    (algebraMap ℚ ℂ).comp awaySixToRat = SptCM.awaySixToComplex := by
+  apply IsLocalization.ringHom_ext (Submonoid.powers (6 : ℤ))
+  ext n
+  simp [awaySixToRat, SptCM.awaySixToComplex]
+
+/-- The class-polynomial divisor is derived from the full rational-function
+divisor, rather than asserted using four orientation labels. -/
+theorem classPolynomialQuotient_divisor {n h : ℕ}
+    {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
+    (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C)
+    (G : I12MeromorphicGeometry) (hcusp : I12ClassPolynomialCuspPrinciple G) :
+    G.divisor (actualClassPolynomialLaurentQuotient D
+      actualRationalHauptmodulLaurent) = fullClassPolynomialDivisor C := by
+  let p := D.A.map awaySixToRat
+  let q := D.B.map awaySixToRat
+  let r : RatFunc ℚ := algebraMap ℚ[X] (RatFunc ℚ) p /
+    algebraMap ℚ[X] (RatFunc ℚ) q
+  have hr : rationalHauptmodulExpansion r =
+      actualClassPolynomialLaurentQuotient D actualRationalHauptmodulLaurent := by
+    simp only [r, p, q, map_div₀, rationalHauptmodulExpansion_polynomial,
+      actualClassPolynomialLaurentQuotient]
+  have hp : p ≠ 0 := (D.monicA.map awaySixToRat).ne_zero
+  have hq : q ≠ 0 := (D.monicB.map awaySixToRat).ne_zero
+  have hr0 : r ≠ 0 := div_ne_zero
+    (RatFunc.algebraMap_ne_zero hp) (RatFunc.algebraMap_ne_zero hq)
+  rw [← hr, G.rationalDivisor r hr0 (hr ▸ hcusp D),
+    rationalFunctionDivisor_div p q hp hq]
+  simp only [p, q, Polynomial.map_map, awaySixToRat_toComplex, D.mapA, D.mapB]
+  rfl
+
+/-- Rigidity is proved for rational functions, with nonzero hypotheses and
+full point divisors. It is no longer assumed for all formal Laurent series. -/
+theorem eq_of_rational_divisors_and_normalization (G : I12MeromorphicGeometry)
+    (f g : LaurentSeries ℚ)
+    (hf : ∃ r : RatFunc ℚ, rationalHauptmodulExpansion r = f)
+    (hg : ∃ r : RatFunc ℚ, rationalHauptmodulExpansion r = g)
+    (hfcusp : G.cuspData f = 0) (hgcusp : G.cuspData g = 0)
+    (hdiv : G.divisor f = G.divisor g)
+    (hf1 : f.coeff 0 = 1) (hg1 : g.coeff 0 = 1) : f = g := by
+  obtain ⟨r, rfl⟩ := hf
+  obtain ⟨s, rfl⟩ := hg
+  have hr : r ≠ 0 := by
+    intro h; simp [h] at hf1
+  have hs : s ≠ 0 := by
+    intro h; simp [h] at hg1
+  rw [G.rationalDivisor r hr hfcusp, G.rationalDivisor s hs hgcusp] at hdiv
+  obtain ⟨c, _, hc⟩ := rationalFunction_divisor_rigidity r s hr hs hdiv
+  have heq := congrArg rationalHauptmodulExpansion hc
+  have hconst : rationalHauptmodulExpansion.comp (algebraMap ℚ (RatFunc ℚ)) =
+      HahnSeries.C := Subsingleton.elim _ _
+  have hconstc := DFunLike.congr_fun hconst c
+  simp only [RingHom.comp_apply] at hconstc
+  simp only [map_mul, hconstc] at heq
+  have hcoeff := congrArg (fun F : LaurentSeries ℚ => F.coeff 0) heq
+  simp only [HahnSeries.C_mul_eq_smul, HahnSeries.coeff_smul, smul_eq_mul,
+    hf1, hg1, mul_one] at hcoeff
+  have hc1 : c = 1 := hcoeff.symm
+  simpa [hc1] using heq
+
+/-- E5 gives the full interior divisor and canonical Euler expansion; E6
+gives zero cusp orders. Genus-zero descent supplies rationality. The full
+divisor rigidity and both leading normalizations are proved internally. -/
 theorem actualClassPolynomialLaurentQuotient_eq_canonicalEulerQuotient
-    {Form V : Type*} [SMul ℂ Form]
-    [AddCommMonoid V] [Module ℂ V] {n h : ℕ}
+    {Form V : Type*} [SMul ℂ Form] [AddCommMonoid V] [Module ℂ V] {n h : ℕ}
     (E : EtaJGeneratorBasis Form)
     {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h}
     (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C)
     (lift : FourComponentInput Form → LaurentSeries ℚ)
-    (unitary : LaurentSeries ℚ → Prop)
-    (G : I12MeromorphicGeometry
-      (LaurentSeries ℚ) I12Divisor I12Divisor ℚ)
-    (hE5 : E5BruinierOno
-      (actualI12BorcherdsModel E n lift G.divisor unitary))
-    (F : FourComponentInput Form) (hn : 0 < n)
-    (hF : VectorInputSpec E n F)
+    (G : I12MeromorphicGeometry)
     (weylVector : FourComponentInput Form → ℕ → ℂ)
+    (hE5 : E5BruinierOno (actualI12BorcherdsModel E C lift G.divisor weylVector))
+    (F : FourComponentInput Form) (hn : 0 < n) (hF : VectorInputSpec E n F)
     (pairing : FourComponentInput Form → V →ₗ[ℂ] ℂ)
     (theta : Fin 12 → V) (eta : V) (normalization : ℂ → ℂ)
     (hE6 : E6BruinierSchwagenscheidt
-      (componentWeylVectorModel (VectorInputSpec E n) weylVector pairing
-        theta normalization))
-    (heta : EtaComponentThetaIdentity theta eta)
-    (hpairing : pairing F eta = 0)
+      (componentWeylVectorModel (VectorInputSpec E n) weylVector pairing theta normalization))
+    (heta : EtaComponentThetaIdentity theta eta) (hpairing : pairing F eta = 0)
     (hnormalization : normalization 0 = 0)
-    (hRigidity : I12DivisorRigidityPrinciple G)
-    (hLeading : I12LeadingValuePrinciple G)
-    (hLeadingCoeff :
-      ∀ f : LaurentSeries ℚ, G.leadingValue f = f.coeff 0)
-    (hClassDivisor : I12ClassPolynomialDivisorPrinciple G)
+    (hDescent : I12GenusZeroDescentPrinciple G)
     (hClassCusp : I12ClassPolynomialCuspPrinciple G)
     (hWeylCusp : I12WeylCuspPrinciple G lift weylVector) :
-    actualClassPolynomialLaurentQuotient
-        D actualRationalHauptmodulLaurent =
+    actualClassPolynomialLaurentQuotient D actualRationalHauptmodulLaurent =
       actualBorcherdsEulerQuotient F := by
-  have hliftDivisor : G.divisor (lift F) = signedHeegnerDivisor :=
-    actualI12Lift_divisor_eq_signed E lift G.divisor unitary hE5 F hn hF
-  have hliftEuler :
-      lift F = actualBorcherdsEulerQuotient F :=
-    actualI12Lift_eq_canonicalEulerQuotient
-      E lift G.divisor unitary hE5 F hF
-  have hliftLeading : G.leadingValue (lift F) = 1 := by
-    rw [hLeadingCoeff, hliftEuler,
-      actualBorcherdsEulerQuotient_coeff_zero]
-  have hclassLeading :
-      G.leadingValue (actualClassPolynomialLaurentQuotient
-        D actualRationalHauptmodulLaurent) = 1 := by
-    rw [hLeadingCoeff,
-      actualClassPolynomialLaurentQuotient_leading_normalization D]
-  obtain ⟨c, hc⟩ := i12_cusp_rigidity E D lift G F hF weylVector
-    pairing theta eta normalization hE6 heta hpairing hnormalization
-    hClassDivisor hClassCusp hWeylCusp hliftDivisor hRigidity
-  have hc_one : c = 1 := by
-    have hlead := congrArg G.leadingValue hc
-    rw [hLeading, hliftLeading, hclassLeading, mul_one] at hlead
-    exact hlead.symm
-  subst c
-  have heq : lift F = actualClassPolynomialLaurentQuotient
-      D actualRationalHauptmodulLaurent := by
-    simpa using hc
-  rw [← heq]
-  exact hliftEuler
+  have hweyl := componentWeylVectors_eq_zero (VectorInputSpec E n) weylVector
+    pairing theta eta normalization hE6 heta F hF hpairing hnormalization
+  have hliftCusp := hWeylCusp F hweyl
+  have hliftEuler : lift F = actualBorcherdsEulerQuotient F := (hE5 F ⟨hF, hweyl⟩).2.2
+  have hliftLeading : (lift F).coeff 0 = 1 := by
+    rw [hliftEuler, actualBorcherdsEulerQuotient_coeff_zero]
+  have hlift0 : lift F ≠ 0 := by
+    intro hzero; simp [hzero] at hliftLeading
+  have hLiftRational := hDescent (lift F) (hE5 F ⟨hF, hweyl⟩).2.1 hliftCusp hlift0
+  have hdiv := (actualI12Lift_divisor_eq_full E C lift G weylVector hE5 F hn hF hweyl).trans
+    (classPolynomialQuotient_divisor D G hClassCusp).symm
+  have heq := eq_of_rational_divisors_and_normalization G (lift F)
+    (actualClassPolynomialLaurentQuotient D actualRationalHauptmodulLaurent)
+    hLiftRational (classPolynomialQuotient_is_rational D) hliftCusp (hClassCusp D)
+    hdiv hliftLeading (actualClassPolynomialLaurentQuotient_leading_normalization D)
+  exact heq.symm.trans hliftEuler
 
 end SptCM.Analytic.Repaired

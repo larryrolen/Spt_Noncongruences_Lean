@@ -9,35 +9,26 @@ The smallest-parts function is defined directly from integer partitions.
   -- Preserve the standard ring operations when importing the complete Mathlib surface.
 attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
 namespace SptCM.Analytic
-/-- The quadratic character `χ₁₂(m) = (12/m)`, explicitly by residue class. -/ def chi12 (m : ℤ) : ℤ :=
-  if m % 12 = 1 ∨ m % 12 = 11 then 1 else if m % 12 = 5 ∨ m % 12 = 7 then -1 else 0
+/-- The quadratic character `χ₁₂(m) = (12/m)`, explicitly by residue class. -/ def chi12 (m : ℤ) : ℤ := if m % 12 = 1 ∨ m % 12 = 11 then 1 else if m % 12 = 5 ∨ m % 12 = 7 then -1 else 0
 end SptCM.Analytic
 namespace Nat
 /-- The least nonnegative representative of the Bézout coefficient of `a` modulo `n`. When `a` and `n` are coprime and `n` is positive, this is the multiplicative inverse of `a` modulo `n`. This compatibility definition supplies the conventional `Nat.modInv` name, which is not present in the Mathlib revision used by this project. -/ def modInv (a n : ℕ) : ℕ :=
   (gcdA a n % (n : ℤ)).toNat
 end Nat
 namespace SptCM
-/-- The multiplicity of the least part of a partition. The unique partition of zero has no parts and is assigned weight zero. -/ def smallestPartMultiplicity {n : ℕ} (p : Nat.Partition n) : ℕ :=
-  if h : p.parts.toFinset.Nonempty then p.parts.count (p.parts.toFinset.min' h) else 0
-/-- Andrews' smallest-parts function: the total number of occurrences of the smallest part among all partitions of `n`. -/ def spt (n : ℕ) : ℕ :=
-  ∑ p : Nat.Partition n, smallestPartMultiplicity p
-/-- The canonical residue `b_ℓ`, represented by the inverse of 24 modulo `ℓ`. For primes `ℓ ≥ 5`, this lies in `{1, ..., ℓ - 1}`. -/ def canonicalResidue (ℓ : ℕ) : ℕ :=
-  Nat.modInv 24 ℓ
-/-- A canonical congruence prime for `spt`: a prime `ℓ ≥ 5` for which the canonical progression is identically zero modulo `ℓ`. -/ def CanonicalCongruencePrime (ℓ : ℕ) : Prop :=
-  ℓ.Prime ∧ 5 ≤ ℓ ∧ ∀ n : ℕ, ℓ ∣ spt (ℓ * n + canonicalResidue ℓ)
+/-- The multiplicity of the least part of a partition. The unique partition of zero has no parts and is assigned weight zero. -/ def smallestPartMultiplicity {n : ℕ} (p : Nat.Partition n) : ℕ := if h : p.parts.toFinset.Nonempty then p.parts.count (p.parts.toFinset.min' h) else 0
+/-- Andrews' smallest-parts function: the total number of occurrences of the smallest part among all partitions of `n`. -/ def spt (n : ℕ) : ℕ := ∑ p : Nat.Partition n, smallestPartMultiplicity p
+/-- The canonical residue `b_ℓ`, represented by the inverse of 24 modulo `ℓ`. For primes `ℓ ≥ 5`, this lies in `{1, ..., ℓ - 1}`. -/ def canonicalResidue (ℓ : ℕ) : ℕ := Nat.modInv 24 ℓ
+/-- A canonical congruence prime for `spt`: a prime `ℓ ≥ 5` for which the canonical progression is identically zero modulo `ℓ`. -/ def CanonicalCongruencePrime (ℓ : ℕ) : Prop := ℓ.Prime ∧ 5 ≤ ℓ ∧ ∀ n : ℕ, ℓ ∣ spt (ℓ * n + canonicalResidue ℓ)
 end SptCM
 namespace SptCM.PaperInterfaces
-/-- A coefficient model for a Laurent or fractional-power series. The index normalization (for example, exponents `n / 24`) is carried by the consumer. -/ abbrev CoeffSeries (R : Type*) :=
-  ℤ → R
-/-- A coefficientwise operator on the neutral series model. -/ abbrev SeriesOperator (R : Type*) :=
-  CoeffSeries R → CoeffSeries R
-/-- Ahlgren--Kim Proposition 6 after choosing the scalar normalization but before taking coefficientwise consequences. -/ def AhlgrenKimThetaCycleInput (ℓ : ℕ) (thetaPower : SeriesOperator (ZMod ℓ)) (epsilon : ZMod ℓ) (f : CoeffSeries (ZMod ℓ)) : Prop :=
-  thetaPower f = epsilon • f
+/-- A coefficient model for a Laurent or fractional-power series. The index normalization (for example, exponents `n / 24`) is carried by the consumer. -/ abbrev CoeffSeries (R : Type*) := ℤ → R
+/-- A coefficientwise operator on the neutral series model. -/ abbrev SeriesOperator (R : Type*) := CoeffSeries R → CoeffSeries R
+/-- Ahlgren--Kim Proposition 6 after choosing the scalar normalization but before taking coefficientwise consequences. -/ def AhlgrenKimThetaCycleInput (ℓ : ℕ) (thetaPower : SeriesOperator (ZMod ℓ)) (epsilon : ZMod ℓ) (f : CoeffSeries (ZMod ℓ)) : Prop := thetaPower f = epsilon • f
 end SptCM.PaperInterfaces
 namespace SptCM.Analytic
 section CoefficientModels
-/-- A coefficient model for the fractional-power `q`-series in Section 2; the integer key is the numerator of the exponent `n/24`. -/ abbrev QSeries (K : Type*) :=
-  ℤ → K
+/-- A coefficient model for the fractional-power `q`-series in Section 2; the integer key is the numerator of the exponent `n/24`. -/ abbrev QSeries (K : Type*) := ℤ → K
 /-- The principal-part predicate characterizing the canonical grid form. It states only the two negative coefficients used in the paper and vanishing of all other negative coefficients. -/ def HasGridPrincipalPart {K : Type*} [Ring K] (chi : ℕ → K) (m : ℕ) (g : QSeries K) : Prop :=
   ∀ r : ℤ, r < 0 → g r = if r = -(m : ℤ) ^ 2 then 1 else if r = -1 then -chi m else 0
 /-- The coefficient formula for the paper's weight `3/2` Hecke operator. Inadmissible divided indices contribute zero. -/ def heckeThreeHalf {K : Type*} [Field K] (ell : ℕ) (chiEll : K) (legendre : ℤ → K) (g : QSeries K) : QSeries K := fun n =>
@@ -46,8 +37,7 @@ end CoefficientModels
 end SptCM.Analytic
 namespace SptCM.Analytic
 open SptCM.PaperInterfaces
-/-- The ordinary partition number, using Mathlib's finite type of partitions. -/ def partitionNumber (n : ℕ) : ℕ :=
-  Fintype.card (Nat.Partition n)
+/-- The ordinary partition number, using Mathlib's finite type of partitions. -/ def partitionNumber (n : ℕ) : ℕ := Fintype.card (Nat.Partition n)
 /-- The coefficient `a(r)` of the smallest-parts mock modular form. The supported nonnegative indices satisfy `r ≡ 23 (mod 24)` and correspond to `r = 24n - 1`; the principal coefficient at `r = -1` is specified separately. -/ def aCoeff (r : ℤ) : ℤ :=
   if r = -1 then 1
   else
@@ -55,22 +45,19 @@ open SptCM.PaperInterfaces
       let n := ((r + 1).toNat / 24)
       (-12 : ℤ) * (SptCM.spt n : ℤ) - r * (partitionNumber n : ℤ)
     else 0
-/-- The coefficient-function model of `f = Σ a(r) q^(r/24)`. -/ def fSeries : QSeries ℤ :=
-  aCoeff
+/-- The coefficient-function model of `f = Σ a(r) q^(r/24)`. -/ def fSeries : QSeries ℤ := aCoeff
 /-- Coefficientwise reduction of `f` modulo `ℓ`. -/ def fSeriesMod (ℓ : ℕ) : QSeries (ZMod ℓ) := fun r => (aCoeff r : ZMod ℓ)
 /-- `Θ = q d/dq` on series indexed by the numerator of `r/24`. Accordingly, the coefficient at index `r` is multiplied by `r/24`. -/ def thetaSeriesOp (ℓ : ℕ) [Fact ℓ.Prime] : QSeries (ZMod ℓ) → QSeries (ZMod ℓ) := fun g r => ((r : ZMod ℓ) / (24 : ZMod ℓ)) * g r
 /-- The coefficientwise closed form of the `k`-fold theta operator. -/ def thetaPowerSeriesOp (ℓ k : ℕ) [Fact ℓ.Prime] : QSeries (ZMod ℓ) → QSeries (ZMod ℓ) := fun g r => (((r : ZMod ℓ) / (24 : ZMod ℓ)) ^ k) * g r
 /-- The `U_ℓ` operator on the integral-index coefficient model. -/ def uSeriesOp {R : Type*} (ℓ : ℕ) (g : QSeries R) : QSeries R := fun r => g ((ℓ : ℤ) * r)
-/-- The scalar `(-24/ℓ)` appearing in the theta-cycle theorem. -/ def thetaCycleEigenvalue (ℓ : ℕ) [Fact ℓ.Prime] : ZMod ℓ :=
-  (legendreSym ℓ (-24) : ℤ)
+/-- The scalar `(-24/ℓ)` appearing in the theta-cycle theorem. -/ def thetaCycleEigenvalue (ℓ : ℕ) [Fact ℓ.Prime] : ZMod ℓ := (legendreSym ℓ (-24) : ℤ)
 /-- The precise conditional form of the Ahlgren--Kim input consumed by the paper: reduced `U_ℓ`-vanishing implies the stated theta-cycle eigenrelation. -/ def AhlgrenKimThetaCycleFromUInput (ℓ : ℕ) [Fact ℓ.Prime] : Prop :=
   uSeriesOp ℓ (fSeriesMod ℓ) = 0 → PaperInterfaces.AhlgrenKimThetaCycleInput ℓ (thetaPowerSeriesOp ℓ ((ℓ - 1) / 2)) (thetaCycleEigenvalue ℓ) (fSeriesMod ℓ)
 end SptCM.Analytic
 namespace SptCM.Analytic
 open Filter Polynomial
 open scoped Topology BigOperators
-/-- Coefficient model for the auxiliary weakly holomorphic form `H_n`. -/ abbrev HForm (R : Type*) :=
-  ℤ → R
+/-- Coefficient model for the auxiliary weakly holomorphic form `H_n`. -/ abbrev HForm (R : Type*) := ℤ → R
 section ClassPolynomials
 variable {R ι κ : Type*} [CommRing R]
 end ClassPolynomials
@@ -90,14 +77,10 @@ open scoped BigOperators
   support : ∀ d r, r < 25 → (∀ i : ℕ, r ≠ 1 - 24 * (i : ℤ)) → coefficients (powerForm d) r = 0
 /-- The unitriangular coefficient matrix of `η, ηj, ..., ηj^k`, ordered by the exponents `q^(1/24), q^(-23/24), ...`. -/ def etaJMatrix {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) : Matrix (Fin (k + 1)) (Fin (k + 1)) ℤ := fun i d => E.coefficients (E.powerForm d) (1 - 24 * (i : ℤ))
 /-- Desired coefficients at the triangular exponents. The top entry is the monic leading term, the bottom entry is `-a(n)`, and all intermediate negative terms vanish. -/ def hnTarget (k : ℕ) (a : ℤ) : Fin (k + 1) → ℤ := fun i => if (i : ℕ) = k then 1 else if (i : ℕ) = 0 then -a else 0
-/-- The integral coefficient vector obtained by solving the unitriangular eta--j system. -/ noncomputable def triangularCoefficients {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Fin (k + 1) → ℤ :=
-  (etaJMatrix E k)⁻¹ *ᵥ hnTarget k a
-/-- The integral polynomial supplied by triangular elimination. -/ noncomputable def triangularPolynomial {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Polynomial ℤ :=
-  ∑ d : Fin (k + 1), Polynomial.monomial (d : ℕ) (triangularCoefficients E k a d)
-/-- The actual form `η P_k(j)` selected by triangular elimination. -/ noncomputable def auxiliaryForm {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Form :=
-  E.polynomialForm (triangularPolynomial E k a)
-/-- The coefficient series of the source-faithful auxiliary form. -/ noncomputable def auxiliaryHn {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : HForm ℤ :=
-  E.coefficients (auxiliaryForm E k a)
+/-- The integral coefficient vector obtained by solving the unitriangular eta--j system. -/ noncomputable def triangularCoefficients {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Fin (k + 1) → ℤ := (etaJMatrix E k)⁻¹ *ᵥ hnTarget k a
+/-- The integral polynomial supplied by triangular elimination. -/ noncomputable def triangularPolynomial {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Polynomial ℤ := ∑ d : Fin (k + 1), Polynomial.monomial (d : ℕ) (triangularCoefficients E k a d)
+/-- The actual form `η P_k(j)` selected by triangular elimination. -/ noncomputable def auxiliaryForm {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Form := E.polynomialForm (triangularPolynomial E k a)
+/-- The coefficient series of the source-faithful auxiliary form. -/ noncomputable def auxiliaryHn {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : HForm ℤ := E.coefficients (auxiliaryForm E k a)
 end SptCM.Analytic.Repaired
 namespace SptCM.RolenLiterature
 open SptCM.Analytic
@@ -110,33 +93,23 @@ open SptCM.Analytic
   qualifies_grid : ∀ m, 1 < m → Nat.Coprime m 6 → Qualifies m (grid m)
   principalPart : ∀ m, 1 < m → Nat.Coprime m 6 → HasGridPrincipalPart chi m (grid m)
   unique : ∀ m, 1 < m → Nat.Coprime m 6 → ∀ g, Qualifies m g → HasGridPrincipalPart chi m g → g = grid m
-/-- The exact data-bearing published-grid result, rather than an opaque proposition saying merely that some grid has been published. -/ abbrev PublishedMockModularGrid (K : Type*) [Field K] :=
-  AhlgrenKimGridTheorem K
+/-- The exact data-bearing published-grid result, rather than an opaque proposition saying merely that some grid has been published. -/ abbrev PublishedMockModularGrid (K : Type*) [Field K] := AhlgrenKimGridTheorem K
 end SptCM.RolenLiterature
 namespace SptCM.RolenLiterature
 open CongruenceSubgroup
-/-- The Möbius action of the integral congruence subgroup on the rational projective line. -/ local instance gammaZeroAction (N : ℕ) : MulAction (Gamma0 N) (OnePoint ℚ) :=
-  MulAction.compHom (OnePoint ℚ) ((Matrix.SpecialLinearGroup.mapGL ℚ).comp (Gamma0 N).subtype)
-/-- Cusps of `X₀(N)`, represented as `Γ₀(N)`-orbits in `ℙ¹(ℚ)`. -/ abbrev GammaZeroCusp (N : ℕ) :=
-  MulAction.orbitRel.Quotient (Gamma0 N) (OnePoint ℚ)
-/-- The positive divisors used in the squarefree-level cusp classification. -/ abbrev LevelDivisor (N : ℕ) :=
-  { d : ℕ // d ∣ N }
-/-- The standard representative attached to a divisor `d ∣ N`. -/ def squarefreeCuspPoint (N : ℕ) (d : LevelDivisor N) : OnePoint ℚ :=
-  if d.1 = 1 then (0 : ℚ) else if d.1 = N then OnePoint.infty else ((1 / (d.1 : ℚ) : ℚ) : OnePoint ℚ)
-/-- The corresponding orbit class on `X₀(N)`. -/ def squarefreeCuspRepresentative (N : ℕ) (d : LevelDivisor N) : GammaZeroCusp N :=
-  Quotient.mk'' (squarefreeCuspPoint N d)
-/-- General E4/E11 squarefree-level cusp classification. -/ def SquarefreeGammaZeroCuspClassification : Prop :=
-  ∀ (N : ℕ), N ≠ 0 → Squarefree N → Function.Bijective (squarefreeCuspRepresentative N)
+/-- The Möbius action of the integral congruence subgroup on the rational projective line. -/ local instance gammaZeroAction (N : ℕ) : MulAction (Gamma0 N) (OnePoint ℚ) := MulAction.compHom (OnePoint ℚ) ((Matrix.SpecialLinearGroup.mapGL ℚ).comp (Gamma0 N).subtype)
+/-- Cusps of `X₀(N)`, represented as `Γ₀(N)`-orbits in `ℙ¹(ℚ)`. -/ abbrev GammaZeroCusp (N : ℕ) := MulAction.orbitRel.Quotient (Gamma0 N) (OnePoint ℚ)
+/-- The positive divisors used in the squarefree-level cusp classification. -/ abbrev LevelDivisor (N : ℕ) := { d : ℕ // d ∣ N }
+/-- The standard representative attached to a divisor `d ∣ N`. -/ def squarefreeCuspPoint (N : ℕ) (d : LevelDivisor N) : OnePoint ℚ := if d.1 = 1 then (0 : ℚ) else if d.1 = N then OnePoint.infty else ((1 / (d.1 : ℚ) : ℚ) : OnePoint ℚ)
+/-- The corresponding orbit class on `X₀(N)`. -/ def squarefreeCuspRepresentative (N : ℕ) (d : LevelDivisor N) : GammaZeroCusp N := Quotient.mk'' (squarefreeCuspPoint N d)
+/-- General E4/E11 squarefree-level cusp classification. -/ def SquarefreeGammaZeroCuspClassification : Prop := ∀ (N : ℕ), N ≠ 0 → Squarefree N → Function.Bijective (squarefreeCuspRepresentative N)
 end SptCM.RolenLiterature
 namespace SptCM
 end SptCM
 namespace SptCM
-/-- Possible pairs `(a,b)` with `1 ≤ a ≤ M` and `|b| ≤ a`, encoded by finite types. The second coordinate represents `b+a`. -/ abbrev ReducedFormIndex (M : ℕ) :=
-  Σ a : Fin M, Fin (2 * (a.val + 1) + 1)
-/-- Decode the positive first coefficient. -/ def ReducedFormIndex.a {M : ℕ} (i : ReducedFormIndex M) : ℕ :=
-  i.1.val + 1
-/-- Decode the signed middle coefficient. -/ def ReducedFormIndex.b {M : ℕ} (i : ReducedFormIndex M) : ℤ :=
-  (i.2.val : ℤ) - (i.a : ℤ)
+/-- Possible pairs `(a,b)` with `1 ≤ a ≤ M` and `|b| ≤ a`, encoded by finite types. The second coordinate represents `b+a`. -/ abbrev ReducedFormIndex (M : ℕ) := Σ a : Fin M, Fin (2 * (a.val + 1) + 1)
+/-- Decode the positive first coefficient. -/ def ReducedFormIndex.a {M : ℕ} (i : ReducedFormIndex M) : ℕ := i.1.val + 1
+/-- Decode the signed middle coefficient. -/ def ReducedFormIndex.b {M : ℕ} (i : ReducedFormIndex M) : ℤ := (i.2.val : ℤ) - (i.a : ℤ)
 /-- The usual reduced positive forms of discriminant `-n`, represented by their bounded pair `(a,b)`; the coefficient `c` is uniquely determined by the discriminant equation. -/ def IsReducedFormIndex (n : ℕ) (i : ReducedFormIndex (Nat.sqrt (n / 3))) : Prop :=
   ∃ c : ℕ, i.b ^ 2 - 4 * (i.a : ℤ) * c = -(n : ℤ) ∧ i.a ≤ c ∧ ((Int.natAbs i.b = i.a ∨ i.a = c) → 0 ≤ i.b)
 /-- The elementary negative-discriminant class number used here is the number of reduced positive forms. For fundamental negative discriminants this is the standard form-class definition of `h(-n)`. -/ noncomputable def negativeClassNumber (n : ℕ) : ℕ := by classical exact Fintype.card { i : ReducedFormIndex (Nat.sqrt (n / 3)) // IsReducedFormIndex n i }
@@ -163,36 +136,25 @@ open PaperInterfaces
   a := Q.a * g.p ^ 2 + Q.b * g.p * g.s + Q.c * g.s ^ 2
   b := 2 * Q.a * g.p * g.q + Q.b * (g.p * g.t + g.q * g.s) + 2 * Q.c * g.s * g.t
   c := Q.a * g.q ^ 2 + Q.b * g.q * g.t + Q.c * g.t ^ 2
-/-- A raw oriented form, before quotienting by `Γ₀(6)`. -/ abbrev RawOrientedForm (n r : ℕ) :=
-  { Q // Q ∈ rawOrientedForms n r }
-/-- The one-step `Γ₀(6)` change-of-variables relation on oriented forms. -/ def gammaZeroSixRelated (n r : ℕ) (Q Q' : RawOrientedForm n r) : Prop :=
-  ∃ g : GammaZeroSixMatrix, transformQuadraticForm g Q.1 = Q'.1
+/-- A raw oriented form, before quotienting by `Γ₀(6)`. -/ abbrev RawOrientedForm (n r : ℕ) := { Q // Q ∈ rawOrientedForms n r }
+/-- The one-step `Γ₀(6)` change-of-variables relation on oriented forms. -/ def gammaZeroSixRelated (n r : ℕ) (Q Q' : RawOrientedForm n r) : Prop := ∃ g : GammaZeroSixMatrix, transformQuadraticForm g Q.1 = Q'.1
 /-- The oriented quadratic-form classes `𝒬_{n,r}`: primitive positive definite forms of discriminant `-n`, with `6 ∣ a` and `b ≡ r (mod 12)`, modulo `Γ₀(6)`. `EqvGen` packages the equivalence closure of the concrete change-of-variables relation. -/ def orientedForms (n r : ℕ) : Type :=
   Quotient (Relation.EqvGen.setoid (gammaZeroSixRelated n r))
-/-- The level-six eta quotient, parameterized by the analytic eta function. This separates its algebraic formula from the cited modularity and integral model results. -/ def hauptmodul (eta : ℂ → ℂ) (τ : ℂ) : ℂ :=
-  eta τ ^ 5 * eta (3 * τ) / (eta (2 * τ) * eta (6 * τ) ^ 5)
+/-- The level-six eta quotient, parameterized by the analytic eta function. This separates its algebraic formula from the cited modularity and integral model results. -/ def hauptmodul (eta : ℂ → ℂ) (τ : ℂ) : ℂ := eta τ ^ 5 * eta (3 * τ) / (eta (2 * τ) * eta (6 * τ) ^ 5)
 section ClassPolynomial
 variable {R : Type*} [CommRing R] [Nontrivial R]
-/-- The polynomial whose roots are a finite family of CM coordinates. -/ def classPolynomial {ι : Type*} [Fintype ι] (t : ι → R) : R[X] :=
-  ∏ i, (X - C (t i))
+/-- The polynomial whose roots are a finite family of CM coordinates. -/ def classPolynomial {ι : Type*} [Fintype ι] (t : ι → R) : R[X] := ∏ i, (X - C (t i))
 end ClassPolynomial
 end
 end SptCM
 namespace SptCM.RolenLiterature
-/-- A congruence on one explicitly specified arithmetic progression. -/ def SptProgressionCongruence (modulus shift : ℕ) : Prop :=
-  ∀ k : ℕ, modulus ∣ spt (modulus * k + shift)
-/-- Andrews' modulus-five congruence. -/ def Andrews5 : Prop :=
-  SptProgressionCongruence 5 4
-/-- Andrews' modulus-seven congruence. -/ def Andrews7 : Prop :=
-  SptProgressionCongruence 7 5
-/-- Andrews' modulus-thirteen congruence. -/ def Andrews13 : Prop :=
-  SptProgressionCongruence 13 6
-/-- E1 (Andrews): exactly the three published congruences, with the shifts `4`, `5`, and `6` appearing in the source. Primality and the computation of the canonical inverse of `24` are deliberately not external assumptions. -/ def E1AndrewsCongruences : Prop :=
-  Andrews5 ∧ Andrews7 ∧ Andrews13
-/-- E2 (Ahlgren--Kim, Theorem 3): the exact finite-range exclusion used at the final cutoff. -/ def E2AhlgrenKimFiniteExclusion : Prop :=
-  ∀ ℓ : ℕ, CanonicalCongruencePrime ℓ → ℓ < 10 ^ 11 → ℓ = 5 ∨ ℓ = 7 ∨ ℓ = 13
-/-- E2 (Ahlgren--Kim, Proposition 6): their normalized theta-cycle input, only in the prime range in which it is cited. -/ def E2AhlgrenKimThetaCycle : Prop :=
-  ∀ (ℓ : ℕ) [Fact ℓ.Prime], 5 ≤ ℓ → SptCM.Analytic.AhlgrenKimThetaCycleFromUInput ℓ
+/-- A congruence on one explicitly specified arithmetic progression. -/ def SptProgressionCongruence (modulus shift : ℕ) : Prop := ∀ k : ℕ, modulus ∣ spt (modulus * k + shift)
+/-- Andrews' modulus-five congruence. -/ def Andrews5 : Prop := SptProgressionCongruence 5 4
+/-- Andrews' modulus-seven congruence. -/ def Andrews7 : Prop := SptProgressionCongruence 7 5
+/-- Andrews' modulus-thirteen congruence. -/ def Andrews13 : Prop := SptProgressionCongruence 13 6
+/-- E1 (Andrews): exactly the three published congruences, with the shifts `4`, `5`, and `6` appearing in the source. Primality and the computation of the canonical inverse of `24` are deliberately not external assumptions. -/ def E1AndrewsCongruences : Prop := Andrews5 ∧ Andrews7 ∧ Andrews13
+/-- E2 (Ahlgren--Kim, Theorem 3): the exact finite-range exclusion used at the final cutoff. -/ def E2AhlgrenKimFiniteExclusion : Prop := ∀ ℓ : ℕ, CanonicalCongruencePrime ℓ → ℓ < 10 ^ 11 → ℓ = 5 ∨ ℓ = 7 ∨ ℓ = 13
+/-- E2 (Ahlgren--Kim, Proposition 6): their normalized theta-cycle input, only in the prime range in which it is cited. -/ def E2AhlgrenKimThetaCycle : Prop := ∀ (ℓ : ℕ) [Fact ℓ.Prime], 5 ≤ ℓ → SptCM.Analytic.AhlgrenKimThetaCycleFromUInput ℓ
 /-- Neutral operations in the general completion/shadow and Hecke theorem. -/ structure HarmonicMaassModel (Completion Series : Type*) where
   holomorphicPart : Completion → Series
   shadow : Completion → Series
@@ -234,10 +196,8 @@ namespace SptCM.RolenLiterature
   ∀ e, M.ligozatConditions e → M.isModularFunction (M.quotient e) ∧ (∀ c, M.cuspOrder (M.quotient e) c = M.orderFormula e c) ∧ (M.characterCriterion e → M.hasTrivialCharacter (M.quotient e))
 /-- E7: good integral model of the compactified level-six modular curve away from the level. -/ def X0SixGoodIntegralModel {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
   ∀ X : Curve, M.isLevelSixModularCurve X → M.isIntegralModelAwayFromLevel X
-/-- E7: smooth irreducible genus-zero geometric fibers away from six. -/ def X0SixGenusZeroFibers {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
-  ∀ X : Curve, M.isLevelSixModularCurve X → M.hasGenusZeroGeometricFibers X
-/-- E7: disjointness of the four standard cusp sections away from six. -/ def X0SixDisjointCusps {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop :=
-  ∀ X : Curve, M.isLevelSixModularCurve X → M.hasDisjointStandardCuspSections X
+/-- E7: smooth irreducible genus-zero geometric fibers away from six. -/ def X0SixGenusZeroFibers {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop := ∀ X : Curve, M.isLevelSixModularCurve X → M.hasGenusZeroGeometricFibers X
+/-- E7: disjointness of the four standard cusp sections away from six. -/ def X0SixDisjointCusps {Exponent Quotient Cusp Order Curve : Type*} (M : LigozatModel Exponent Quotient Cusp Order Curve) : Prop := ∀ X : Curve, M.isLevelSixModularCurve X → M.hasDisjointStandardCuspSections X
 /-- Operations on rational functions on a proper integral curve. This is a neutral geometric model: it contains no eta quotient, CM point, Hauptmodul, or paper-specific conclusion. -/ structure IntegralCurveFunctionGeometry (Function Divisor Curve Section Expansion : Type*) where
   divisor : Function → Divisor
   sectionDifference : Curve → Section → Section → Divisor
@@ -255,10 +215,8 @@ namespace SptCM.RolenLiterature
 /-- General degree-one divisor criterion on a smooth proper integral genus-zero model. -/ def E7IntegralDegreeOneCriterion {Function Divisor Curve Section Expansion : Type*} (G : IntegralCurveFunctionGeometry Function Divisor Curve Section Expansion)
     (isIntegralModel hasGenusZeroFibers hasDisjointStandardCuspSections : Curve → Prop) : Prop :=
   ∀ X f zero infinity, isIntegralModel X → hasGenusZeroFibers X → hasDisjointStandardCuspSections X → G.divisor f = G.sectionDifference X zero infinity → G.hasNoVerticalComponent f X → G.identifiesWithProjectiveLine f X
-/-- The concrete finite type counted by `negativeClassNumber`. -/ abbrev ReducedFormClasses (n : ℕ) :=
-  { i : ReducedFormIndex (Nat.sqrt (n / 3)) // IsReducedFormIndex n i }
-/-- In the odd negative-discriminant case used here, `-n` is fundamental exactly when `n` is squarefree and `n ≡ 3 (mod 4)`. -/ def IsNegativeFundamentalDiscriminant (n : ℕ) : Prop :=
-  Squarefree n ∧ n % 4 = 3
+/-- The concrete finite type counted by `negativeClassNumber`. -/ abbrev ReducedFormClasses (n : ℕ) := { i : ReducedFormIndex (Nat.sqrt (n / 3)) // IsReducedFormIndex n i }
+/-- In the odd negative-discriminant case used here, `-n` is fundamental exactly when `n` is squarefree and `n ≡ 3 (mod 4)`. -/ def IsNegativeFundamentalDiscriminant (n : ℕ) : Prop := Squarefree n ∧ n % 4 = 3
 /-- The canonical quadratic order `ℤ[(1 + √(-n))/2] = ℤ[X]/(X²-X+(n+1)/4)` in the paper's range `n ≡ 3 (mod 4)`. Using this concrete quotient prevents substitution of an unrelated domain with a conveniently chosen class number. -/ abbrev NegativeQuadraticOrder (n : ℕ) :=
   AdjoinRoot (Polynomial.X ^ 2 - Polynomial.X + Polynomial.C (((n + 1) / 4 : ℕ) : ℤ))
 /-- The standard fact that the canonical imaginary quadratic order is a domain in the negative-fundamental-discriminant range. It is separated from the form classification so callers can install the required typeclass without assuming any action or count statement. -/ def E8NegativeQuadraticOrderDomain (n : ℕ) : Prop :=
@@ -309,12 +267,9 @@ namespace SptCM.RolenLiterature
 /-- The integral refinement of the finite-Galois CM reciprocity datum. Potential good reduction and regularity of the modular coordinate say that the algebraic CM values belong to the integral closure of the chosen coefficient ring in the class field. This interface records exactly that root-level conclusion, and still contains no assertion about a root-product polynomial or any of its coefficients. -/ structure E8FiniteGaloisIntegralCMReciprocity (A I J L : Type*) [CommRing A] [Field L] [Algebra A L] [Algebra ℚ L] [FiniteDimensional ℚ L] [IsGalois ℚ L] (x : I → ℂ) (y : J → ℂ) extends E8FiniteGaloisCMReciprocity I J L x y where
   integralX : ∀ i, IsIntegral A (toE8FiniteGaloisCMReciprocity.algebraicX i)
   integralY : ∀ j, IsIntegral A (toE8FiniteGaloisCMReciprocity.algebraicY j)
-/-- E8: potential good reduction for the qualified CM points with level. -/ def CMPotentialGoodReduction {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
-  ∀ P, M.hasPotentiallyGoodReduction P
-/-- E8: Deuring's inert-reduction theorem. -/ def DeuringInertSupersingular {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
-  ∀ ℓ P, M.inertAt ℓ P → M.supersingular (M.reduction P)
-/-- E8: injectivity of the relevant CM-order action after specialization. -/ def CMSpecializationInjective {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
-  ∀ P, M.specializationInjective P
+/-- E8: potential good reduction for the qualified CM points with level. -/ def CMPotentialGoodReduction {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ P, M.hasPotentiallyGoodReduction P
+/-- E8: Deuring's inert-reduction theorem. -/ def DeuringInertSupersingular {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ ℓ P, M.inertAt ℓ P → M.supersingular (M.reduction P)
+/-- E8: injectivity of the relevant CM-order action after specialization. -/ def CMSpecializationInjective {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop := ∀ P, M.specializationInjective P
 /-- Compatibility conjunction for the reduction branch. -/ def E8StandardCMReduction {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
   CMPotentialGoodReduction M ∧ DeuringInertSupersingular M ∧ CMSpecializationInjective M
 /-- Compatibility interface used by the existing reduction branch. Its first conjunct is intentionally *not* used for I22; the pinned declarations `E8ReducedFormClassification` and `E8IdealClassAction` above replace it there. -/ def E8StandardCM {Order IdealClass CMPoint Reduction Endomorphism : Type*} (M : CMTheoryModel Order IdealClass CMPoint Reduction Endomorphism) : Prop :=
@@ -328,12 +283,10 @@ namespace SptCM.RolenLiterature
   span : Vector → Vector → Vector → Vector → Lattice
   covolume : Lattice → ℝ
   squaredNorm : Vector → ℝ
-/-- E9 (Arpin): the level-six Eichler-order theorem. -/ def ArpinLevelSix {Curve Subgroup Order Lattice Vector : Type*} (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop :=
-  ∀ E C, M.supersingular E → M.cyclicOfOrderSix C → M.isEichlerOfLevelSix (M.preservingOrder E C)
+/-- E9 (Arpin): the level-six Eichler-order theorem. -/ def ArpinLevelSix {Curve Subgroup Order Lattice Vector : Type*} (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop := ∀ E C, M.supersingular E → M.cyclicOfOrderSix C → M.isEichlerOfLevelSix (M.preservingOrder E C)
 /-- E9 (Goren--Lauter): the general four-vector covolume/Hadamard bound. -/ def GorenLauterHadamard {Curve Subgroup Order Lattice Vector : Type*} (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop :=
   ∀ a b c d, M.independent a b c d → M.covolume (M.span a b c d) ^ 2 ≤ M.squaredNorm a * M.squaredNorm b * M.squaredNorm c * M.squaredNorm d
-/-- Compatibility conjunction for older callers. -/ def E9ArpinGorenLauter {Curve Subgroup Order Lattice Vector : Type*} (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop :=
-  ArpinLevelSix M ∧ GorenLauterHadamard M
+/-- Compatibility conjunction for older callers. -/ def E9ArpinGorenLauter {Curve Subgroup Order Lattice Vector : Type*} (M : EichlerCovolumeModel Curve Subgroup Order Lattice Vector) : Prop := ArpinLevelSix M ∧ GorenLauterHadamard M
 /-- Constancy of a genuine Dirichlet character on `H` consecutive integers. `DirichletCharacter` supplies multiplicativity, periodicity and the extension by zero at non-units; these were missing from the old arbitrary-function formulation. -/ def ConstantDirichletOnInterval {R : Type*} [CommMonoidWithZero R] {ℓ : ℕ} (χ : DirichletCharacter R ℓ) (a : ℤ) (H : ℕ) : Prop :=
   ∀ i j : ℕ, i < H → j < H → χ (a + (i : ℤ)) = χ (a + (j : ℤ))
 /-- E10 (Treviño, corrected): the all-prime constant-character estimate with constant `3.38`. Nonprincipality is the standard condition `χ ≠ 1`, not a caller-chosen predicate. -/ def E10TrevinoCorrected : Prop :=
@@ -348,27 +301,22 @@ namespace SptCM.RolenLiterature
 /-- The exact output of finite-height Stokes: the truncated-domain identity, convergence to the regularized pairing, and decay of the nonholomorphic top boundary. -/ def FiniteHeightStokesConclusion {Input : Type*} (M : FiniteHeightStokesModel Input) (x : Input) : Prop :=
   (∀ T, M.shadowScale x * M.truncatedIntegral x T = M.holomorphicConstantTerm x + M.topBoundaryError x T) ∧
     Filter.Tendsto (M.truncatedIntegral x) Filter.atTop (nhds (M.regularizedPairing x)) ∧ Filter.Tendsto (M.topBoundaryError x) Filter.atTop (nhds 0)
-/-- E11: the general finite-height Stokes theorem, with its full numerical identity and both limiting assertions exposed. -/ def FiniteHeightStokesTheorem {Input : Type*} (M : FiniteHeightStokesModel Input) : Prop :=
-  ∀ x, M.qualified x → FiniteHeightStokesConclusion M x
+/-- E11: the general finite-height Stokes theorem, with its full numerical identity and both limiting assertions exposed. -/ def FiniteHeightStokesTheorem {Input : Type*} (M : FiniteHeightStokesModel Input) : Prop := ∀ x, M.qualified x → FiniteHeightStokesConclusion M x
 end SptCM.RolenLiterature
 namespace SptCM.Analytic.Repaired
 open SptCM.RolenLiterature
 open SptCM.Analytic
-/-- The characteristic-free prime range used by the initial `f`-identity. -/ def ValidLevelPrime (p : ℕ) : Prop :=
-  p.Prime ∧ Nat.Coprime p 6
-/-- Re-export of the cycle-free, exact literature interface. This is an abbreviation, not a second grid theorem or a new caller-chosen family. -/ abbrev AhlgrenKimGridTheorem (K : Type*) [Field K] :=
-  SptCM.RolenLiterature.AhlgrenKimGridTheorem K
+/-- The characteristic-free prime range used by the initial `f`-identity. -/ def ValidLevelPrime (p : ℕ) : Prop := p.Prime ∧ Nat.Coprime p 6
+/-- Re-export of the cycle-free, exact literature interface. This is an abbreviation, not a second grid theorem or a new caller-chosen family. -/ abbrev AhlgrenKimGridTheorem (K : Type*) [Field K] := SptCM.RolenLiterature.AhlgrenKimGridTheorem K
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.Analytic
 /-- The actual left side of the `f`-Hecke identity in the coefficient model. -/ def fHeckeDifference {K : Type*} [Field K] (p : ℕ) (chiP : K) (legendre : ℤ → K) (f : QSeries K) : QSeries K := fun r => heckeThreeHalf p chiP legendre f r - chiP * (1 + (p : K)) * f r
-/-- Mathlib's Legendre symbol, cast to the coefficient field used by the Hecke coefficient formula. -/ def heckeLegendreCast {K : Type*} [Field K] (p : ℕ) [Fact p.Prime] (r : ℤ) : K :=
-  (legendreSym p r : ℤ)
+/-- Mathlib's Legendre symbol, cast to the coefficient field used by the Hecke coefficient formula. -/ def heckeLegendreCast {K : Type*} [Field K] (p : ℕ) [Fact p.Prime] (r : ℤ) : K := (legendreSym p r : ℤ)
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.Analytic
-/-- The conventionally zero term `G_{m/p}` when `p ∤ m`. When `m=p`, this is `G₁`, so the published convention `G₁=0` gives the required cancellation. -/ def gridDivisorTerm {K : Type*} [Zero K] (G : ℕ → QSeries K) (m p : ℕ) : QSeries K :=
-  if p ∣ m then G (m / p) else 0
+/-- The conventionally zero term `G_{m/p}` when `p ∤ m`. When `m=p`, this is `G₁`, so the published convention `G₁=0` gives the required cancellation. -/ def gridDivisorTerm {K : Type*} [Zero K] (G : ℕ → QSeries K) (m p : ℕ) : QSeries K := if p ∣ m then G (m / p) else 0
 /-- The source-normalized left side of Rolen's grid Hecke recurrence, solved for `G_{mp}`. -/ def normalizedGridHeckeLeft {K : Type*} [Field K] (p m : ℕ) (chi : ℕ → K) (legendre : ℤ → K) (G : ℕ → QSeries K) : QSeries K := fun r =>
   (p : K)⁻¹ * (heckeThreeHalf p (chi p) legendre (G m) r - chi p * legendre ((m : ℤ) ^ 2) * G m r - gridDivisorTerm G m p r + (p : K) * chi m * G p r)
 end SptCM.Analytic.Repaired
@@ -384,8 +332,7 @@ open SptCM.RolenLiterature
     heckeLegendreCast p r
   else 0
 /-- The actual normalized left side of the `f`-Hecke identity. -/ def actualFHeckeLeft {K : Type*} [Field K] [CharZero K] (G : PublishedMockModularGrid K) (p : ℕ) : QSeries K := fun r => (p : K)⁻¹ * fHeckeDifference p (G.chi p) (actualHeckeLegendre p) (fun s => (fSeries s : K)) r
-/-- The actual normalized left side of the grid Hecke recurrence. -/ def actualGridHeckeLeft {K : Type*} [Field K] (G : PublishedMockModularGrid K) (m p : ℕ) : QSeries K :=
-  normalizedGridHeckeLeft p m G.chi (actualHeckeLegendre p) G.grid
+/-- The actual normalized left side of the grid Hecke recurrence. -/ def actualGridHeckeLeft {K : Type*} [Field K] (G : PublishedMockModularGrid K) (m p : ℕ) : QSeries K := normalizedGridHeckeLeft p m G.chi (actualHeckeLegendre p) G.grid
 /-- Exact E3/E4 application boundary used in I05. These are only the modular/shadow qualifications supplied by the cited analytic theory; neither a principal-part assertion nor either desired Hecke identity is a field. -/ structure SourceI05Qualification {K : Type*} [Field K] [CharZero K] (G : PublishedMockModularGrid K) : Prop where
   f_left_qualifies : ∀ p, ValidLevelPrime p → G.Qualifies p (actualFHeckeLeft G p)
   grid_left_qualifies : ∀ m p, 1 < m → Nat.Coprime m 6 → ValidLevelPrime p → G.Qualifies (m * p) (actualGridHeckeLeft G m p)
@@ -399,22 +346,18 @@ open SptCM.Analytic SptCM.RolenLiterature
   sourceQualification : SourceI05Qualification rationalGrid
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
-/-- The four nonzero values of the primitive quadratic character modulo twelve, written on the canonical representatives. -/ def chiTwelveResidue (s : Fin 12) : ℤ :=
-  if s = 1 then 1 else if s = 5 then -1 else if s = 7 then -1 else if s = 11 then 1 else 0
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
-/-- The inverse primitive twelfth root used by the Fourier transform `e(-rs/12)`. -/ noncomputable def inverseTwelfthRoot : ℂ :=
-  (Real.sqrt 3 / 2 : ℂ) - Complex.I / 2
+/-- The four nonzero values of the primitive quadratic character modulo twelve, written on the canonical representatives. -/ def chiTwelveResidue (s : Fin 12) : ℤ := if s = 1 then 1 else if s = 5 then -1 else if s = 7 then -1 else if s = 11 then 1 else 0
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
+/-- The inverse primitive twelfth root used by the Fourier transform `e(-rs/12)`. -/ noncomputable def inverseTwelfthRoot : ℂ := (Real.sqrt 3 / 2 : ℂ) - Complex.I / 2
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open scoped BigOperators
-/-- The component vector `c (e₁ - e₅ - e₇ + e₁₁)`, evaluated on the canonical representatives of `ℤ / 12ℤ`. -/ def fourComponentVector (c : ℂ) (r : Fin 12) : ℂ :=
-  c * (chiTwelveResidue r : ℂ)
+/-- The component vector `c (e₁ - e₅ - e₇ + e₁₁)`, evaluated on the canonical representatives of `ℤ / 12ℤ`. -/ def fourComponentVector (c : ℂ) (r : Fin 12) : ℂ := c * (chiTwelveResidue r : ℂ)
 /-- The normalized finite Fourier matrix giving the level-twelve Weil `S`-generator, with the same inverse-root convention as the Gauss sum. -/ noncomputable def levelTwelveWeilS (x : Fin 12 → ℂ) (s : Fin 12) : ℂ :=
   (Real.sqrt 12 : ℂ)⁻¹ * ∑ r : Fin 12, inverseTwelfthRoot ^ ((r.val * s.val) % 12) * x r
-/-- The common `T` multiplier of the four supported components. -/ noncomputable def levelTwelveTMultiplier : ℂ :=
-  Complex.exp (Complex.I * (Real.pi / 12 : ℂ))
-/-- The diagonal level-twelve Weil `T`-generator. The exponent is the quadratic residue `r² mod 24`; all four supported indices have residue one. -/ noncomputable def levelTwelveWeilT (x : Fin 12 → ℂ) (r : Fin 12) : ℂ :=
-  levelTwelveTMultiplier ^ ((r.val ^ 2) % 24) * x r
+/-- The common `T` multiplier of the four supported components. -/ noncomputable def levelTwelveTMultiplier : ℂ := Complex.exp (Complex.I * (Real.pi / 12 : ℂ))
+/-- The diagonal level-twelve Weil `T`-generator. The exponent is the quadratic residue `r² mod 24`; all four supported indices have residue one. -/ noncomputable def levelTwelveWeilT (x : Fin 12 → ℂ) (r : Fin 12) : ℂ := levelTwelveTMultiplier ^ ((r.val ^ 2) % 24) * x r
 /-- Exact E4 generator data for eta times an integral polynomial in `j`. The two displayed equalities are the standard scalar `S`- and `T`-laws; they are required for every polynomial, rather than merely recorded as an opaque qualification predicate. -/ structure EtaJGeneratorBasis (Form : Type*) [SMul ℂ Form] extends EtaJPowerBasis Form where
   slashS : Form → Form
   slashT : Form → Form
@@ -435,15 +378,12 @@ open scoped BigOperators
   HasFourComponentWeilS E F ∧ HasFourComponentWeilT E F
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
-/-- The four divisors indexing the cusps of squarefree level six. -/ def IsLevelSixDivisor (c : ℕ) : Prop :=
-  c = 1 ∨ c = 2 ∨ c = 3 ∨ c = 6
-/-- Multiplier description of the simultaneous congruences `σ_c(r) ≡ -r (mod 2c)` and `σ_c(r) ≡ r (mod 12/c)` at level six. -/ def atkinLehnerMultiplier (c : ℕ) : ℕ :=
-  if c = 1 then 1 else if c = 2 then 7 else if c = 3 then 5 else 11
-/-- The Atkin--Lehner permutation `σ_c` on `ℤ/12ℤ`. -/ def atkinLehnerSigma (c : ℕ) (r : Fin 12) : Fin 12 :=
-  ⟨(atkinLehnerMultiplier c * r.val) % 12, Nat.mod_lt _ (by norm_num)⟩
-/-- The signed component theta series appearing in Euler's eta identity. -/ def signedComponentThetaSeries {V : Type*} [AddCommMonoid V] [Module ℂ V] (theta : Fin 12 → V) : V :=
-  ∑ r, (chiTwelveResidue r : ℂ) • theta r
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
+/-- The four divisors indexing the cusps of squarefree level six. -/ def IsLevelSixDivisor (c : ℕ) : Prop := c = 1 ∨ c = 2 ∨ c = 3 ∨ c = 6
+/-- Multiplier description of the simultaneous congruences `σ_c(r) ≡ -r (mod 2c)` and `σ_c(r) ≡ r (mod 12/c)` at level six. -/ def atkinLehnerMultiplier (c : ℕ) : ℕ := if c = 1 then 1 else if c = 2 then 7 else if c = 3 then 5 else 11
+/-- The Atkin--Lehner permutation `σ_c` on `ℤ/12ℤ`. -/ def atkinLehnerSigma (c : ℕ) (r : Fin 12) : Fin 12 := ⟨(atkinLehnerMultiplier c * r.val) % 12, Nat.mod_lt _ (by norm_num)⟩
+/-- The signed component theta series appearing in Euler's eta identity. -/ def signedComponentThetaSeries {V : Type*} [AddCommMonoid V] [Module ℂ V] (theta : Fin 12 → V) : V := ∑ r, (chiTwelveResidue r : ℂ) • theta r
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
 /-- Exact general Euler theta identity in a complex series model. This is the standard scalar identity, not a cusp contraction or Weyl-vector assertion. -/ def EtaComponentThetaIdentity {V : Type*} [AddCommMonoid V] [Module ℂ V] (theta : Fin 12 → V) (eta : V) : Prop :=
   signedComponentThetaSeries theta = (2 : ℂ) • eta
 end SptCM.Analytic.Repaired
@@ -453,9 +393,9 @@ open SptCM.RolenLiterature
 open scoped BigOperators
 /-- The genuinely coefficient-theoretic constant term of `H f`, written as a finite convolution once `H` has no terms below `-n` and `f` has no negative terms below `-1`. -/ noncomputable def finiteMockProductConstantTerm (n : ℕ) (H : HForm ℤ) : ℤ :=
   ∑ r ∈ Finset.Icc (-(n : ℤ)) 1, H r * aCoeff (-r)
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
-/-- The numerical shadow factor in the paper's Stokes formula. -/ noncomputable def publishedShadowScale : ℝ :=
-  3 * Real.sqrt 6 / Real.pi
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
+/-- The numerical shadow factor in the paper's Stokes formula. -/ noncomputable def publishedShadowScale : ℝ := 3 * Real.sqrt 6 / Real.pi
 /-- A Stokes input remembers the coefficient series to which the completion is paired. It contains no boundary identity, limit, or pairing conclusion. -/ structure HnStokesInput (Completion : Type*) where
   index : ℕ
   coefficients : HForm ℤ
@@ -500,31 +440,24 @@ open scoped BigOperators
   residueTheorem : ∀ F, IsWeaklyHolomorphic F → IsWeightTwo F → constantTerm F = 0
 end SptCM.Analytic.Repaired
 namespace SptCM.Repair
-/-- The signed integer exponent occurring in the Borcherds product. -/ def signedEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℤ :=
-  SptCM.Analytic.chi12 (m : ℤ) * H ((m : ℤ) ^ 2)
-/-- Positive part of the signed Euler exponent. -/ def positiveEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℕ :=
-  (signedEulerExponent H m).toNat
-/-- Negative part of the signed Euler exponent. -/ def negativeEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℕ :=
-  (-signedEulerExponent H m).toNat
+/-- The signed integer exponent occurring in the Borcherds product. -/ def signedEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℤ := SptCM.Analytic.chi12 (m : ℤ) * H ((m : ℤ) ^ 2)
+/-- Positive part of the signed Euler exponent. -/ def positiveEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℕ := (signedEulerExponent H m).toNat
+/-- Negative part of the signed Euler exponent. -/ def negativeEulerExponent (H : ℤ → ℤ) (m : ℕ) : ℕ := (-signedEulerExponent H m).toNat
 end SptCM.Repair
 namespace SptCM.Repair
 open scoped PowerSeries
-/-- The finite truncation of an Euler product with the indicated factor indices and natural exponents. -/ noncomputable def eulerProductTruncation {R : Type*} [CommRing R] (index exponent : ℕ → ℕ) (N : ℕ) : PowerSeries R :=
-  ∏ i ∈ Finset.range N, (1 - PowerSeries.X ^ index i) ^ exponent i
+/-- The finite truncation of an Euler product with the indicated factor indices and natural exponents. -/ noncomputable def eulerProductTruncation {R : Type*} [CommRing R] (index exponent : ℕ → ℕ) (N : ℕ) : PowerSeries R := ∏ i ∈ Finset.range N, (1 - PowerSeries.X ^ index i) ^ exponent i
 /-- The canonical coefficientwise Euler product: its coefficient in degree `d` is read from the finite truncation through `d + 1`. -/ noncomputable def stabilizedEulerProduct {R : Type*} [CommRing R] (index exponent : ℕ → ℕ) : PowerSeries R :=
   PowerSeries.mk fun d => PowerSeries.coeff d (eulerProductTruncation (R := R) index exponent (d + 2))
-/-- The actual numerator Euler product attached to the signed coefficients of `H`. -/ noncomputable def eulerProductPlus {R : Type*} [CommRing R] (H : ℤ → ℤ) : PowerSeries R :=
-  stabilizedEulerProduct (R := R) id (positiveEulerExponent H)
-/-- The actual denominator Euler product attached to the signed coefficients of `H`. -/ noncomputable def eulerProductMinus {R : Type*} [CommRing R] (H : ℤ → ℤ) : PowerSeries R :=
-  stabilizedEulerProduct (R := R) id (negativeEulerExponent H)
+/-- The actual numerator Euler product attached to the signed coefficients of `H`. -/ noncomputable def eulerProductPlus {R : Type*} [CommRing R] (H : ℤ → ℤ) : PowerSeries R := stabilizedEulerProduct (R := R) id (positiveEulerExponent H)
+/-- The actual denominator Euler product attached to the signed coefficients of `H`. -/ noncomputable def eulerProductMinus {R : Type*} [CommRing R] (H : ℤ → ℤ) : PowerSeries R := stabilizedEulerProduct (R := R) id (negativeEulerExponent H)
 end SptCM.Repair
 namespace SptCM.Analytic.Repaired
 open SptCM.Analytic
 /-- The integral twelve-component coefficient function `H v`, where `v = e₁ - e₅ - e₇ + e₁₁`. -/ def fourComponentHSeries (H : HForm ℤ) : ℤ → Fin 12 → ℤ := fun r s => H r * chiTwelveResidue s
 /-- Exact coefficient content needed from the four-component input: zero constant coefficient, and a single integral negative index `-n` whose vector is `e₁-e₅-e₇+e₁₁`. -/ def HasFourComponentFourierData (n : ℕ) (V : ℤ → Fin 12 → ℤ) : Prop :=
   (∀ s, V 0 s = 0) ∧ ∀ r : ℤ, r < 0 → ∀ s, V r s = if r = -(n : ℤ) then chiTwelveResidue s else 0
-/-- Integral vector Fourier series attached to an actual four-component input. The finite sign vector is fixed by the type of input. -/ def FourComponentInput.vectorSeries {Form : Type*} (F : FourComponentInput Form) : ℤ → Fin 12 → ℤ :=
-  fourComponentHSeries F.scalarSeries
+/-- Integral vector Fourier series attached to an actual four-component input. The finite sign vector is fixed by the type of input. -/ def FourComponentInput.vectorSeries {Form : Type*} (F : FourComponentInput Form) : ℤ → Fin 12 → ℤ := fourComponentHSeries F.scalarSeries
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.RolenLiterature
@@ -535,9 +468,9 @@ end SptCM.Analytic.Repaired
 namespace SptCM
 noncomputable section
 open Polynomial
-/-- The coefficient ring `ℤ[1/6]` used by the oriented class polynomials. -/ abbrev AwaySix :=
-  Localization.Away (6 : ℤ)
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
+/-- The coefficient ring `ℤ[1/6]` used by the oriented class polynomials. -/ abbrev AwaySix := Localization.Away (6 : ℤ)
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
 /-- Reduction of coefficients in `ℤ[1/6]` to a field of characteristic `ℓ`. The explicit unit hypothesis is precisely the good-prime condition needed by the universal property of localization. -/ def awaySixReduction (ℓ : ℕ) (h6 : IsUnit (6 : ZMod ℓ)) : AwaySix →+* ZMod ℓ :=
   Localization.awayLift (Int.castRingHom (ZMod ℓ)) 6 (by simpa using h6)
 end
@@ -560,15 +493,13 @@ end
 end SptCM
 namespace SptCM.CM.Repaired
 open SptCM.RolenLiterature
-/-- Rolen's analytic Hauptmodul using Mathlib's actual Dedekind eta function, rather than an arbitrary function named `eta`. -/ noncomputable def analyticHauptmodul (τ : UpperHalfPlane) : ℂ :=
-  SptCM.hauptmodul ModularForm.eta τ
+/-- Rolen's analytic Hauptmodul using Mathlib's actual Dedekind eta function, rather than an arbitrary function named `eta`. -/ noncomputable def analyticHauptmodul (τ : UpperHalfPlane) : ℂ := SptCM.hauptmodul ModularForm.eta τ
 /-- An eta-exponent vector at the four divisors of level six. -/ structure LevelSixEtaExponents where
   atOne : ℤ
   atTwo : ℤ
   atThree : ℤ
   atSix : ℤ
-/-- The exponent vector of Rolen's Hauptmodul. -/ def hauptmodulExponents : LevelSixEtaExponents :=
-  ⟨5, -1, 1, -5⟩
+/-- The exponent vector of Rolen's Hauptmodul. -/ def hauptmodulExponents : LevelSixEtaExponents := ⟨5, -1, 1, -5⟩
 /-- Ligozat's order formula at the cusp represented by denominator `c ∣ 6`. The four summands are indexed by `δ = 1,2,3,6`. -/ def ligozatCuspOrder (e : LevelSixEtaExponents) (c : ℕ) : ℚ :=
   (6 : ℚ) / 24 *
     (((Nat.gcd c 1 : ℚ) ^ 2 * e.atOne) / (Nat.gcd c (6 / c) * c * 1 : ℕ) + ((Nat.gcd c 2 : ℚ) ^ 2 * e.atTwo) / (Nat.gcd c (6 / c) * c * 2 : ℕ) + ((Nat.gcd c 3 : ℚ) ^ 2 * e.atThree) / (Nat.gcd c (6 / c) * c * 3 : ℕ) +
@@ -576,28 +507,26 @@ open SptCM.RolenLiterature
 end SptCM.CM.Repaired
 namespace SptCM.CM.Repaired
 noncomputable section
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
-/-- The canonical complex CM point attached to a raw oriented quadratic form. -/ def rawCMPoint {n r : ℕ} (Q : RawOrientedForm n r) : ℂ :=
-  ((-(Q.1.b : ℂ)) + Complex.I * Real.sqrt n) / (2 * (Q.1.a : ℂ))
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
+/-- The canonical complex CM point attached to a raw oriented quadratic form. -/ def rawCMPoint {n r : ℕ} (Q : RawOrientedForm n r) : ℂ := ((-(Q.1.b : ℂ)) + Complex.I * Real.sqrt n) / (2 * (Q.1.a : ℂ))
 /-- In the paper's positive-discriminant range, the canonical point lies in `ℍ`. Positivity of `a` comes from the definition of `rawOrientedForms`. -/ theorem rawCMPoint_im_pos {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) : 0 < (rawCMPoint Q).im := by sorry
-/-- The actual upper-half-plane CM point of a raw oriented form. -/ def rawCMUpperHalfPlane {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) : UpperHalfPlane :=
-  ⟨rawCMPoint Q, rawCMPoint_im_pos hn Q⟩
+/-- The actual upper-half-plane CM point of a raw oriented form. -/ def rawCMUpperHalfPlane {n r : ℕ} (hn : 0 < n) (Q : RawOrientedForm n r) : UpperHalfPlane := ⟨rawCMPoint Q, rawCMPoint_im_pos hn Q⟩
 /-- Values of a function on raw CM points are invariant under one concrete `Γ₀(6)` change of variables. This is the exact hypothesis needed for descent, not an arbitrary function on the quotient. -/ def RawCMValueInvariant {n r : ℕ} (F : UpperHalfPlane → ℂ) : Prop :=
   ∀ (hn : 0 < n) (Q Q' : RawOrientedForm n r), gammaZeroSixRelated n r Q Q' → F (rawCMUpperHalfPlane hn Q) = F (rawCMUpperHalfPlane hn Q')
 /-- One-step invariance extends to the equivalence closure defining the actual orientation classes. -/ theorem rawCMValue_eq_of_eqvGen {n r : ℕ} (F : UpperHalfPlane → ℂ) (hF : RawCMValueInvariant (n := n) (r := r) F) (hn : 0 < n) {Q Q' : RawOrientedForm n r} (h : Relation.EqvGen (gammaZeroSixRelated n r) Q Q') :
     F (rawCMUpperHalfPlane hn Q) = F (rawCMUpperHalfPlane hn Q') := by sorry
 /-- The value induced on the actual quotient of oriented forms. -/ def orientedCMValue {n r : ℕ} (F : UpperHalfPlane → ℂ) (hF : RawCMValueInvariant (n := n) (r := r) F) (hn : 0 < n) : orientedForms n r → ℂ :=
   Quotient.lift (fun Q : RawOrientedForm n r => F (rawCMUpperHalfPlane hn Q)) (fun _ _ h => rawCMValue_eq_of_eqvGen F hF hn h)
-/-- Rolen's genuine eta-quotient value on the actual oriented form classes. -/ def actualOrientedHauptmodulValue {n r : ℕ} (hInv : RawCMValueInvariant (n := n) (r := r) analyticHauptmodul) (hn : 0 < n) : orientedForms n r → ℂ :=
-  orientedCMValue analyticHauptmodul hInv hn
+/-- Rolen's genuine eta-quotient value on the actual oriented form classes. -/ def actualOrientedHauptmodulValue {n r : ℕ} (hInv : RawCMValueInvariant (n := n) (r := r) analyticHauptmodul) (hn : 0 < n) : orientedForms n r → ℂ := orientedCMValue analyticHauptmodul hInv hn
 end
 end SptCM.CM.Repaired
 namespace SptCM.CM.Repaired
 noncomputable section
-def awaySixToRat : SptCM.AwaySix →+* ℚ :=
-  Localization.awayLift (Int.castRingHom ℚ) 6 (by norm_num)
-/-- The canonical `ℤ[1/6]`-algebra structure on every rational algebra. -/ instance awaySixAlgebra (L : Type*) [CommRing L] [Algebra ℚ L] : Algebra SptCM.AwaySix L :=
-  ((algebraMap ℚ L).comp awaySixToRat).toAlgebra
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
+def awaySixToRat : SptCM.AwaySix →+* ℚ := Localization.awayLift (Int.castRingHom ℚ) 6 (by norm_num)
+/-- The canonical `ℤ[1/6]`-algebra structure on every rational algebra. -/ instance awaySixAlgebra (L : Type*) [CommRing L] [Algebra ℚ L] : Algebra SptCM.AwaySix L := ((algebraMap ℚ L).comp awaySixToRat).toAlgebra
 end
 end SptCM.CM.Repaired
 namespace SptCM.CM.Repaired
@@ -664,6 +593,12 @@ end ActualOrientedCMCoordinates
 end
 end SptCM.CM.Repaired
 namespace SptCM.Repair
+/-- A Laurent series whose coefficient at `-1` is one (and which has no terms below `-1`) is transcendental over its coefficient field. -/ theorem laurentSeries_transcendental_of_simple_pole {K : Type*} [Field K] (t : LaurentSeries K) (hcoeff : t.coeff (-1) = 1) (_hbelow : ∀ z : ℤ, z < -1 → t.coeff z = 0) : Transcendental K t := by sorry
+end SptCM.Repair
+namespace SptCM.Repair
+/-- The principal part `t(q) = q⁻¹ - 5 + O(q)` of the level-six Hauptmodul. -/ def HasHauptmodulPrincipalPart {K : Type*} [Ring K] (t : LaurentSeries K) : Prop := t.coeff (-1) = 1 ∧ t.coeff 0 = -5 ∧ ∀ z : ℤ, z < -1 → t.coeff z = 0
+end SptCM.Repair
+namespace SptCM.Repair
 open scoped PowerSeries
 /-- The contribution of the `m`-th Euler index to the unit part of `η(τ)^5 η(3τ) / (η(2τ) η(6τ)^5)`. -/ noncomputable def hauptmodulFormalEulerFactor (m : ℕ) : PowerSeries ℤ :=
   (1 - PowerSeries.X ^ m) ^ 5 * (1 - PowerSeries.X ^ (3 * m)) * PowerSeries.subst (PowerSeries.X ^ (2 * m)) (PowerSeries.invOneSubPow ℤ 1 : PowerSeries ℤ) *
@@ -673,6 +608,37 @@ open scoped PowerSeries
 /-- The formal Laurent series obtained by adjoining the net `q⁻¹` prefactor to the formal Euler unit. This is not asserted to be the analytic eta quotient's Laurent expansion. -/ noncomputable def hauptmodulFormalLaurent : LaurentSeries ℤ :=
   HahnSeries.single (-1) 1 * (hauptmodulFormalEulerUnit : LaurentSeries ℤ)
 end SptCM.Repair
+@[expose] public section
+namespace SptCM.Analytic.Repaired
+open Polynomial
+noncomputable section
+/-- The full finite divisor of a rational function in the Hauptmodul coordinate. The argument is the actual complex point, not its orientation. The zero function is excluded whenever this divisor is used for rigidity. -/ def rationalFunctionDivisor (f : RatFunc ℚ) (z : ℂ) : ℤ :=
+  ((f.num.map (algebraMap ℚ ℂ)).rootMultiplicity z : ℤ) - ((f.denom.map (algebraMap ℚ ℂ)).rootMultiplicity z : ℤ)
+end
+end SptCM.Analytic.Repaired
+end
+@[expose] public section
+namespace SptCM.Analytic.Repaired
+noncomputable section
+/-- Cusp representatives in the order infinity, zero, one-half, one-third. -/ def i12CuspTransform (c : Fin 4) (z : ℂ) : ℂ := if c = 0 then z else if c = 1 then -1 / z else if c = 2 then z / (2 * z + 1) else z / (3 * z + 1)
+def i12CuspWidth (c : Fin 4) : ℕ := if c = 0 then 1 else if c = 1 then 6 else if c = 2 then 3 else 2
+/-- A genuine analytic realization of a rational-coefficient Laurent series. The unitary transformation law is on Gamma_0(6), and every cusp has a convergent local expansion with a nonvanishing analytic unit. Real orders allow unitary multipliers; zero orders give ordinary holomorphic units. The convergence requirement ties the analytic function to the formal series. -/ structure I12UnitaryMeromorphicRealization (f : LaurentSeries ℚ) where
+  toFun : ℂ → ℂ
+  meromorphic : MeromorphicOn toFun {z : ℂ | 0 < z.im}
+  nonzeroOrder : ∀ z : ℂ, 0 < z.im → meromorphicOrderAt toFun z ≠ ⊤
+  unitary : ∀ γ : SptCM.GammaZeroSixMatrix, ∃ u : ℂ, ‖u‖ = 1 ∧ ∀ z : ℂ, 0 < z.im → toFun (((γ.p : ℂ) * z + γ.q) / ((γ.s : ℂ) * z + γ.t)) = u * toFun z
+  expansion : ∃ Y : ℝ, 0 < Y ∧ ∀ z : ℂ, Y < z.im → HasSum (fun k : ℤ => (f.coeff k : ℂ) * (Complex.exp (2 * Real.pi * Complex.I * z)) ^ k) (toFun z)
+  cuspOrder : Fin 4 → ℝ
+  cuspExpansion :
+    ∀ c : Fin 4,
+      ∃ U : ℂ → ℂ,
+        AnalyticAt ℂ U 0 ∧
+          U 0 ≠ 0 ∧
+            ∃ Y : ℝ, 0 < Y ∧ ∀ z : ℂ, Y < z.im → toFun (i12CuspTransform c z) = Complex.exp (2 * Real.pi * Complex.I * (cuspOrder c : ℂ) * z / (i12CuspWidth c : ℂ)) * U (Complex.exp (2 * Real.pi * Complex.I * z / (i12CuspWidth c : ℂ)))
+def HasI12UnitaryMeromorphicRealization (f : LaurentSeries ℚ) : Prop := Nonempty (I12UnitaryMeromorphicRealization f)
+end
+end SptCM.Analytic.Repaired
+end
 namespace SptCM.Analytic.Repaired
 open SptCM.RolenLiterature
 open Polynomial
@@ -682,51 +648,53 @@ open Polynomial
   | five
   | seven
   deriving DecidableEq
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
 /-- The residue represented by an orientation. -/ def I12Orientation.residue : I12Orientation → Fin 12
   | .one => 1
   | .eleven => 11
   | .five => 5
   | .seven => 7
-/-- A divisor supported on the four oriented CM families. -/ abbrev I12Divisor :=
-  I12Orientation → ℤ
+/-- A divisor supported on the four oriented CM families. -/ abbrev I12Divisor := I12Orientation → ℤ
 /-- The divisor read directly from the coefficient at the unique negative index of the vector-valued input. -/ def heegnerDivisorFromSeries (n : ℕ) (V : ℤ → Fin 12 → ℤ) : I12Divisor := fun o => V (-(n : ℤ)) o.residue
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
-/-- The canonical embedding of `ℤ[1/6]` into `ℚ`. -/ noncomputable def awaySixToRat : SptCM.AwaySix →+* ℚ :=
-  Localization.awayLift (Int.castRingHom ℚ) 6 (by norm_num)
+/-- The canonical embedding of `ℤ[1/6]` into `ℚ`. -/ noncomputable def awaySixToRat : SptCM.AwaySix →+* ℚ := Localization.awayLift (Int.castRingHom ℚ) 6 (by norm_num)
 /-- The actual Laurent-series evaluation of `A_n(t)/B_n(t)`. The coefficient polynomials come from a sound descent specification for the genuine complex root products, and substitution is Mathlib's `aeval`. -/ noncomputable def actualClassPolynomialLaurentQuotient {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h} (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C) (t : LaurentSeries ℚ) : LaurentSeries ℚ :=
   Polynomial.aeval t (D.A.map awaySixToRat) / Polynomial.aeval t (D.B.map awaySixToRat)
 /-- The actual stabilized Euler quotient attached to the scalar series of the I10 input. These are precisely the canonical products constructed in I14. -/ noncomputable def actualBorcherdsEulerQuotient {Form : Type*} (F : FourComponentInput Form) : LaurentSeries ℚ :=
   ((SptCM.Repair.eulerProductPlus F.scalarSeries : PowerSeries ℚ) : LaurentSeries ℚ) / ((SptCM.Repair.eulerProductMinus F.scalarSeries : PowerSeries ℚ) : LaurentSeries ℚ)
-/-- The exact integral Euler-product Hauptmodul, base-changed to `ℚ` for the characteristic-zero class-polynomial quotient. -/ noncomputable def actualRationalHauptmodulLaurent : LaurentSeries ℚ :=
-  HahnSeries.map SptCM.Repair.hauptmodulFormalLaurent (Int.castRingHom ℚ)
-/-- Root-divisor of the actual class-polynomial quotient. It is computed from which of the four concrete products a root factor belongs to. -/ def actualClassPolynomialRootDivisor : I12Divisor
-  | .one | .eleven => 1
-  | .five | .seven => -1
-/-- Predicted divisor read from the unique negative coefficient. -/ def actualPredictedHeegnerDivisor {Form : Type*} (n : ℕ) : FourComponentInput Form → I12Divisor := fun F => heegnerDivisorFromSeries n F.vectorSeries
-/-- E5 applied to the actual I10 input and the fixed canonical stabilized Euler quotient. The expansion predicate is no longer caller-selectable. -/ def actualI12BorcherdsModel {Form : Type*} [SMul ℂ Form] (E : EtaJGeneratorBasis Form) (n : ℕ) (lift : FourComponentInput Form → LaurentSeries ℚ) (divisor : LaurentSeries ℚ → I12Divisor) (unitary : LaurentSeries ℚ → Prop) :
-    BorcherdsLiftModel (FourComponentInput Form) (LaurentSeries ℚ) I12Divisor where
-  admissibleInput := VectorInputSpec E n
+/-- The exact integral Euler-product Hauptmodul, base-changed to `ℚ` for the characteristic-zero class-polynomial quotient. -/ noncomputable def actualRationalHauptmodulLaurent : LaurentSeries ℚ := HahnSeries.map SptCM.Repair.hauptmodulFormalLaurent (Int.castRingHom ℚ)
+/-- The rational base change retains the exact principal part `q⁻¹ - 5 + O(q)`. -/ theorem actualRationalHauptmodulLaurent_principalPart : SptCM.Repair.HasHauptmodulPrincipalPart actualRationalHauptmodulLaurent := by sorry
+/-- The embedding of the rational function field in the genuine formal Hauptmodul. Its simple pole proves transcendence, so this is an injective algebra homomorphism, not an arbitrary interpretation of formal series. -/ noncomputable def rationalHauptmodulExpansion : RatFunc ℚ →+* LaurentSeries ℚ :=
+  IsFractionRing.lift (A := ℚ[X]) (K := RatFunc ℚ) (L := LaurentSeries ℚ) (g := (Polynomial.aeval actualRationalHauptmodulLaurent).toRingHom)
+    (by exact transcendental_iff_injective.mp (SptCM.Repair.laurentSeries_transcendental_of_simple_pole actualRationalHauptmodulLaurent actualRationalHauptmodulLaurent_principalPart.1 actualRationalHauptmodulLaurent_principalPart.2.2))
+/-- The complete divisor of a single oriented CM family, retaining the Hauptmodul coordinate of every point and its multiplicity. -/ noncomputable def orientedCMPointDivisor {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (o : I12Orientation) (z : ℂ) : ℤ :=
+  match o with
+  | .one => (classPolynomial (fun i : C.orientation1.Index => SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant1 C.n_pos (C.orientation1.classes i))).rootMultiplicity z
+  | .eleven => (classPolynomial (fun i : C.orientation11.Index => SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant11 C.n_pos (C.orientation11.classes i))).rootMultiplicity z
+  | .five => (classPolynomial (fun i : C.orientation5.Index => SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant5 C.n_pos (C.orientation5.classes i))).rootMultiplicity z
+  | .seven => (classPolynomial (fun i : C.orientation7.Index => SptCM.CM.Repaired.actualOrientedHauptmodulValue C.invariant7 C.n_pos (C.orientation7.classes i))).rootMultiplicity z
+noncomputable def fullHeegnerDivisor {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (a : I12Divisor) (z : ℂ) : ℤ :=
+  a .one * orientedCMPointDivisor C .one z + a .eleven * orientedCMPointDivisor C .eleven z + a .five * orientedCMPointDivisor C .five z + a .seven * orientedCMPointDivisor C .seven z
+/-- Interior divisors are functions of actual complex coordinates. Cusp orders are real because a unitary character can have nonintegral exponents. The compatibility law is needed only when every cusp order is zero. -/ structure I12MeromorphicGeometry where
+  divisor : LaurentSeries ℚ → ℂ → ℤ
+  cuspData : LaurentSeries ℚ → Fin 4 → ℝ
+  analyticCuspOrders : ∀ f (R : I12UnitaryMeromorphicRealization f), cuspData f = R.cuspOrder
+  analyticDivisor : ∀ f (R : I12UnitaryMeromorphicRealization f) (τ : UpperHalfPlane), divisor f (SptCM.CM.Repaired.analyticHauptmodul τ) = (meromorphicOrderAt R.toFun (τ : ℂ)).untop₀
+  rationalDivisor : ∀ r : RatFunc ℚ, r ≠ 0 → cuspData (rationalHauptmodulExpansion r) = 0 → divisor (rationalHauptmodulExpansion r) = rationalFunctionDivisor r
+/-- Explicit analytic descent input: a nonzero weight-zero meromorphic form with unitary character and zero cusp orders on the compact genus-zero curve is rational in its Hauptmodul. The analytic domain is fixed by convergent expansions and actual meromorphic functions, rather than a caller-selected predicate. This general descent theorem remains an explicit analytic input; it involves no CM polynomials or target identity. -/ def I12GenusZeroDescentPrinciple (G : I12MeromorphicGeometry) : Prop :=
+  ∀ f, HasI12UnitaryMeromorphicRealization f → G.cuspData f = 0 → f ≠ 0 → ∃ r : RatFunc ℚ, rationalHauptmodulExpansion r = f
+/-- The finite CM roots are interior points, and the monic equal-degree quotient has no zero or pole at any cusp. -/ def I12ClassPolynomialCuspPrinciple (G : I12MeromorphicGeometry) : Prop :=
+  ∀ {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h} (D : SptCM.CM.Repaired.ActualClassPolynomialSpec C), G.cuspData (actualClassPolynomialLaurentQuotient D actualRationalHauptmodulLaurent) = 0
+def I12WeylCuspPrinciple {Form : Type*} (G : I12MeromorphicGeometry) (lift : FourComponentInput Form → LaurentSeries ℚ) (weylVector : FourComponentInput Form → ℕ → ℂ) : Prop := ∀ F, (∀ c, IsLevelSixDivisor c → weylVector F c = 0) → G.cuspData (lift F) = 0
+/-- E5 with the full Heegner divisor, applied after all Weyl vectors vanish. -/ noncomputable def actualI12BorcherdsModel {Form : Type*} [SMul ℂ Form] (E : EtaJGeneratorBasis Form) {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h) (lift : FourComponentInput Form → LaurentSeries ℚ)
+    (divisor : LaurentSeries ℚ → ℂ → ℤ) (weylVector : FourComponentInput Form → ℕ → ℂ) : BorcherdsLiftModel (FourComponentInput Form) (LaurentSeries ℚ) (ℂ → ℤ)
+    where
+  admissibleInput := fun F => VectorInputSpec E n F ∧ (∀ c, IsLevelSixDivisor c → weylVector F c = 0)
   lift := lift
   divisor := divisor
-  predictedDivisor := actualPredictedHeegnerDivisor n
-  hasUnitaryCharacter := unitary
+  predictedDivisor := fun F => fullHeegnerDivisor C (heegnerDivisorFromSeries n F.vectorSeries)
+  hasUnitaryCharacter := HasI12UnitaryMeromorphicRealization
   hasProductExpansion := fun F g => g = actualBorcherdsEulerQuotient F
-/-- Neutral operations on the meromorphic functions used in I12. -/ structure I12MeromorphicGeometry (Function Divisor CuspData Scalar : Type*) where
-  divisor : Function → Divisor
-  cuspData : Function → CuspData
-  leadingValue : Function → Scalar
-/-- Geometric interpretation of finite root products: evaluating the actual class-polynomial quotient in the exact Hauptmodul has precisely the signed root divisor computed from its numerator and denominator factors. This is quantified over every descended class-polynomial specification and does not assume the final Borcherds-product identity. -/ def I12ClassPolynomialDivisorPrinciple (G : I12MeromorphicGeometry (LaurentSeries ℚ) I12Divisor I12Divisor ℚ) : Prop :=
-  ∀ {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h} (_D : SptCM.CM.Repaired.ActualClassPolynomialSpec C),
-    G.divisor (actualClassPolynomialLaurentQuotient _D actualRationalHauptmodulLaurent) = actualClassPolynomialRootDivisor
-/-- The finite CM roots are interior points, so the equal-degree class-polynomial quotient has no cusp contribution. As above, this is a uniform geometric interpretation law, not the desired product equality. -/ def I12ClassPolynomialCuspPrinciple (G : I12MeromorphicGeometry (LaurentSeries ℚ) I12Divisor I12Divisor ℚ) : Prop :=
-  ∀ {n h : ℕ} {C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h} (_D : SptCM.CM.Repaired.ActualClassPolynomialSpec C), G.cuspData (actualClassPolynomialLaurentQuotient _D actualRationalHauptmodulLaurent) = 0
-/-- General interpretation of Weyl vectors as cusp orders of a Borcherds lift: vanishing at all four level-six cusps forces trivial cusp data. -/ def I12WeylCuspPrinciple {Form : Type*} (G : I12MeromorphicGeometry (LaurentSeries ℚ) I12Divisor I12Divisor ℚ) (lift : FourComponentInput Form → LaurentSeries ℚ) (weylVector : FourComponentInput Form → ℕ → ℂ) : Prop :=
-  ∀ F, (∀ c, IsLevelSixDivisor c → weylVector F c = 0) → G.cuspData (lift F) = 0
-/-- General compact-curve rigidity: two meromorphic functions with the same horizontal divisor and cusp data differ by a scalar. -/ def I12DivisorRigidityPrinciple {Function Divisor CuspData Scalar : Type*} [Field Scalar] [Field Function] [Algebra Scalar Function] (G : I12MeromorphicGeometry Function Divisor CuspData Scalar) : Prop :=
-  ∀ f g, G.divisor f = G.divisor g → G.cuspData f = G.cuspData g → ∃ c : Scalar, f = algebraMap Scalar Function c * g
-/-- General compatibility of the leading value with scalar multiplication. -/ def I12LeadingValuePrinciple {Function Divisor CuspData Scalar : Type*} [Field Scalar] [Field Function] [Algebra Scalar Function] (G : I12MeromorphicGeometry Function Divisor CuspData Scalar) : Prop :=
-  ∀ c : Scalar, ∀ f, G.leadingValue (algebraMap Scalar Function c * f) = c * G.leadingValue f
 end SptCM.Analytic.Repaired
 namespace SptCM.Analytic.Repaired
 open SptCM.RolenLiterature
@@ -744,10 +712,9 @@ noncomputable section
   qualification : ∀ (k : ℕ) (F : Completion), harmonicMaass.holomorphicPart F = mockSeries → harmonicMaass.shadow F = shadowNormalization etaSeries → stokesQualified (actualHnStokesInput E.toEtaJPowerBasis k F)
   finiteHeightStokes : FiniteHeightStokesTheorem (hnFiniteHeightStokesModel stokesQualified truncatedIntegral topBoundaryError regularizedValue)
   lift : FourComponentInput Form → LaurentSeries ℚ
-  unitary : LaurentSeries ℚ → Prop
-  geometry : I12MeromorphicGeometry (LaurentSeries ℚ) I12Divisor I12Divisor ℚ
-  bruinierOno : ∀ n : ℕ, E5BruinierOno (actualI12BorcherdsModel E n lift geometry.divisor unitary)
+  geometry : I12MeromorphicGeometry
   weylVector : FourComponentInput Form → ℕ → ℂ
+  bruinierOno : ∀ {n h : ℕ} (C : SptCM.CM.Repaired.ActualOrientedCMCoordinates n h), E5BruinierOno (actualI12BorcherdsModel E C lift geometry.divisor weylVector)
   pairing : FourComponentInput Form → V →ₗ[ℂ] ℂ
   componentTheta : Fin 12 → V
   etaTheta : V
@@ -759,10 +726,7 @@ noncomputable section
     ∀ (k : ℕ) (F : Completion),
       harmonicMaass.holomorphicPart F = mockSeries →
         harmonicMaass.shadow F = shadowNormalization etaSeries → pairing (auxiliaryFourComponentInput E k (aCoeff ((24 * k - 1 : ℕ) : ℤ))) etaTheta = (regularizedValue (actualHnStokesInput E.toEtaJPowerBasis k F) : ℂ)
-  divisorRigidity : I12DivisorRigidityPrinciple geometry
-  leadingValue : I12LeadingValuePrinciple geometry
-  leadingCoefficient : ∀ f : LaurentSeries ℚ, geometry.leadingValue f = f.coeff 0
-  classPolynomialDivisor : I12ClassPolynomialDivisorPrinciple geometry
+  genusZeroDescent : I12GenusZeroDescentPrinciple geometry
   classPolynomialCusp : I12ClassPolynomialCuspPrinciple geometry
   weylCusp : I12WeylCuspPrinciple geometry lift weylVector
 end
@@ -783,7 +747,8 @@ open SptCM.CM.Repaired
 /-- A good-prime residue map is defined on the integral closure, not on the whole number field. Compatibility says that it extends the chosen reduction of `ℤ[1/6]` coefficientwise. -/ structure E8IntegralClosureResidueSpecialization (L k : Type*) (ℓ : ℕ) [Field L] [Algebra AwaySix L] [Field k] [Algebra (ZMod ℓ) k] (coefficientReduction : AwaySix →+* ZMod ℓ) where
   residue : integralClosure AwaySix L →+* k
   compatible : residue.comp (algebraMap AwaySix (integralClosure AwaySix L)) = (algebraMap (ZMod ℓ) k).comp coefficientReduction
-run_cmd Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env {}
+run_cmd
+  Lean.modifyEnv fun env => Lean.Meta.auxLemmasExt.setState env { }
 /-- Source-faithful E8 lying-over/residue theorem in precisely the good-prime coefficient ring needed by the paper. The theorem only produces a residue map on the integral closure. Root collisions and polynomial separation are not part of this external statement. -/ def E8AwaySixIntegralClosureResidueTheorem : Prop :=
   ∀ (ℓ : ℕ) [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ)) (L : Type) (_ : Field L) (_ : Algebra AwaySix L) (_ : Algebra ℚ L) (_ : FiniteDimensional ℚ L),
     Nonempty (E8IntegralClosureResidueSpecialization L (AlgebraicClosure (ZMod ℓ)) ℓ (SptCM.awaySixReduction ℓ h6))
@@ -831,14 +796,12 @@ open scoped ModularForm PowerSeries
   order_infinity : M.orderFormula SptCM.CM.Repaired.hauptmodulExponents infinity = SptCM.CM.Repaired.ligozatCuspOrder SptCM.CM.Repaired.hauptmodulExponents 6
   analyticNonvanishingInterpretation : ∀ f : UpperHalfPlane → ℂ, (∀ τ, f τ ≠ 0) → G.hasNoInteriorZeroOrPole f X
   integralExpansionInterpretation : ∀ (f : UpperHalfPlane → ℂ) (u : PowerSeries ℤ), HasActualIntegralUnitExpansion f u → G.hasIntegralUnitExpansionAt f infinity u
-/-- The proposition-valued exact E7 input: the standard integral model and all comparison maps required by the application exist. -/ def E7ActualX0SixApplicationChecks : Prop :=
-  Nonempty ActualX0SixApplicationChecks
+/-- The proposition-valued exact E7 input: the standard integral model and all comparison maps required by the application exist. -/ def E7ActualX0SixApplicationChecks : Prop := Nonempty ActualX0SixApplicationChecks
 end SptCM.Repair
 namespace SptCM
 universe u
 open Polynomial
-/-- Reduced norm in an algebra with quaternionic conjugation. -/ def reducedNorm {R : Type*} [Mul R] [Star R] (α : R) : R :=
-  α * star α
+/-- Reduced norm in an algebra with quaternionic conjugation. -/ def reducedNorm {R : Type*} [Mul R] [Star R] (α : R) : R := α * star α
 end SptCM
 namespace SptCM.Repair
 noncomputable section
@@ -856,15 +819,15 @@ open SptCM.RolenLiterature
   squaredNorm_eq : ∀ x, EC.squaredNorm x = 2 * (reducedNorm x : ℝ)
   independent_of_linearIndependent : ∀ a b c d, LinearIndependent ℚ ![a, b, c, d] → EC.independent a b c d
   covolume_nonnegative : ∀ a b c d, 0 ≤ EC.covolume (EC.span a b c d)
-  /-- The (reduced-discriminant) local index of an Eichler order. -/   localIndex : Order → ℕ
-  /-- The local contributions at the primes dividing the level. -/   localIndexAtTwo : Order → ℕ
+  /-- The (reduced-discriminant) local index of an Eichler order. -/ localIndex : Order → ℕ
+  /-- The local contributions at the primes dividing the level. -/ localIndexAtTwo : Order → ℕ
   localIndexAtThree : Order → ℕ
-  /-- The covolume of a maximal order in the ambient quaternion algebra. -/   maximalOrderCovolume : Curve → ℝ
-  /-- General local-to-global index factorization for a level-six Eichler order; all local factors away from `2` and `3` are units. -/   levelSix_localIndex_factorization : ∀ O, EC.isEichlerOfLevelSix O → localIndex O = localIndexAtTwo O * localIndexAtThree O
-  /-- Preserving the distinguished line at `2` has local index `2`. -/   levelSix_localIndexAtTwo : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtTwo O = 2
-  /-- Preserving the distinguished line at `3` has local index `3`. -/   levelSix_localIndexAtThree : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtThree O = 3
-  /-- General discriminant normalization for a maximal order in the supersingular quaternion algebra. -/   maximalOrderCovolume_eq_characteristic : ∀ E, maximalOrderCovolume E = characteristic E
-  /-- General finite-index scaling law for the lattice of an Eichler order. -/   orderLattice_covolume : ∀ E C, EC.isEichlerOfLevelSix (EC.preservingOrder E C) → EC.covolume (orderLattice (EC.preservingOrder E C)) = localIndex (EC.preservingOrder E C) * maximalOrderCovolume E
+  /-- The covolume of a maximal order in the ambient quaternion algebra. -/ maximalOrderCovolume : Curve → ℝ
+  /-- General local-to-global index factorization for a level-six Eichler order; all local factors away from `2` and `3` are units. -/ levelSix_localIndex_factorization : ∀ O, EC.isEichlerOfLevelSix O → localIndex O = localIndexAtTwo O * localIndexAtThree O
+  /-- Preserving the distinguished line at `2` has local index `2`. -/ levelSix_localIndexAtTwo : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtTwo O = 2
+  /-- Preserving the distinguished line at `3` has local index `3`. -/ levelSix_localIndexAtThree : ∀ O, EC.isEichlerOfLevelSix O → localIndexAtThree O = 3
+  /-- General discriminant normalization for a maximal order in the supersingular quaternion algebra. -/ maximalOrderCovolume_eq_characteristic : ∀ E, maximalOrderCovolume E = characteristic E
+  /-- General finite-index scaling law for the lattice of an Eichler order. -/ orderLattice_covolume : ∀ E C, EC.isEichlerOfLevelSix (EC.preservingOrder E C) → EC.covolume (orderLattice (EC.preservingOrder E C)) = localIndex (EC.preservingOrder E C) * maximalOrderCovolume E
   span_covolume_lower :
     ∀ E C a b c d,
       EC.independent a b c d →
