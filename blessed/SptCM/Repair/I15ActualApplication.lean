@@ -1,4 +1,12 @@
-import blessed.SptCM.Repair.AnalyticFormalIdentification
+module
+
+public import blessed.SptCM.Repair.AnalyticFormalIdentification
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The actual expansion input in the I15 application
@@ -17,6 +25,7 @@ open scoped ModularForm PowerSeries
 The power series is integral, is a unit with constant coefficient one, and
 its complex evaluation on every upper-half-plane nome gives the analytic
 function after adjoining the simple pole `q⁻¹`. -/
+@[expose]
 def HasActualIntegralUnitExpansion
     (f : UpperHalfPlane → ℂ) (u : PowerSeries ℤ) : Prop :=
   (∀ τ : UpperHalfPlane,

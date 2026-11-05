@@ -1,7 +1,16 @@
-import blessed.SptCM.Repair.AnalyticFormalIdentification
+module
+
+public import blessed.SptCM.Repair.AnalyticFormalIdentification
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 namespace SptCM.Repair
 open scoped PowerSeries
 variable {R : Type*} [CommRing R]
+@[expose]
 def LowOne (P : PowerSeries R) (m : ℕ) : Prop :=
   ∀ n < m, PowerSeries.coeff n P = PowerSeries.coeff n 1
 lemma coeff_mul_low (P Q : PowerSeries R) (n : ℕ)

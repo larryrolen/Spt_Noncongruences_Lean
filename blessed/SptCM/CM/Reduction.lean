@@ -1,8 +1,16 @@
-import blessed.SptCM.CM.ClassPolynomials
-import Mathlib.Data.ZMod.Units
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import blessed.SptCM.CM.ClassPolynomials
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Reduction of the oriented class polynomials
@@ -26,6 +34,7 @@ abbrev AwaySix := Localization.Away (6 : ℤ)
 /-- Reduction of coefficients in `ℤ[1/6]` to a field of characteristic `ℓ`.
 The explicit unit hypothesis is precisely the good-prime condition needed by
 the universal property of localization. -/
+@[expose]
 def awaySixReduction (ℓ : ℕ) (h6 : IsUnit (6 : ZMod ℓ)) :
     AwaySix →+* ZMod ℓ :=
   Localization.awayLift (Int.castRingHom (ZMod ℓ)) 6 (by simpa using h6)
@@ -53,12 +62,14 @@ structure IntegralOrientedClassPolynomials (n : ℕ) where
   denominator_monic : denominator.Monic
 
 /-- Coefficientwise reduction of the numerator polynomial. -/
+@[expose]
 def IntegralOrientedClassPolynomials.reduceNumerator
     {n ℓ : ℕ} (P : IntegralOrientedClassPolynomials n)
     (h6 : IsUnit (6 : ZMod ℓ)) : (ZMod ℓ)[X] :=
   P.numerator.map (awaySixReduction ℓ h6)
 
 /-- Coefficientwise reduction of the denominator polynomial. -/
+@[expose]
 def IntegralOrientedClassPolynomials.reduceDenominator
     {n ℓ : ℕ} (P : IntegralOrientedClassPolynomials n)
     (h6 : IsUnit (6 : ZMod ℓ)) : (ZMod ℓ)[X] :=
@@ -80,6 +91,7 @@ theorem IntegralOrientedClassPolynomials.reduceDenominator_monic
 
 /-- A common reduced root is correctly sought in an algebraically closed
 extension of `ZMod ℓ`, not necessarily in `ZMod ℓ` itself. -/
+@[expose]
 def HasReducedCMCollision {n ℓ : ℕ}
     (P : IntegralOrientedClassPolynomials n)
     (h6 : IsUnit (6 : ZMod ℓ)) : Prop :=

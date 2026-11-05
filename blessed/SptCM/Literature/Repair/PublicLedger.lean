@@ -1,7 +1,15 @@
-import blessed.SptCM.Literature.Repair.UniformLedger
-import blessed.SptCM.CM.Repaired.ActualCoordinateConstruction
-import blessed.SptCM.Repair.I15ActualCoordinate
-import blessed.SptCM.Repair.ActualWronskianContradiction
+module
+
+public import blessed.SptCM.Literature.Repair.UniformLedger
+public import blessed.SptCM.CM.Repaired.ActualCoordinateConstruction
+public import blessed.SptCM.Repair.I15ActualCoordinate
+public import blessed.SptCM.Repair.ActualWronskianContradiction
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Uniform, source-facing literature ledger
@@ -97,6 +105,7 @@ variable {n ℓ : ℕ}
 
 /-- The level-six subgroup attached to the numerator point of an actual
 geometric specialization. -/
+@[expose]
 def levelSubgroup
     (M : E9ActualLevelSixModel (ℓ := ℓ) CM E8Q)
     (S : SptCM.Repair.GeometricCMSpecialization CM) : M.Subgroup :=
@@ -151,9 +160,11 @@ theorem preservingOrder_covolume_eq
 
 end E9ActualLevelSixModel
 
-/-- Public, discriminant-uniform literature data which do not depend on an
+/-- Public, discriminant-uniform conditional data which do not depend on an
 implementation choice for the analytic Borcherds and quaternionic models.
 
+The E8 fields are additional unproved application inputs, not certified
+translations of cited CM theorems; see EXTERNAL_INPUTS.json.
 The class-field field is dependent on the *actual* coordinate family.  This
 is essential: it prevents a single unrelated pair of CM-value families from
 being used for every discriminant. -/
@@ -242,6 +253,7 @@ theorem UniformRolenLiterature.actualCoordinates
 /-- An eligible-discriminant package retaining the actual class field and
 its integral realization.  The field is allowed to depend on `n`; requiring
 one fixed number field for all discriminants would not be a source theorem. -/
+@[expose]
 def ActualCMClassFieldPackage (n : ℕ) : Prop :=
   ∃ (C : ActualOrientedCMCoordinates n (SptCM.negativeClassNumber n))
       (L : Type) (_ : Field L) (_ : Algebra ℚ L)

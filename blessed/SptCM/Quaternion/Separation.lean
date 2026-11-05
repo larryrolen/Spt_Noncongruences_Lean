@@ -1,6 +1,14 @@
-import blessed.SptCM.CM.ClassPolynomials
-import blessed.SptCM.Lemmas.VolumeArithmetic
-import Mathlib.FieldTheory.SplittingField.Construction
+module
+
+public import blessed.SptCM.CM.ClassPolynomials
+public import blessed.SptCM.Lemmas.VolumeArithmetic
+public import Mathlib.FieldTheory.SplittingField.Construction
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Quaternionic volume and separation
@@ -20,14 +28,17 @@ open Polynomial
 
 /-- A generic level-preserving endomorphism order, represented as the subtype
 of endomorphisms preserving the chosen level structure. -/
+@[expose]
 def levelEndomorphismOrder {E : Type*} (PreservesLevel : E → Prop) :=
   {α : E // PreservesLevel α}
 
 /-- Reduced norm in an algebra with quaternionic conjugation. -/
+@[expose]
 def reducedNorm {R : Type*} [Mul R] [Star R] (α : R) : R :=
   α * star α
 
 /-- Reduced trace in an algebra with quaternionic conjugation. -/
+@[expose]
 def reducedTrace {R : Type*} [Add R] [Star R] (α : R) : R :=
   α + star α
 

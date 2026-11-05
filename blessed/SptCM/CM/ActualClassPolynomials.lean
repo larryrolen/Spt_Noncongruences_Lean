@@ -1,4 +1,12 @@
-import blessed.SptCM.CM.Reduction
+module
+
+public import blessed.SptCM.CM.Reduction
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Class polynomials indexed by the actual oriented form classes
@@ -20,6 +28,7 @@ local instance awaySixIsDomain : IsDomain AwaySix :=
   Localization.Away.isDomain (by norm_num)
 
 /-- The canonical embedding of `ℤ[1/6]` into the complex numbers. -/
+@[expose]
 def awaySixToComplex : AwaySix →+* ℂ :=
   Localization.awayLift (Int.castRingHom ℂ) 6 (by
     apply isUnit_iff_ne_zero.mpr
@@ -72,6 +81,7 @@ namespace OrientedCMIntegralCoordinates
 variable {n h : ℕ} (D : OrientedCMIntegralCoordinates n h)
 
 /-- The actual numerator polynomial, using orientations `1` and `11`. -/
+@[expose]
 def numeratorPolynomial : AwaySix[X] :=
   classPolyA
     (fun i : D.orientation1.Index =>
@@ -80,6 +90,7 @@ def numeratorPolynomial : AwaySix[X] :=
       D.coordinate11 (D.orientation11.classes i))
 
 /-- The actual denominator polynomial, using orientations `5` and `7`. -/
+@[expose]
 def denominatorPolynomial : AwaySix[X] :=
   classPolyB
     (fun i : D.orientation5.Index =>
@@ -112,6 +123,7 @@ theorem denominatorPolynomial_natDegree :
 
 /-- Package the two characteristic-zero polynomials with their internally
 proved monicity. -/
+@[expose]
 def integralPolynomials : IntegralOrientedClassPolynomials n where
   numerator := D.numeratorPolynomial
   denominator := D.denominatorPolynomial
@@ -121,6 +133,7 @@ def integralPolynomials : IntegralOrientedClassPolynomials n where
 /-- The canonical coefficientwise reductions of the two actual oriented
 class polynomials at a prime away from the level.  Keeping the pair in this
 order matches the numerator/denominator convention used by the Wronskian. -/
+@[expose]
 def reducedClassPolynomials
     {ℓ : ℕ} [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ)) :
     (ZMod ℓ)[X] × (ZMod ℓ)[X] :=
@@ -130,6 +143,7 @@ def reducedClassPolynomials
 /-- Complete arithmetic specification of the two actual characteristic-zero
 class polynomials: their coefficient ring already records integrality away
 from six, and both products are monic. -/
+@[expose]
 def ClassPolynomialSpec : Prop :=
   D.numeratorPolynomial.Monic ∧ D.denominatorPolynomial.Monic
 
@@ -298,6 +312,7 @@ abbrev DenominatorFactorIndex :=
   D.orientation5.Index ⊕ D.orientation7.Index
 
 /-- The reduced coordinate belonging to a numerator factor. -/
+@[expose]
 def reducedNumeratorCoordinate
     {ℓ : ℕ} [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ)) :
     D.NumeratorFactorIndex → ZMod ℓ
@@ -307,6 +322,7 @@ def reducedNumeratorCoordinate
       (D.coordinate11 (D.orientation11.classes i))
 
 /-- The reduced coordinate belonging to a denominator factor. -/
+@[expose]
 def reducedDenominatorCoordinate
     {ℓ : ℕ} [Fact ℓ.Prime] (h6 : IsUnit (6 : ZMod ℓ)) :
     D.DenominatorFactorIndex → ZMod ℓ

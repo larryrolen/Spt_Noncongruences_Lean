@@ -1,4 +1,12 @@
-import blessed.SptCM.Quaternion.Repaired.I19ActualAdapter
+module
+
+public import blessed.SptCM.Quaternion.Repaired.I19ActualAdapter
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Constructing the actual oriented reduction points
@@ -61,6 +69,7 @@ variable {n h : ℕ} (C : ActualOrientedCMCoordinates n h)
 
 /-- Reductions of the E8 points attached to the canonical raw representatives
 of the two numerator orientation families. -/
+@[expose]
 def actualNumeratorReduction
     {Order IdealClass CMPoint Reduction D : Type*}
     [DivisionRing D] [Star D]
@@ -73,6 +82,7 @@ def actualNumeratorReduction
       (E8Q.point 11 (rawRepresentative (C.orientation11.classes i)))
 
 /-- Reductions of the corresponding denominator points. -/
+@[expose]
 def actualDenominatorReduction
     {Order IdealClass CMPoint Reduction D : Type*}
     [DivisionRing D] [Star D]
@@ -180,6 +190,7 @@ variable {n h ℓ : ℕ} {C : ActualOrientedCMCoordinates n h}
 
 /-- The uniform evaluation law constructs the entire coordinate-specialization
 record, with the points chosen to be reductions of the E8 raw-form points. -/
+@[expose]
 def coordinateSpecialization
     (H : E8ActualHauptmodulGoodReduction C F Sres CM E8Q) :
     E8IntegralCoordinateSpecialization
@@ -212,6 +223,7 @@ def coordinateSpecialization
 reduction interpretation is obtained from the same raw-form points used in
 `coordinateSpecialization`.  Inertness is an arithmetic qualification, not a
 point-comparison or downstream quaternionic conclusion. -/
+@[expose]
 def pointReductionData
     (H : E8ActualHauptmodulGoodReduction C F Sres CM E8Q)
     (hinert : ∀ (r : ℕ) (Q : SptCM.RawOrientedForm n r),

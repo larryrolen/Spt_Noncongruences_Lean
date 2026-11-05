@@ -1,5 +1,13 @@
-import blessed.SptCM.Interfaces
-import blessed.SptCM.PaperInterfaces
+module
+
+public import blessed.SptCM.Interfaces
+public import blessed.SptCM.PaperInterfaces
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Oriented CM class polynomials
@@ -27,6 +35,7 @@ structure IntegralBinaryQuadraticForm where
 /-- The raw oriented level-six forms of discriminant `-n`.  Passage to
 `Γ₀(6)`-classes and the finiteness/cardinality theorem are external arithmetic
 inputs, represented below by finite index types and cardinality hypotheses. -/
+@[expose]
 def rawOrientedForms (n r : ℕ) : Set IntegralBinaryQuadraticForm :=
   {Q | Q.b ^ 2 - 4 * Q.a * Q.c = -(n : ℤ) ∧ 0 < Q.a ∧
     (6 : ℤ) ∣ Q.a ∧ Q.b % 12 = (r : ℤ) % 12 ∧
@@ -44,6 +53,7 @@ structure GammaZeroSixMatrix where
 
 /-- Change of variables of an integral binary quadratic form by a matrix
 `((p,q),(s,t))`. -/
+@[expose]
 def transformQuadraticForm (g : GammaZeroSixMatrix)
     (Q : IntegralBinaryQuadraticForm) : IntegralBinaryQuadraticForm where
   a := Q.a * g.p ^ 2 + Q.b * g.p * g.s + Q.c * g.s ^ 2
@@ -55,6 +65,7 @@ def transformQuadraticForm (g : GammaZeroSixMatrix)
 abbrev RawOrientedForm (n r : ℕ) := {Q // Q ∈ rawOrientedForms n r}
 
 /-- The one-step `Γ₀(6)` change-of-variables relation on oriented forms. -/
+@[expose]
 def gammaZeroSixRelated (n r : ℕ)
     (Q Q' : RawOrientedForm n r) : Prop :=
   ∃ g : GammaZeroSixMatrix, transformQuadraticForm g Q.1 = Q'.1
@@ -63,12 +74,14 @@ def gammaZeroSixRelated (n r : ℕ)
 definite forms of discriminant `-n`, with `6 ∣ a` and `b ≡ r (mod 12)`,
 modulo `Γ₀(6)`. `EqvGen` packages the equivalence closure of the concrete
 change-of-variables relation. -/
+@[expose]
 def orientedForms (n r : ℕ) : Type :=
   Quotient (Relation.EqvGen.setoid (gammaZeroSixRelated n r))
 
 /-- The level-six eta quotient, parameterized by the analytic eta function.
 This separates its algebraic formula from the cited modularity and integral
 model results. -/
+@[expose]
 def hauptmodul (eta : ℂ → ℂ) (τ : ℂ) : ℂ :=
   eta τ ^ 5 * eta (3 * τ) / (eta (2 * τ) * eta (6 * τ) ^ 5)
 
@@ -145,6 +158,7 @@ section ClassPolynomial
 variable {R : Type*} [CommRing R] [Nontrivial R]
 
 /-- The polynomial whose roots are a finite family of CM coordinates. -/
+@[expose]
 def classPolynomial {ι : Type*} [Fintype ι] (t : ι → R) : R[X] :=
   ∏ i, (X - C (t i))
 
@@ -180,12 +194,14 @@ theorem aeval_classPolynomial_eq_zero_iff
     exact ⟨i, Finset.mem_univ i, sub_eq_zero.mpr hi⟩
 
 /-- The numerator class polynomial formed from the orientations `1` and `11`. -/
+@[expose]
 def classPolyA
     {ι₁ ι₁₁ : Type*} [Fintype ι₁] [Fintype ι₁₁]
     (t₁ : ι₁ → R) (t₁₁ : ι₁₁ → R) : R[X] :=
   classPolynomial t₁ * classPolynomial t₁₁
 
 /-- The denominator class polynomial formed from the orientations `5` and `7`. -/
+@[expose]
 def classPolyB
     {ι₅ ι₇ : Type*} [Fintype ι₅] [Fintype ι₇]
     (t₅ : ι₅ → R) (t₇ : ι₇ → R) : R[X] :=

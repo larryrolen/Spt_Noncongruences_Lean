@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.Repaired.HauptmodulCoordinate
-import Mathlib.NumberTheory.ModularForms.DedekindEta
+module
+
+public import blessed.SptCM.CM.Repaired.HauptmodulCoordinate
+public import Mathlib.NumberTheory.ModularForms.DedekindEta
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The analytic Euler product for the level-six Hauptmodul
@@ -15,11 +23,13 @@ namespace SptCM.Repair
 open scoped ModularForm
 
 /-- The unit Euler product occurring in Mathlib's definition of Dedekind eta. -/
+@[expose]
 noncomputable def etaEulerUnit (z : ℂ) : ℂ :=
   ∏' n : ℕ, (1 - ModularForm.eta_q n z)
 
 /-- The level-six Euler-product quotient after removing the net `q⁻¹`
 prefactor from the eta quotient. -/
+@[expose]
 noncomputable def hauptmodulEulerUnit (τ : UpperHalfPlane) : ℂ :=
   etaEulerUnit τ ^ 5 * etaEulerUnit (3 * (τ : ℂ)) /
     (etaEulerUnit (2 * (τ : ℂ)) * etaEulerUnit (6 * (τ : ℂ)) ^ 5)

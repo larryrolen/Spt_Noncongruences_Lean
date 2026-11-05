@@ -1,8 +1,16 @@
-import blessed.SptCM.Repair.CMPolynomialReduction
-import blessed.SptCM.Quaternion.Separation
-import blessed.SptCM.Literature.RolenLiterature
-import blessed.SptCM.CM.Repaired.ActualCMValues
-import Mathlib.Tactic
+module
+
+public import blessed.SptCM.Repair.CMPolynomialReduction
+public import blessed.SptCM.Quaternion.Separation
+public import blessed.SptCM.Literature.RolenLiterature
+public import blessed.SptCM.CM.Repaired.ActualCMValues
+public import Mathlib.Tactic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Repairs I18--I20: geometric collision and quaternionic separation
@@ -59,6 +67,7 @@ structure GeometricCMSpecialization
 
 /-- I18: a common geometric root specializes to one supersingular reduction
 carrying the two injectively specialized CM actions. -/
+@[expose]
 def common_root_specialization
     {n ℓ : ℕ} (P : SptCM.IntegralOrientedClassPolynomials n)
     (h6 : IsUnit (6 : ZMod ℓ))
@@ -92,12 +101,14 @@ theorem common_root_specialization_exists
 /-- The scalar by which
 `\omega = a\tau_Q + (b+1)/2` acts on the standard cyclic subgroup
 `C_Q = ⟨1/6⟩`.  Only the residue of `b` modulo `12` matters. -/
+@[expose]
 def orientationScalar (b : ℕ) : ZMod 6 := ((b + 1) / 2 : ℕ)
 
 /-! ### The actual quadratic element before specialization -/
 
 /-- For a raw form `Q = [a,b,c]`, the element
 `a τ_Q + (b+1)/2` in the corresponding complex quadratic order. -/
+@[expose]
 noncomputable def rawOmega {n r : ℕ} (Q : SptCM.RawOrientedForm n r) : ℂ :=
   (Q.1.a : ℂ) * SptCM.CM.Repaired.rawCMPoint Q +
     ((Q.1.b : ℂ) + 1) / 2
@@ -153,6 +164,7 @@ theorem rawOmega_quadratic_relation {n r : ℕ} (hn : 0 < n)
 
 /-- The distinguished generator of the concrete order
 `ℤ[X]/(X²-X+(n+1)/4)` used by the E8 interface. -/
+@[expose]
 noncomputable def negativeQuadraticOmega (n : ℕ) :
     NegativeQuadraticOrder n :=
   AdjoinRoot.root _
@@ -325,6 +337,7 @@ specialization homomorphisms.  In particular, the trace and common-norm
 fields are proved from the defining equation of the order generator and are
 not hypotheses of this constructor.  The remaining scalar formulas are
 exactly the still-geometric compatibility with the cyclic level subgroup. -/
+@[expose]
 def OrientedSpecializedActions.ofQuadraticSpecializations
     {n : ℕ}
     {Order IdealClass CMPoint Reduction D : Type*}
@@ -411,6 +424,7 @@ structure CollisionOrientedFormData
 points are identified with their two raw oriented forms, the general E8
 ring-specialization and level-action laws construct the complete action
 specification.  Trace one and common norm are internal consequences. -/
+@[expose]
 def actualOrientedSpecializedActions_of_E8
     {n : ℕ}
     {Order IdealClass CMPoint Reduction D : Type*}

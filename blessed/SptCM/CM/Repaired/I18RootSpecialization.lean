@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.Repaired.I16Reduction
-import blessed.SptCM.Literature.Repair.UniformLedger
+module
+
+public import blessed.SptCM.CM.Repaired.I16Reduction
+public import blessed.SptCM.Literature.Repair.UniformLedger
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Root factors after specialization of algebraic CM values
@@ -22,6 +30,7 @@ open Polynomial
 
 /-- Compatibility of an extension-ring specialization with coefficientwise
 reduction of `ℤ[1/6]`. -/
+@[expose]
 def AwaySixResidueCompatibility
     {ℓ : ℕ} (h6 : IsUnit (6 : ZMod ℓ))
     {R k : Type*} [CommRing R] [Field k] [Algebra (ZMod ℓ) k]

@@ -1,8 +1,13 @@
-import blessed.SptCM.Lemmas.Polynomial
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.Polynomial.Derivation
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.RingTheory.PowerSeries.Derivative
+module
+
+public import blessed.SptCM.Lemmas.Polynomial
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.PowerSeries.Derivative
+
+public section
+
 
 /-!
 # From product identities to the polynomial Wronskian obstruction
@@ -31,11 +36,11 @@ theorem derivation_pow_char_eq_zero
 theorem powerSeries_derivative_pow_char_eq_zero
     {p : ℕ} (R : Type*) [CommRing R] [CharP R p]
     (f : PowerSeries R) :
-    PowerSeries.derivative R (f ^ p) = 0 := by
+    PowerSeries.derivative (R := R) (f ^ p) = 0 := by
   letI : CharP (PowerSeries R) p :=
     charP_of_injective_ringHom PowerSeries.C_injective p
   exact derivation_pow_char_eq_zero (p := p) (R := R) (A := PowerSeries R)
-    (PowerSeries.derivative R) f
+    (PowerSeries.derivative (R := R)) f
 
 /-- A power series supported on exponents divisible by the characteristic has
 zero formal derivative.  This is the coefficientwise version of the
@@ -44,7 +49,7 @@ theorem powerSeries_derivative_eq_zero_of_support_dvd_char
     {p : ℕ} {R : Type*} [CommRing R] [CharP R p]
     (f : PowerSeries R)
     (hsupport : ∀ n : ℕ, ¬p ∣ n → PowerSeries.coeff n f = 0) :
-    PowerSeries.derivative R f = 0 := by
+    PowerSeries.derivative (R := R) f = 0 := by
   ext n
   rw [PowerSeries.coeff_derivative]
   by_cases hdiv : p ∣ n + 1

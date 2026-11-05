@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.Repaired.I18RootSpecialization
-import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
+module
+
+public import blessed.SptCM.CM.Repaired.I18RootSpecialization
+public import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # From an actual common class-polynomial root to a CM specialization

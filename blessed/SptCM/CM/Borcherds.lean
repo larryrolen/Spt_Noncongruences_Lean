@@ -1,10 +1,19 @@
-import blessed.SptCM.CM.ClassPolynomials
-import blessed.SptCM.Analytic.DualityPairing
-import blessed.SptCM.Analytic.ProductObstruction
-import blessed.SptCM.PaperInterfaces
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.RingTheory.LaurentSeries
+module
+
+public import blessed.SptCM.CM.ClassPolynomials
+public import blessed.SptCM.Analytic.DualityPairing
+public import blessed.SptCM.Analytic.ProductObstruction
+public import blessed.SptCM.PaperInterfaces
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.RingTheory.LaurentSeries
+
+public section
+
+-- Keep the existing ring operations on ZMod; the generic group reconstruction
+-- introduced in this Mathlib version creates an incompatible negation instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Algebraic deductions from the Borcherds product
@@ -132,6 +141,7 @@ theorem normalized_classPolynomial_quotient_product_identity
 /-- A Borcherds interface whose product-expansion field has the concrete
 meaning `g = numerator F / denominator F`.  Using this constructor prevents a
 later theorem from postulating a bridge out of an opaque expansion predicate. -/
+@[expose]
 def quotientBorcherdsLiftData
     {Input Divisor M : Type*} [Field M]
     (lift : Input → M) (divisor : M → Divisor)
@@ -194,6 +204,7 @@ of degree `d` is required to agree with a finite truncation; the slightly
 larger range `d+2` is convenient for differentiating, and expresses the usual
 stabilization fact that only finitely many Euler factors affect a fixed
 coefficient. -/
+@[expose]
 def IsStabilizedEulerProduct
     {R : Type*} [CommRing R]
     (P : PowerSeries R) (index exponent : ℕ → ℕ) : Prop :=
@@ -363,7 +374,7 @@ theorem stabilizedEulerProduct_derivative_eq_zero
     (P : PowerSeries (ZMod ℓ)) (index exponent : ℕ → ℕ)
     (hproduct : IsStabilizedEulerProduct P index exponent)
     (hdiv : ∀ i : ℕ, ℓ ∣ index i ∨ ℓ ∣ exponent i) :
-    PowerSeries.derivative (ZMod ℓ) P = 0 := by
+    PowerSeries.derivative (R := ZMod ℓ) P = 0 := by
   letI : CharP (PowerSeries (ZMod ℓ)) ℓ :=
     charP_of_injective_ringHom PowerSeries.C_injective ℓ
   ext d
@@ -371,7 +382,7 @@ theorem stabilizedEulerProduct_derivative_eq_zero
   rw [hproduct (d + 1)]
   have hfinite :=
     derivation_finset_eulerProduct_eq_zero ℓ
-      (PowerSeries.derivative (ZMod ℓ)) PowerSeries.X
+      (PowerSeries.derivative (R := ZMod ℓ)) PowerSeries.X
       (Finset.range (d + 1 + 2)) index exponent
       (fun i _ => hdiv i)
   have hc := congrArg (PowerSeries.coeff d) hfinite
@@ -713,7 +724,7 @@ theorem canonicalCongruence_forces_wronskian_zero_from_infinite_product
     (honeSide : ∀ i : ℕ, eplus i = 0 ∨ eminus i = 0)
     (t : PowerSeries (ZMod ℓ)) (A B : Polynomial (ZMod ℓ))
     (htrans : Transcendental (ZMod ℓ) t)
-    (ht : PowerSeries.derivative (ZMod ℓ) t ≠ 0)
+    (ht : PowerSeries.derivative (R := ZMod ℓ) t ≠ 0)
     (hB : aeval t B ≠ 0)
     (hdenominator : denominator ≠ 0)
     (hquotient :
@@ -737,11 +748,11 @@ theorem canonicalCongruence_forces_wronskian_zero_from_infinite_product
         (hb_of_canonical_inert i hm hcanonical hsquarefree hmod hinert)
         (hexponent i) (honeSide i)
   have hnumerator :
-      PowerSeries.derivative (ZMod ℓ) numerator = 0 :=
+      PowerSeries.derivative (R := ZMod ℓ) numerator = 0 :=
     stabilizedEulerProduct_derivative_eq_zero ℓ numerator index eplus
       hnumeratorProduct (fun i => (hdiv i).imp_right And.left)
   have hdenominatorDeriv :
-      PowerSeries.derivative (ZMod ℓ) denominator = 0 :=
+      PowerSeries.derivative (R := ZMod ℓ) denominator = 0 :=
     stabilizedEulerProduct_derivative_eq_zero ℓ denominator index eminus
       hdenominatorProduct (fun i => (hdiv i).imp_right And.right)
   have hproduct :
@@ -749,7 +760,7 @@ theorem canonicalCongruence_forces_wronskian_zero_from_infinite_product
     powerSeries_crossProduct_of_laurentSeries_quotient
       t numerator denominator A B hB hdenominator hquotient
   exact wronskian_zero_of_borcherds_quotient
-    (PowerSeries.derivative (ZMod ℓ)) t A B htrans ht
+    (PowerSeries.derivative (R := ZMod ℓ)) t A B htrans ht
     numerator denominator hdenominator hproduct
     hnumerator hdenominatorDeriv
 
@@ -781,7 +792,7 @@ theorem canonicalCongruence_forces_wronskian_zero_from_square_vanishing
     (honeSide : ∀ i : ℕ, eplus i = 0 ∨ eminus i = 0)
     (t : PowerSeries (ZMod ℓ)) (A B : Polynomial (ZMod ℓ))
     (htrans : Transcendental (ZMod ℓ) t)
-    (ht : PowerSeries.derivative (ZMod ℓ) t ≠ 0)
+    (ht : PowerSeries.derivative (R := ZMod ℓ) t ≠ 0)
     (hB : aeval t B ≠ 0)
     (hdenominator : denominator ≠ 0)
     (hquotient :
@@ -803,11 +814,11 @@ theorem canonicalCongruence_forces_wronskian_zero_from_square_vanishing
         (hsquareVanish i hm hcanonical hsquarefree hmod hinert)
         (hexponent i) (honeSide i)
   have hnumerator :
-      PowerSeries.derivative (ZMod ℓ) numerator = 0 :=
+      PowerSeries.derivative (R := ZMod ℓ) numerator = 0 :=
     stabilizedEulerProduct_derivative_eq_zero ℓ numerator index eplus
       hnumeratorProduct (fun i => (hdiv i).imp_right And.left)
   have hdenominatorDeriv :
-      PowerSeries.derivative (ZMod ℓ) denominator = 0 :=
+      PowerSeries.derivative (R := ZMod ℓ) denominator = 0 :=
     stabilizedEulerProduct_derivative_eq_zero ℓ denominator index eminus
       hdenominatorProduct (fun i => (hdiv i).imp_right And.right)
   have hproduct :
@@ -815,7 +826,7 @@ theorem canonicalCongruence_forces_wronskian_zero_from_square_vanishing
     powerSeries_crossProduct_of_laurentSeries_quotient
       t numerator denominator A B hB hdenominator hquotient
   exact wronskian_zero_of_borcherds_quotient
-    (PowerSeries.derivative (ZMod ℓ)) t A B htrans ht
+    (PowerSeries.derivative (R := ZMod ℓ)) t A B htrans ht
     numerator denominator hdenominator hproduct
     hnumerator hdenominatorDeriv
 

@@ -1,5 +1,13 @@
-import blessed.SptCM.Analytic.ThetaHecke
-import blessed.SptCM.Analytic.ChiTwelve
+module
+
+public import blessed.SptCM.Analytic.ThetaHecke
+public import blessed.SptCM.Analytic.ChiTwelve
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Exact Ahlgren--Kim modular-grid literature interface

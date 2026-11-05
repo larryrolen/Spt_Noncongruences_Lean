@@ -1,4 +1,12 @@
-import blessed.SptCM.CM.Reduction
+module
+
+public import blessed.SptCM.CM.Reduction
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Repair I17: coefficient reduction and geometric roots
@@ -16,6 +24,7 @@ noncomputable section
 open Polynomial
 
 /-- Coefficientwise reduction of any polynomial over `ℤ[1/6]`. -/
+@[expose]
 def reduceAwaySixPolynomial (ℓ : ℕ) (h6 : IsUnit (6 : ZMod ℓ))
     (P : SptCM.AwaySix[X]) : (ZMod ℓ)[X] :=
   P.map (SptCM.awaySixReduction ℓ h6)
@@ -37,6 +46,7 @@ theorem reduceAwaySixPolynomial_monic
 
 /-- A geometric root of a reduced polynomial.  The algebraically closed field
 `K` may be a genuine extension of `ZMod ℓ`. -/
+@[expose]
 def IsGeometricReducedRoot
     (ℓ : ℕ) (h6 : IsUnit (6 : ZMod ℓ))
     (P : SptCM.AwaySix[X])
@@ -46,6 +56,7 @@ def IsGeometricReducedRoot
 
 /-- The corrected common-root predicate for the two oriented CM class
 polynomials. -/
+@[expose]
 def HasGeometricCMCollision
     {n ℓ : ℕ} (P : SptCM.IntegralOrientedClassPolynomials n)
     (h6 : IsUnit (6 : ZMod ℓ)) : Prop :=
@@ -56,6 +67,7 @@ def HasGeometricCMCollision
 
 /-- The complete corrected reduction specification for a pair of integral
 oriented class polynomials. -/
+@[expose]
 def RootReductionSpec
     {n ℓ : ℕ} (P : SptCM.IntegralOrientedClassPolynomials n)
     (h6 : IsUnit (6 : ZMod ℓ)) : Prop :=

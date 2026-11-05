@@ -1,5 +1,14 @@
-import blessed.SptCM.Repair.AnalyticFormalIdentification
+module
+
+public import blessed.SptCM.Repair.AnalyticFormalIdentification
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 namespace SptCM.Repair
+@[expose]
 noncomputable def af (q : ℂ) (m : ℕ) : ℂ :=
   (1-q^m)^5 * (1-q^(3*m)) * (1/(1-q^(2*m))) * (1/(1-q^(6*m))^5)
 example (q : ℂ) (N : ℕ) :

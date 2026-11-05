@@ -1,7 +1,15 @@
-import blessed.SptCM.Analytic.Repaired.I12NormalizedProduct
-import blessed.SptCM.Analytic.Repaired.SquareCoefficientVanishing
-import blessed.SptCM.CM.Repaired.I16Reduction
-import blessed.SptCM.Repair.I21ActualLaurentModel
+module
+
+public import blessed.SptCM.Analytic.Repaired.I12NormalizedProduct
+public import blessed.SptCM.Analytic.Repaired.SquareCoefficientVanishing
+public import blessed.SptCM.CM.Repaired.I16Reduction
+public import blessed.SptCM.Repair.I21ActualLaurentModel
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 namespace SptCM.Repair
 
@@ -49,13 +57,16 @@ lemma map_eulerProductMinus {R S : Type*} [CommRing R] [CommRing S]
 
 
 /-- The integral Hauptmodul and Euler products, base-changed to `ℤ[1/6]`. -/
+@[expose]
 noncomputable def awayHauptmodulLaurent : LaurentSeries SptCM.AwaySix :=
   HahnSeries.map hauptmodulFormalLaurent (algebraMap ℤ SptCM.AwaySix)
 
+@[expose]
 noncomputable def awayEulerPlus (H : ℤ → ℤ) : LaurentSeries SptCM.AwaySix :=
   ((PowerSeries.map (algebraMap ℤ SptCM.AwaySix)
     (eulerProductPlus (R := ℤ) H)) : PowerSeries SptCM.AwaySix)
 
+@[expose]
 noncomputable def awayEulerMinus (H : ℤ → ℤ) : LaurentSeries SptCM.AwaySix :=
   ((PowerSeries.map (algebraMap ℤ SptCM.AwaySix)
     (eulerProductMinus (R := ℤ) H)) : PowerSeries SptCM.AwaySix)
@@ -104,6 +115,7 @@ lemma map_awayEulerMinus_to_rat (H : ℤ → ℤ) :
     apply map_eulerProductMinus
 
 
+@[expose]
 noncomputable def hahnSeriesMapRingHom {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) : LaurentSeries R →+* LaurentSeries S where
   toFun x := HahnSeries.map x f
@@ -153,7 +165,7 @@ namespace SptCM.Repair
 lemma laurentSeries_derivative_coe_powerSeries
     {R : Type*} [CommRing R] (p : PowerSeries R) :
     LaurentSeries.derivative R (p : LaurentSeries R) =
-      ((PowerSeries.derivative R p : PowerSeries R) : LaurentSeries R) := by
+      ((PowerSeries.derivative (R := R) p : PowerSeries R) : LaurentSeries R) := by
   ext z
   cases z with
   | ofNat n =>
@@ -331,7 +343,7 @@ lemma laurentSeries_derivative_single_mul_coe {R : Type*} [CommRing R]
         (HahnSeries.single a 1 * (p : LaurentSeries R)) =
       HahnSeries.single (a - 1) (a : R) * (p : LaurentSeries R) +
         HahnSeries.single a 1 *
-          ((PowerSeries.derivative R p : PowerSeries R) : LaurentSeries R) := by
+          ((PowerSeries.derivative (R := R) p : PowerSeries R) : LaurentSeries R) := by
   ext z
   simp [LaurentSeries.derivative, LaurentSeries.hasseDeriv,
     HahnSeries.coeff_single_mul, PowerSeries.coeff_coe,
@@ -380,7 +392,7 @@ lemma laurentSeries_derivative_mul {R : Type*} [CommRing R]
   rw [hprod, laurentSeries_derivative_single_mul_coe,
     laurentSeries_derivative_single_mul_coe,
     laurentSeries_derivative_single_mul_coe]
-  rw [(PowerSeries.derivative R).leibniz]
+  rw [(PowerSeries.derivative (R := R)).leibniz]
   simp only [map_add, map_mul]
   have hmono :
       HahnSeries.single (f.order + g.order - 1)
@@ -546,14 +558,14 @@ theorem actualClassPolynomials_wronskian_eq_zero
         · exact dvd_zero ℓ
   have hspec := eulerProducts_spec (R := ZMod ℓ) F.scalarSeries
   have hnumeratorPS :
-      PowerSeries.derivative (ZMod ℓ)
+      PowerSeries.derivative (R := ZMod ℓ)
           (eulerProductPlus F.scalarSeries : PowerSeries (ZMod ℓ)) = 0 :=
     SptCM.stabilizedEulerProduct_derivative_eq_zero ℓ
       (eulerProductPlus F.scalarSeries) id
       (positiveEulerExponent F.scalarSeries) hspec.1
       (fun m => (hdiv m).imp_right And.left)
   have hdenominatorPS :
-      PowerSeries.derivative (ZMod ℓ)
+      PowerSeries.derivative (R := ZMod ℓ)
           (eulerProductMinus F.scalarSeries : PowerSeries (ZMod ℓ)) = 0 :=
     SptCM.stabilizedEulerProduct_derivative_eq_zero ℓ
       (eulerProductMinus F.scalarSeries) id

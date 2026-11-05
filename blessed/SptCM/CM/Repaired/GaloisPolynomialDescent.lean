@@ -1,6 +1,11 @@
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+
+public section
+
 
 /-!
 # Polynomial descent in a finite Galois extension
@@ -58,8 +63,7 @@ theorem exists_integrallyClosedPolynomial_of_fractional_integral
     have := congrArg (fun f : L[X] => f.coeff i) hq
     simpa using this
   have hqint : IsIntegral A (q.coeff i) := by
-    apply (isIntegral_algebraMap_iff
-      (FaithfulSMul.algebraMap_injective K L)).mp
+    apply (isIntegral_algebraMap_iff (B := L)).mp
     rw [hcoeff]
     exact hint i
   obtain ⟨a, ha⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral hqint

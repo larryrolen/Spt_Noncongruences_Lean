@@ -1,4 +1,13 @@
-import Mathlib
+module
+
+public import Mathlib
+
+public section
+
+-- Keep the existing ring operations on ZMod; the generic group reconstruction
+-- introduced in this Mathlib version creates an incompatible negation instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The smallest-parts function and canonical congruences
@@ -16,6 +25,7 @@ multiplicative inverse of `a` modulo `n`.
 
 This compatibility definition supplies the conventional `Nat.modInv` name,
 which is not present in the Mathlib revision used by this project. -/
+@[expose]
 def modInv (a n : ℕ) : ℕ :=
   (gcdA a n % (n : ℤ)).toNat
 
@@ -25,6 +35,7 @@ namespace SptCM
 
 /-- The multiplicity of the least part of a partition.  The unique partition
 of zero has no parts and is assigned weight zero. -/
+@[expose]
 def smallestPartMultiplicity {n : ℕ} (p : Nat.Partition n) : ℕ :=
   if h : p.parts.toFinset.Nonempty then
     p.parts.count (p.parts.toFinset.min' h)
@@ -33,16 +44,19 @@ def smallestPartMultiplicity {n : ℕ} (p : Nat.Partition n) : ℕ :=
 
 /-- Andrews' smallest-parts function: the total number of occurrences of the
 smallest part among all partitions of `n`. -/
+@[expose]
 def spt (n : ℕ) : ℕ :=
   ∑ p : Nat.Partition n, smallestPartMultiplicity p
 
 /-- The canonical residue `b_ℓ`, represented by the inverse of 24 modulo `ℓ`.
 For primes `ℓ ≥ 5`, this lies in `{1, ..., ℓ - 1}`. -/
+@[expose]
 def canonicalResidue (ℓ : ℕ) : ℕ :=
   Nat.modInv 24 ℓ
 
 /-- A canonical congruence prime for `spt`: a prime `ℓ ≥ 5` for which the
 canonical progression is identically zero modulo `ℓ`. -/
+@[expose]
 def CanonicalCongruencePrime (ℓ : ℕ) : Prop :=
   ℓ.Prime ∧ 5 ≤ ℓ ∧ ∀ n : ℕ, ℓ ∣ spt (ℓ * n + canonicalResidue ℓ)
 

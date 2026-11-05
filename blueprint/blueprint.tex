@@ -11,7 +11,7 @@
 \begin{document}\maketitle
 
 \section{Scope, target, and trust boundary}
-This blueprint supersedes the earlier conditional plan and follows the full Completion Target and Issue Register.  The unique target is Rolen's classification of canonical congruence primes.  The only black boxes are the source-faithful general results E1--E11 below.  Every Rolen-specific construction or specialization is an internal node, including all repairs I01--I25.  In particular, no node may assume a normalized Borcherds identity, grid support, an \texttt{InfiniteProductObstructionData} package, or a common-root collision package.
+This blueprint supersedes the earlier conditional plan and follows the full Completion Target and Issue Register.  The unique target is Rolen's classification of canonical congruence primes.  The conditional proof uses the explicit inputs E1--E11 below. E8 includes additional unproved application assumptions: the exact oriented level-six, integral CM and residue interfaces have no certified theorem-level sources. They are not claimed as verified translations of standard literature. The analytic descent and model compatibility assumptions also remain unproved.  In particular, no node may assume a normalized Borcherds identity, grid support, an \texttt{InfiniteProductObstructionData} package, or a common-root collision package.
 
 The principal representation choices are: coefficients indexed by numerators of exponents in $\frac1{24}\Z$; the Hauptmodul as a Laurent series $q^{-1}-5+O(q)$; class polynomials first over $\Z[1/6]$ and then reduced coefficientwise; and roots taken in an algebraic closure of $\F_\ell$.  General literature inputs are separated from their paper-specific hypotheses.
 
@@ -1142,7 +1142,7 @@ oriented quotients, $\mathsf{ClassCountSpec}(n)$ holds.
 \end{lemma}
 \begin{uses-statement}\ref{def_class_count_spec}\end{uses-statement}
 \begin{proof}
-The pinned E8/E11 reduced-form classification identifies the concrete
+The assumed E8/E11 reduced-form classification identifies the concrete
 reduced-form type of discriminant $-n$ with the proper ideal-class group of
 $\mathbf Z[(1+\sqrt{-n})/2]$, including the boundary convention.  For each of
 the four concrete orientation quotients, choose a base point in the permitted
@@ -1729,27 +1729,25 @@ Compute the four Atkin--Lehner eigenvalues of the component vector and contract 
 \end{proof}
 \begin{uses-proof}\ref{def_ext_weyl}, \ref{prop_i09_pairing_zero}, \ref{lem_i11_cusp_contractions}\end{uses-proof}
 
-\begin{proposition}[I12: signed Heegner divisor]\label{prop_i12_heegner_divisor}\lean{SptCM.Analytic.Repaired.prop_i12_heegner_divisor}\leanok
-For the actual vector input, Bruinier--Ono's predicted divisor is
-$D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$, with every multiplicity equal to one.
+\begin{proposition}[I12: signed Heegner divisor]\label{prop_i12_heegner_divisor}\lean{SptCM.Analytic.Repaired.actualI12Lift_divisor_eq_full}\leanok
+For the actual vector input, the full interior divisor of the Bruinier--Ono lift is the signed sum $D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$ at the actual complex Hauptmodul coordinates, retaining every point and its multiplicity.
 \end{proposition}
 \begin{uses-statement}\ref{def_vector_input_spec}, \ref{def_oriented_forms}\end{uses-statement}
-\begin{proof}Match every negative Fourier coefficient and discriminant convention in the general divisor formula.\end{proof}
+\begin{proof}Read the four orientation coefficients from the principal part, then apply them to the corresponding finite CM point divisors. The full numerator and denominator root multiplicities give the signed divisor.\end{proof}
 \begin{uses-proof}\ref{def_ext_borcherds}, \ref{prop_i10_vector_input}\end{uses-proof}
 
-\begin{proposition}[I12: divisor of the class-polynomial quotient]\label{prop_i12_class_quotient_divisor}\lean{SptCM.Analytic.Repaired.actualClassPolynomialLaurentQuotient_divisor_eq_signed}\leanok
-For any meromorphic geometry satisfying the uniform finite-root-product divisor interpretation law, the genuine quotient $A_n(t)/B_n(t)$ formed from the descended class polynomials and the exact rational Euler-product Hauptmodul has divisor
-$D_{n,1}+D_{n,11}-D_{n,5}-D_{n,7}$.
+\begin{proposition}[I12: divisor of the class-polynomial quotient]\label{prop_i12_class_quotient_divisor}\lean{SptCM.Analytic.Repaired.classPolynomialQuotient_divisor}\leanok
+Under the explicit rational-function divisor compatibility and zero-cusp-order inputs, the genuine quotient $A_n(t)/B_n(t)$ has the full divisor of its actual numerator roots minus its actual denominator roots, at every complex coordinate.
 \end{proposition}
 \begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}, \ref{def_hauptmodul}\end{uses-statement}
-\begin{proof}The uniform interpretation law identifies its divisor with the root divisor.  The actual numerator roots have orientations $1,11$, the actual denominator roots have orientations $5,7$, and the internally computed signs give the displayed signed divisor.\end{proof}
-\begin{uses-proof}\ref{prop_i15_actual_coordinate}, \ref{prop_i16_class_polynomials}, \ref{prop_i12_heegner_divisor}\end{uses-proof}
+\begin{proof}Embed the rational function field using the transcendence of the formal Hauptmodul. Cancellation preserves the signed root multiplicities. The descended coefficient polynomials map to the actual complex root products, so their full divisors agree.\end{proof}
+\begin{uses-proof}\ref{prop_i15_actual_coordinate}, \ref{prop_i16_class_polynomials}\end{uses-proof}
 
-\begin{lemma}[I12: no cusp contribution and rigidity]\label{lem_i12_cusp_rigidity}\lean{SptCM.Analytic.Repaired.i12_cusp_rigidity}\leanok
-Assume the general root-product divisor law, the general interpretation of vanishing Weyl vectors as zero cusp data, and compact-curve divisor rigidity.  For the actual input, the Borcherds lift is a rational scalar multiple of the genuine class-polynomial Laurent quotient.
+\begin{lemma}[I12: rational-function rigidity and normalization]\label{lem_i12_cusp_rigidity}\lean{SptCM.Analytic.Repaired.eq_of_rational_divisors_and_normalization}\leanok
+Let $f,g$ belong to the rational function field embedded at the actual Hauptmodul. If their full divisors agree, their cusp orders vanish, and both Laurent constant coefficients are one, then $f=g$. Rigidity is not assumed for arbitrary formal Laurent series.
 \end{lemma}
-\begin{proof}Apply E6 to the verified component-theta contraction and zero regularized pairing to derive vanishing of every level-six Weyl vector.  The Weyl interpretation law gives zero cusp data for the lift, while the equal-degree interior root-product law gives zero cusp data for the class quotient.  Their divisors agree by the preceding proposition, so compact-curve rigidity supplies the scalar multiple.\end{proof}
-\begin{uses-proof}\ref{prop_i11_weyl_zero}, \ref{prop_i12_class_quotient_divisor}, \ref{def_ext_x0_six_integral}, \ref{def_ext_x0_six_genus_zero}\end{uses-proof}
+\begin{proof}The constant coefficients exclude zero functions. Equal full root divisors give equal root multisets for the cross-multiplied polynomials. Polynomial factorization gives a nonzero rational scalar, and the two constant coefficients force it to be one.\end{proof}
+
 
 \begin{lemma}[I12: leading normalization]\label{lem_i12_leading_normalization}\lean{SptCM.Analytic.Repaired.i12_leading_normalization}\leanok
 After base-changing the exact integral Euler-product Hauptmodul to $\mathbb Q((q))$, the coefficient of $q^0$ in the actual quotient $A_n(t)/B_n(t)$ is one; the coefficient of $q^0$ in the canonical stabilized Borcherds Euler quotient is also one.
@@ -1759,16 +1757,10 @@ After base-changing the exact integral Euler-product Hauptmodul to $\mathbb Q((q
 \begin{uses-proof}\ref{def_ext_borcherds}, \ref{lem_class_poly_degree}, \ref{prop_i21_actual_laurent_model}\end{uses-proof}
 
 \begin{proposition}[I12: normalized Borcherds product identity]\label{prop_i12_product_identity}\lean{SptCM.Analytic.Repaired.actualClassPolynomialLaurentQuotient_eq_canonicalEulerQuotient}\leanok
-Under the general divisor, cusp-order, leading-value, and compact-curve rigidity interpretation laws, for squarefree $n\equiv23\pmod{24}$ the genuine descended class-polynomial quotient in the exact rational Euler-product Hauptmodul satisfies
-\[
-\frac{A_n(t(\tau))}{B_n(t(\tau))}=\prod_{m\ge1}(1-q^m)^{\chi_{12}(m)h_n(m^2)}
-\]
-as a Laurent-series identity.
+Assume the explicit analytic realization, full divisor and cusp compatibility, and genus-zero descent inputs. The descent domain consists of actual unitary meromorphic functions with convergent Laurent and cusp expansions; zero cusp orders imply rationality in the Hauptmodul. Then for squarefree $n\equiv23\pmod{24}$, the genuine descended class-polynomial quotient satisfies $A_n(t)/B_n(t)=\prod_{m\ge1}(1-q^m)^{\chi_{12}(m)h_n(m^2)}$ as a Laurent-series identity. The general analytic descent theorem remains a premise; rational-function rigidity is proved in Lean.
 \end{proposition}
 \begin{uses-statement}\ref{def_class_poly_a}, \ref{def_class_poly_b}, \ref{def_hauptmodul_laurent}, \ref{def_signed_exponent}\end{uses-statement}
-\begin{proof}
-Apply the general Bruinier--Ono theorem to the verified vector-valued input.  Zero Weyl vectors remove cusp exponents.  Check the signed Heegner divisor with multiplicity one, identify it with the divisor of the class-polynomial quotient, and use divisor-zero rigidity.  Monicity and equal degree make the remaining scalar one.
-\end{proof}
+\begin{proof}E6 first establishes zero Weyl vectors. The E5 product model is applied only on this qualified domain, where the cusp prefactor is absent; it supplies the analytic realization, full Heegner divisor and canonical Euler expansion. The cusp interpretation gives zero cusp orders. Apply the explicit genus-zero descent theorem to place the lift in the rational function field. The class quotient is rational by construction and has the same full divisor. The checked rational-function rigidity and leading normalizations give equality.\end{proof}
 \begin{uses-proof}\ref{def_ext_borcherds}, \ref{prop_i12_heegner_divisor}, \ref{prop_i12_class_quotient_divisor}, \ref{lem_i12_cusp_rigidity}, \ref{lem_i12_leading_normalization}\end{uses-proof}
 
 \begin{proposition}[I14: actual stabilized Euler products]\label{prop_i14_euler_products}\lean{SptCM.Repair.eulerProducts_spec}\leanok

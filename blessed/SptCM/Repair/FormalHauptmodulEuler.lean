@@ -1,7 +1,15 @@
-import blessed.SptCM.Analytic.Repaired.EulerProducts
-import blessed.SptCM.Repair.LaurentHauptmodul
-import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.RingTheory.PowerSeries.Substitution
+module
+
+public import blessed.SptCM.Analytic.Repaired.EulerProducts
+public import blessed.SptCM.Repair.LaurentHauptmodul
+public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.RingTheory.PowerSeries.Substitution
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Formal Euler product of the level-six Hauptmodul
@@ -17,6 +25,7 @@ open scoped PowerSeries
 
 /-- The contribution of the `m`-th Euler index to the unit part of
 `η(τ)^5 η(3τ) / (η(2τ) η(6τ)^5)`. -/
+@[expose]
 noncomputable def hauptmodulFormalEulerFactor (m : ℕ) : PowerSeries ℤ :=
   (1 - PowerSeries.X ^ m) ^ 5 * (1 - PowerSeries.X ^ (3 * m)) *
     PowerSeries.subst (PowerSeries.X ^ (2 * m))
@@ -27,6 +36,7 @@ noncomputable def hauptmodulFormalEulerFactor (m : ℕ) : PowerSeries ℤ :=
 /-- The coefficientwise stabilized formal Euler product for the level-six
 Hauptmodul's unit part.  Degree `d` is read from the first `d+2` positive
 Euler indices, after which no omitted factor can affect it. -/
+@[expose]
 noncomputable def hauptmodulFormalEulerUnit : PowerSeries ℤ :=
   PowerSeries.mk fun d =>
     PowerSeries.coeff d
@@ -41,7 +51,7 @@ private theorem coeff_hauptmodulFormalEulerUnit (d : ℕ) :
 /-- The formal unit Euler product is normalized. -/
 theorem hauptmodulFormalEulerUnit_coeff_zero :
     PowerSeries.coeff 0 hauptmodulFormalEulerUnit = 1 := by
-  rw [coeff_hauptmodulFormalEulerUnit]
+  simp only [hauptmodulFormalEulerUnit, PowerSeries.coeff_mk]
   norm_num [hauptmodulFormalEulerFactor, PowerSeries.coeff_one_mul, PowerSeries.coeff_one_pow,
     PowerSeries.invOneSubPow, Finset.prod_range_succ]
 
@@ -58,13 +68,14 @@ theorem hauptmodulFormalEulerUnit_isUnit :
 index contributes in degree one. -/
 theorem hauptmodulFormalEulerUnit_coeff_one :
     PowerSeries.coeff 1 hauptmodulFormalEulerUnit = -5 := by
-  rw [coeff_hauptmodulFormalEulerUnit]
+  simp only [hauptmodulFormalEulerUnit, PowerSeries.coeff_mk]
   norm_num [hauptmodulFormalEulerFactor, PowerSeries.coeff_one_mul, PowerSeries.coeff_one_pow,
     PowerSeries.invOneSubPow, Finset.prod_range_succ]
 
 /-- The formal Laurent series obtained by adjoining the net `q⁻¹` prefactor
 to the formal Euler unit.  This is not asserted to be the analytic eta
 quotient's Laurent expansion. -/
+@[expose]
 noncomputable def hauptmodulFormalLaurent : LaurentSeries ℤ :=
   HahnSeries.single (-1) 1 * (hauptmodulFormalEulerUnit : LaurentSeries ℤ)
 
@@ -99,9 +110,9 @@ theorem hauptmodulFormalLaurent_principalPart :
     simpa [PowerSeries.coeff_coe] using
       hauptmodulFormalEulerUnit_coeff_one
   · intro z hz
-    have hz' : z + 1 < 0 := by omega
+    have hz' : z + 1 < 0 := lt_sub_iff_add_lt.mp hz
     unfold hauptmodulFormalLaurent
-    rw [← show (z + 1) + (-1) = z by omega]
+    rw [← show (z + 1) + (-1) = z from add_neg_cancel_right z 1]
     rw [HahnSeries.coeff_single_mul_add, one_mul, PowerSeries.coeff_coe]
     simp [hz']
 

@@ -1,5 +1,10 @@
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Tactic
+
+public section
+
 
 /-!
 # The four-component quadratic Gauss sum at level twelve
@@ -13,6 +18,7 @@ namespace SptCM.Analytic.Repaired
 
 /-- The four nonzero values of the primitive quadratic character modulo
 twelve, written on the canonical representatives. -/
+@[expose]
 def chiTwelveResidue (s : Fin 12) : ℤ :=
   if s = 1 then 1
   else if s = 5 then -1
@@ -22,12 +28,14 @@ def chiTwelveResidue (s : Fin 12) : ℤ :=
 
 /-- The inverse primitive twelfth root used by the Fourier transform
 `e(-rs/12)`. -/
+@[expose]
 noncomputable def inverseTwelfthRoot : ℂ :=
   (Real.sqrt 3 / 2 : ℂ) - Complex.I / 2
 
 /-- The level-twelve character Gauss sum.  The omitted eight summands have
 zero character value, so this is literally the four nonzero terms of the
 usual sum over `r mod 12`. -/
+@[expose]
 noncomputable def chiTwelveGaussSum (s : Fin 12) : ℂ :=
   inverseTwelfthRoot ^ s.val -
     inverseTwelfthRoot ^ ((5 * s.val) % 12) -

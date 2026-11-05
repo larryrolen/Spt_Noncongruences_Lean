@@ -1,4 +1,12 @@
-import blessed.SptCM.Arithmetic.Repaired.ClassNumberOrientation
+module
+
+public import blessed.SptCM.Arithmetic.Repaired.ClassNumberOrientation
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The four level-six oriented ideal-class actions
@@ -22,6 +30,7 @@ variable {R X : Type*} [CommRing R] [IsDomain R]
 
 /-- Transport left multiplication in the ideal-class group across a concrete
 classification equivalence. -/
+@[expose]
 def transportedIdealClassAction (e : ClassGroup R ≃ X) :
     ClassGroup R → X → X :=
   fun g x => e (g * e.symm x)
@@ -78,6 +87,7 @@ structure FourOrientedIdealClassActionsWitness (n : ℕ) where
 
 /-- I22 action construction: transport the regular ideal-class action across
 all four fixed-orientation form/ideal correspondences. -/
+@[expose]
 def fourOrientedIdealClassActions
     {n : ℕ} [IsDomain (NegativeQuadraticOrder n)]
     (E : FourOrientedClassEquivalences n) :

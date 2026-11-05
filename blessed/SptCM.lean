@@ -1,78 +1,86 @@
-import blessed.SptCM.Definitions
-import blessed.SptCM.PaperInterfaces
-import blessed.SptCM.Analytic.ThetaHecke
-import blessed.SptCM.Analytic.DualityPairing
-import blessed.SptCM.Analytic.ProductObstruction
-import blessed.SptCM.Analytic.PaperCoefficientModels
-import blessed.SptCM.Analytic.PaperConstructions
-import blessed.SptCM.Analytic.Repaired.Duality
-import blessed.SptCM.Analytic.Repaired.GaussSum
-import blessed.SptCM.Analytic.Repaired.GridHeckePrincipalParts
-import blessed.SptCM.Analytic.Repaired.GridNormalization
-import blessed.SptCM.Analytic.Repaired.EulerProducts
-import blessed.SptCM.Analytic.Repaired.PairingBorcherds
-import blessed.SptCM.Analytic.Repaired.I12NormalizedProduct
-import blessed.SptCM.Analytic.Repaired.WeilGenerators
-import blessed.SptCM.Analytic.Repaired.HeckePrincipalParts
-import blessed.SptCM.Analytic.Repaired.VectorFourierData
-import blessed.SptCM.Analytic.Repaired.CuspEnumeration
-import blessed.SptCM.Analytic.Repaired.StokesConstantTerm
-import blessed.SptCM.Analytic.Repaired.CuspContractions
-import blessed.SptCM.Analytic.Repaired.CuspWeylVectors
-import blessed.SptCM.Analytic.Repaired.I05HeckeApplication
-import blessed.SptCM.Analytic.Repaired.CharacteristicGridSupport
-import blessed.SptCM.Analytic.Repaired.SquareCoefficientVanishing
-import blessed.SptCM.Analytic.Repaired.UniformNormalizedProduct
-import blessed.SptCM.Arithmetic.SmallDiscriminant
-import blessed.SptCM.Arithmetic.Repaired.ClassNumberOrientation
-import blessed.SptCM.CM.ClassPolynomials
-import blessed.SptCM.CM.Repaired.HauptmodulCoordinate
-import blessed.SptCM.CM.Repaired.ActualCMValues
-import blessed.SptCM.CM.Repaired.ActualCoordinateConstruction
-import blessed.SptCM.CM.Repaired.GaloisPolynomialDescent
-import blessed.SptCM.CM.Repaired.OrientedClassActions
-import blessed.SptCM.CM.Repaired.I16Coordinates
-import blessed.SptCM.CM.Repaired.I16Reduction
-import blessed.SptCM.CM.Repaired.I18RootSpecialization
-import blessed.SptCM.CM.Repaired.I18CommonRoot
-import blessed.SptCM.CM.Reduction
-import blessed.SptCM.CM.ActualClassPolynomials
-import blessed.SptCM.CM.Borcherds
-import blessed.SptCM.Literature.RolenLiterature
-import blessed.SptCM.Literature.Repair.UniformLedger
-import blessed.SptCM.Literature.Repair.PublicLedger
-import blessed.SptCM.Repair.AdmissibleRange
-import blessed.SptCM.Repair.ActualLaurentBridge
-import blessed.SptCM.Repair.AnalyticFormalIdentification
-import blessed.SptCM.Repair.I15ActualApplication
-import blessed.SptCM.Repair.I15ActualCoordinate
-import blessed.SptCM.Repair.I21ActualLaurentModel
-import blessed.SptCM.Repair.I12WronskianZero
-import blessed.SptCM.Repair.AndrewsCongruences
-import blessed.SptCM.Repair.CMPolynomialReduction
-import blessed.SptCM.Repair.FinalAssembly
-import blessed.SptCM.Repair.FormalHauptmodulEuler
-import blessed.SptCM.Repair.GridSupport
-import blessed.SptCM.Repair.LaurentHauptmodul
-import blessed.SptCM.Repair.MinimalInert
-import blessed.SptCM.Repair.SignedExponent
-import blessed.SptCM.Repair.SoundObstruction
-import blessed.SptCM.Repair.TrevinoBridge
-import blessed.SptCM.Repair.WronskianAssembly
-import blessed.SptCM.Quaternion.Separation
-import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
-import blessed.SptCM.Quaternion.Repaired.NormHadamard
-import blessed.SptCM.Quaternion.Repaired.I20Covolume
-import blessed.SptCM.Quaternion.Repaired.ActualSeparation
-import blessed.SptCM.Quaternion.Repaired.I19ActualAdapter
-import blessed.SptCM.Quaternion.Repaired.ActualPointConstruction
-import blessed.SptCM.Lemmas.Polynomial
-import blessed.SptCM.Lemmas.SmallDiscriminantArithmetic
-import blessed.SptCM.Lemmas.VolumeArithmetic
-import blessed.SptCM.Interfaces
-import blessed.SptCM.Main
-import blessed.SptCM.PaperMain
-import blessed.SptCM.Solution
+module
 
-import blessed.SptCM.Repair.ActualWronskianContradiction
-import blessed.SptCM.Repair.PublicLargeExclusion
+public import blessed.SptCM.Definitions
+public import blessed.SptCM.PaperInterfaces
+public import blessed.SptCM.Analytic.ThetaHecke
+public import blessed.SptCM.Analytic.DualityPairing
+public import blessed.SptCM.Analytic.ProductObstruction
+public import blessed.SptCM.Analytic.PaperCoefficientModels
+public import blessed.SptCM.Analytic.PaperConstructions
+public import blessed.SptCM.Analytic.Repaired.Duality
+public import blessed.SptCM.Analytic.Repaired.GaussSum
+public import blessed.SptCM.Analytic.Repaired.GridHeckePrincipalParts
+public import blessed.SptCM.Analytic.Repaired.GridNormalization
+public import blessed.SptCM.Analytic.Repaired.EulerProducts
+public import blessed.SptCM.Analytic.Repaired.PairingBorcherds
+public import blessed.SptCM.Analytic.Repaired.I12NormalizedProduct
+public import blessed.SptCM.Analytic.Repaired.WeilGenerators
+public import blessed.SptCM.Analytic.Repaired.HeckePrincipalParts
+public import blessed.SptCM.Analytic.Repaired.VectorFourierData
+public import blessed.SptCM.Analytic.Repaired.CuspEnumeration
+public import blessed.SptCM.Analytic.Repaired.StokesConstantTerm
+public import blessed.SptCM.Analytic.Repaired.CuspContractions
+public import blessed.SptCM.Analytic.Repaired.CuspWeylVectors
+public import blessed.SptCM.Analytic.Repaired.I05HeckeApplication
+public import blessed.SptCM.Analytic.Repaired.CharacteristicGridSupport
+public import blessed.SptCM.Analytic.Repaired.SquareCoefficientVanishing
+public import blessed.SptCM.Analytic.Repaired.UniformNormalizedProduct
+public import blessed.SptCM.Arithmetic.SmallDiscriminant
+public import blessed.SptCM.Arithmetic.Repaired.ClassNumberOrientation
+public import blessed.SptCM.CM.ClassPolynomials
+public import blessed.SptCM.CM.Repaired.HauptmodulCoordinate
+public import blessed.SptCM.CM.Repaired.ActualCMValues
+public import blessed.SptCM.CM.Repaired.ActualCoordinateConstruction
+public import blessed.SptCM.CM.Repaired.GaloisPolynomialDescent
+public import blessed.SptCM.CM.Repaired.OrientedClassActions
+public import blessed.SptCM.CM.Repaired.I16Coordinates
+public import blessed.SptCM.CM.Repaired.I16Reduction
+public import blessed.SptCM.CM.Repaired.I18RootSpecialization
+public import blessed.SptCM.CM.Repaired.I18CommonRoot
+public import blessed.SptCM.CM.Reduction
+public import blessed.SptCM.CM.ActualClassPolynomials
+public import blessed.SptCM.CM.Borcherds
+public import blessed.SptCM.Literature.RolenLiterature
+public import blessed.SptCM.Literature.Repair.UniformLedger
+public import blessed.SptCM.Literature.Repair.PublicLedger
+public import blessed.SptCM.Repair.AdmissibleRange
+public import blessed.SptCM.Repair.ActualLaurentBridge
+public import blessed.SptCM.Repair.AnalyticFormalIdentification
+public import blessed.SptCM.Repair.I15ActualApplication
+public import blessed.SptCM.Repair.I15ActualCoordinate
+public import blessed.SptCM.Repair.I21ActualLaurentModel
+public import blessed.SptCM.Repair.I12WronskianZero
+public import blessed.SptCM.Repair.AndrewsCongruences
+public import blessed.SptCM.Repair.CMPolynomialReduction
+public import blessed.SptCM.Repair.FinalAssembly
+public import blessed.SptCM.Repair.FormalHauptmodulEuler
+public import blessed.SptCM.Repair.GridSupport
+public import blessed.SptCM.Repair.LaurentHauptmodul
+public import blessed.SptCM.Repair.MinimalInert
+public import blessed.SptCM.Repair.SignedExponent
+public import blessed.SptCM.Repair.SoundObstruction
+public import blessed.SptCM.Repair.TrevinoBridge
+public import blessed.SptCM.Repair.WronskianAssembly
+public import blessed.SptCM.Quaternion.Separation
+public import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
+public import blessed.SptCM.Quaternion.Repaired.NormHadamard
+public import blessed.SptCM.Quaternion.Repaired.I20Covolume
+public import blessed.SptCM.Quaternion.Repaired.ActualSeparation
+public import blessed.SptCM.Quaternion.Repaired.I19ActualAdapter
+public import blessed.SptCM.Quaternion.Repaired.ActualPointConstruction
+public import blessed.SptCM.Lemmas.Polynomial
+public import blessed.SptCM.Lemmas.SmallDiscriminantArithmetic
+public import blessed.SptCM.Lemmas.VolumeArithmetic
+public import blessed.SptCM.Interfaces
+public import blessed.SptCM.Main
+public import blessed.SptCM.PaperMain
+public import blessed.SptCM.Solution
+
+public import blessed.SptCM.Repair.ActualWronskianContradiction
+public import blessed.SptCM.Repair.PublicLargeExclusion
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+

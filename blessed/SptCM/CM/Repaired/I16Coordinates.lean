@@ -1,8 +1,16 @@
-import blessed.SptCM.CM.ActualClassPolynomials
-import blessed.SptCM.CM.Repaired.ActualCMValues
-import Mathlib.Algebra.Polynomial.Eval.Subring
-import blessed.SptCM.CM.Repaired.GaloisPolynomialDescent
-import blessed.SptCM.CM.Repaired.AwaySixAlgebra
+module
+
+public import blessed.SptCM.CM.ActualClassPolynomials
+public import blessed.SptCM.CM.Repaired.ActualCMValues
+public import Mathlib.Algebra.Polynomial.Eval.Subring
+public import blessed.SptCM.CM.Repaired.GaloisPolynomialDescent
+public import blessed.SptCM.CM.Repaired.AwaySixAlgebra
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Algebraic descent steps for the oriented CM class polynomials
@@ -95,19 +103,23 @@ namespace ActualOrientedCMCoordinates
 variable {n h : ℕ} (C : ActualOrientedCMCoordinates n h)
 
 /-- The actual analytic Hauptmodul roots in numerator orientations. -/
+@[expose]
 def numeratorRoot : C.orientation1.Index ⊕ C.orientation11.Index → ℂ
   | .inl i => actualOrientedHauptmodulValue C.invariant1 C.n_pos (C.orientation1.classes i)
   | .inr i => actualOrientedHauptmodulValue C.invariant11 C.n_pos (C.orientation11.classes i)
 
 /-- The actual analytic Hauptmodul roots in denominator orientations. -/
+@[expose]
 def denominatorRoot : C.orientation5.Index ⊕ C.orientation7.Index → ℂ
   | .inl i => actualOrientedHauptmodulValue C.invariant5 C.n_pos (C.orientation5.classes i)
   | .inr i => actualOrientedHauptmodulValue C.invariant7 C.n_pos (C.orientation7.classes i)
 
 /-- The honest complex root product over orientations `1` and `11`. -/
+@[expose]
 def actualNumeratorPolynomial : ℂ[X] := classPolynomial C.numeratorRoot
 
 /-- The honest complex root product over orientations `5` and `7`. -/
+@[expose]
 def actualDenominatorPolynomial : ℂ[X] := classPolynomial C.denominatorRoot
 
 /-- The actual analytic root products are monic, before any descent or
@@ -171,6 +183,7 @@ structure IntegralFiniteGaloisRealization
 
 /-- Specialize the central E8 finite-Galois reciprocity boundary to
 the two actual oriented Hauptmodul root families. -/
+@[expose]
 def FiniteGaloisRealization.ofE8
     {L : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L]
     [IsGalois ℚ L]
@@ -192,6 +205,7 @@ def FiniteGaloisRealization.ofE8
 
 /-- Specialize the integral E8 reciprocity/good-reduction boundary to the two
 actual oriented Hauptmodul root families. -/
+@[expose]
 def IntegralFiniteGaloisRealization.ofE8
     {L : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L]
     [IsGalois ℚ L]
@@ -212,9 +226,11 @@ variable {L : Type*} [Field L] [Algebra ℚ L] [FiniteDimensional ℚ L]
   [IsGalois ℚ L] (F : C.FiniteGaloisRealization L)
 
 /-- The numerator root product in a finite Galois CM class field. -/
+@[expose]
 def numeratorPolynomial : L[X] := classPolynomial F.numeratorAlgebraicRoot
 
 /-- The denominator root product in the same class field. -/
+@[expose]
 def denominatorPolynomial : L[X] := classPolynomial F.denominatorAlgebraicRoot
 
 /-- CM reciprocity fixes the class-field numerator polynomial. -/
@@ -352,6 +368,7 @@ theorem denominatorPolynomial_coeff_integral
 polynomials over `ℤ[1/6]`.  Rationality comes from the Galois fixed-field
 theorem, integrality from the integral closure, and their intersection from
 `exists_integrallyClosedPolynomial_of_fractional_integral`. -/
+@[expose]
 noncomputable def actualClassPolynomialSpec
     (F : C.IntegralFiniteGaloisRealization L) :
     ActualClassPolynomialSpec C := by
@@ -486,6 +503,7 @@ structure GoodReductionEvaluation (S : Subring ℂ) where
 
 /-- Specialize the central E8 good-reduction/regular-evaluation boundary to
 the four actual raw CM-point families. -/
+@[expose]
 def GoodReductionEvaluation.ofE8
     (S : Subring ℂ)
     (E : SptCM.RolenLiterature.E8GoodReductionRegularEvaluation

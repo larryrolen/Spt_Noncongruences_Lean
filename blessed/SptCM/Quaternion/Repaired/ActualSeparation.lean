@@ -1,6 +1,14 @@
-import blessed.SptCM.CM.Repaired.I18CommonRoot
-import blessed.SptCM.Quaternion.Repaired.I20Covolume
-import blessed.SptCM.Arithmetic.SmallDiscriminant
+module
+
+public import blessed.SptCM.CM.Repaired.I18CommonRoot
+public import blessed.SptCM.Quaternion.Repaired.I20Covolume
+public import blessed.SptCM.Arithmetic.SmallDiscriminant
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Separation of the genuine reduced class polynomials

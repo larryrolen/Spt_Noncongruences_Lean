@@ -1,7 +1,15 @@
-import blessed.SptCM.Analytic.DualityPairing
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import blessed.SptCM.Analytic.DualityPairing
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The triangular eta--j construction of the auxiliary forms
@@ -40,6 +48,7 @@ structure EtaJPowerBasis (Form : Type*) where
 
 /-- The unitriangular coefficient matrix of
 `η, ηj, ..., ηj^k`, ordered by the exponents `q^(1/24), q^(-23/24), ...`. -/
+@[expose]
 def etaJMatrix {Form : Type*} (E : EtaJPowerBasis Form) (k : ℕ) :
     Matrix (Fin (k + 1)) (Fin (k + 1)) ℤ :=
   fun i d => E.coefficients (E.powerForm d) (1 - 24 * (i : ℤ))
@@ -64,11 +73,13 @@ lemma etaJMatrix_det {Form : Type*}
 /-- Desired coefficients at the triangular exponents.  The top entry is the
 monic leading term, the bottom entry is `-a(n)`, and all intermediate negative
 terms vanish. -/
+@[expose]
 def hnTarget (k : ℕ) (a : ℤ) : Fin (k + 1) → ℤ :=
   fun i => if (i : ℕ) = k then 1 else if (i : ℕ) = 0 then -a else 0
 
 /-- The integral coefficient vector obtained by solving the unitriangular
 eta--j system. -/
+@[expose]
 noncomputable def triangularCoefficients {Form : Type*}
     (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Fin (k + 1) → ℤ :=
   (etaJMatrix E k)⁻¹ *ᵥ hnTarget k a
@@ -84,6 +95,7 @@ lemma etaJMatrix_mulVec_triangularCoefficients {Form : Type*}
   exact Matrix.one_mulVec _
 
 /-- The integral polynomial supplied by triangular elimination. -/
+@[expose]
 noncomputable def triangularPolynomial {Form : Type*}
     (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Polynomial ℤ :=
   ∑ d : Fin (k + 1), Polynomial.monomial (d : ℕ) (triangularCoefficients E k a d)
@@ -149,11 +161,13 @@ lemma triangularPolynomial_monic {Form : Type*}
   exact p.monic
 
 /-- The actual form `η P_k(j)` selected by triangular elimination. -/
+@[expose]
 noncomputable def auxiliaryForm {Form : Type*}
     (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : Form :=
   E.polynomialForm (triangularPolynomial E k a)
 
 /-- The coefficient series of the source-faithful auxiliary form. -/
+@[expose]
 noncomputable def auxiliaryHn {Form : Type*}
     (E : EtaJPowerBasis Form) (k : ℕ) (a : ℤ) : HForm ℤ :=
   E.coefficients (auxiliaryForm E k a)
@@ -234,6 +248,7 @@ theorem auxiliaryForm_qualifies {Form : Type*}
 
 /-- A polynomial has the prescribed triangular eta--j coefficients through
 its leading exponent. -/
+@[expose]
 def HasTriangularNormalization {Form : Type*} (E : EtaJPowerBasis Form)
     (k : ℕ) (a : ℤ) (P : Polynomial ℤ) : Prop :=
   P.natDegree ≤ k ∧ ∀ i : Fin (k + 1),
@@ -310,6 +325,7 @@ theorem existsUnique_triangularPolynomial {Form : Type*}
 /-- The one-index specification of the internally constructed auxiliary form:
 qualification comes from the general eta--j theorem, while monicity and the
 Fourier normalization are proved by the triangular solve. -/
+@[expose]
 def AuxiliaryFormSpec {Form : Type*} (E : EtaJPowerBasis Form)
     (k : ℕ) (a : ℤ) : Prop :=
   E.qualifies (auxiliaryForm E k a) ∧

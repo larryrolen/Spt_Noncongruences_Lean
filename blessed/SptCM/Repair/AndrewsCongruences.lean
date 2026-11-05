@@ -1,4 +1,12 @@
-import blessed.SptCM.Literature.RolenLiterature
+module
+
+public import blessed.SptCM.Literature.RolenLiterature
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Exact application of Andrews' three SPT congruences
@@ -17,19 +25,16 @@ open SptCM.RolenLiterature
   unfold canonicalResidue Nat.modInv Nat.gcdA Nat.xgcd
   simp only [Nat.xgcdAux, Nat.strongRec_eq]
   norm_num
-  exact_mod_cast Int.toNat_of_nonneg (show (0 : ℤ) ≤ 4 by norm_num)
 
 @[simp] theorem canonicalResidue_seven : canonicalResidue 7 = 5 := by
   unfold canonicalResidue Nat.modInv Nat.gcdA Nat.xgcd
   simp only [Nat.xgcdAux, Nat.strongRec_eq]
   norm_num
-  exact_mod_cast Int.toNat_of_nonneg (show (0 : ℤ) ≤ 5 by norm_num)
 
 @[simp] theorem canonicalResidue_thirteen : canonicalResidue 13 = 6 := by
   unfold canonicalResidue Nat.modInv Nat.gcdA Nat.xgcd
   simp only [Nat.xgcdAux, Nat.strongRec_eq]
   norm_num
-  exact_mod_cast Int.toNat_of_nonneg (show (0 : ℤ) ≤ 6 by norm_num)
 
 /-- Andrews' published modulus-five congruence implies that `5` is canonical. -/
 theorem canonical_five_of_Andrews (h : SptProgressionCongruence 5 4) :

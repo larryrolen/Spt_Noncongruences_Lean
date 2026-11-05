@@ -1,8 +1,16 @@
-import blessed.SptCM.Repair.I12WronskianZero
-import blessed.SptCM.Repair.WronskianAssembly
-import blessed.SptCM.Quaternion.Repaired.I19ActualAdapter
-import blessed.SptCM.Quaternion.Repaired.ActualPointConstruction
-import blessed.SptCM.Repair.FinalAssembly
+module
+
+public import blessed.SptCM.Repair.I12WronskianZero
+public import blessed.SptCM.Repair.WronskianAssembly
+public import blessed.SptCM.Quaternion.Repaired.I19ActualAdapter
+public import blessed.SptCM.Quaternion.Repaired.ActualPointConstruction
+public import blessed.SptCM.Repair.FinalAssembly
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Genuine actual-class-polynomial Wronskian contradiction

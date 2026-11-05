@@ -1,6 +1,14 @@
-import blessed.SptCM.Arithmetic.SmallDiscriminant
-import blessed.SptCM.Literature.RolenLiterature
-import Mathlib.NumberTheory.DirichletCharacter.Basic
+module
+
+public import blessed.SptCM.Arithmetic.SmallDiscriminant
+public import blessed.SptCM.Literature.RolenLiterature
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The genuine Dirichlet-character bridge for Treviño's estimate
@@ -16,6 +24,7 @@ namespace SptCM.Repair
 open SptCM.RolenLiterature
 
 /-- The complex quadratic Dirichlet character modulo a prime. -/
+@[expose]
 noncomputable def complexQuadraticCharacter (ℓ : ℕ) [Fact ℓ.Prime] :
     DirichletCharacter ℂ ℓ :=
   MulChar.ofUnitHom <|

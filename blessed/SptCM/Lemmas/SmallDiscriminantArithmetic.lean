@@ -1,4 +1,12 @@
-import blessed.SptCM.Interfaces
+module
+
+public import blessed.SptCM.Interfaces
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Elementary arithmetic for the small-discriminant lemma

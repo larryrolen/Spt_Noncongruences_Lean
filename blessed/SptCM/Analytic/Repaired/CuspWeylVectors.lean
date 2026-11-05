@@ -1,6 +1,14 @@
-import blessed.SptCM.Analytic.Repaired.CuspContractions
-import blessed.SptCM.Literature.RolenLiterature
-import blessed.SptCM.Analytic.Repaired.StokesConstantTerm
+module
+
+public import blessed.SptCM.Analytic.Repaired.CuspContractions
+public import blessed.SptCM.Literature.RolenLiterature
+public import blessed.SptCM.Analytic.Repaired.StokesConstantTerm
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # The four concrete Weyl-vector calculations
@@ -19,6 +27,7 @@ open SptCM.RolenLiterature
 /-- The Weyl-vector model in which the regularized pairing is the signed sum
 of the twelve component pairings and the cusp theta function is obtained by
 the explicit Atkin--Lehner permutation. -/
+@[expose]
 def componentWeylVectorModel
     {Input V : Type*} [AddCommMonoid V] [Module ℂ V]
     (admissible : Input → Prop) (weylVector : Input → ℕ → ℂ)
@@ -108,12 +117,14 @@ theorem auxiliaryHn_componentWeylVectors_eq_zero
 
 /-- Euler's signed component identity in the real series space used by the
 finite-height integral. -/
+@[expose]
 def RealEtaComponentThetaIdentity
     {V : Type*} [AddCommMonoid V] [Module ℝ V]
     (theta : Fin 12 → V) (eta : V) : Prop :=
   (∑ r, (chiTwelveResidue r : ℝ) • theta r) = (2 : ℝ) • eta
 
 /-- The real component pairing at the cusp indexed by `c`. -/
+@[expose]
 def realRegularizedCuspThetaContraction
     {V : Type*} [AddCommMonoid V] [Module ℝ V]
     (pairing : V →ₗ[ℝ] ℝ) (c : ℕ) (theta : Fin 12 → V) : ℝ :=
@@ -142,6 +153,7 @@ theorem realRegularizedCuspThetaContraction_eq_signed_eta
 /-- The real Weyl model whose pairing is definitionally the twelve-component
 regularized pairing and whose cusp theta functions use the computed
 Atkin--Lehner permutations. -/
+@[expose]
 def realComponentWeylVectorModel
     {Input V : Type*} [AddCommMonoid V] [Module ℝ V]
     (admissible : Input → Prop) (weylVector : Input → ℕ → ℝ)

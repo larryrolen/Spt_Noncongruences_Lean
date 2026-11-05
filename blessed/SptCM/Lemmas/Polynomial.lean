@@ -1,11 +1,17 @@
-import Mathlib.RingTheory.Polynomial.Wronskian
-import Mathlib.Algebra.Field.ZMod
+module
+
+public import Mathlib.RingTheory.Polynomial.Wronskian
+public import Mathlib.Algebra.Field.ZMod
+
+public section
+
 
 namespace SptCM
 
 open Polynomial
 
 /-- The Wronskian obstruction, with the paper's convention `A' B - A B'`. -/
+@[expose]
 noncomputable def wronskianObstruction {R : Type*} [CommRing R]
     (A B : Polynomial R) : Polynomial R :=
   derivative A * B - A * derivative B

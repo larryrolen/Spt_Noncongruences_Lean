@@ -1,6 +1,14 @@
-import blessed.SptCM.Analytic.Repaired.GaussSum
-import blessed.SptCM.Analytic.Repaired.AuxiliaryForms
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import blessed.SptCM.Analytic.Repaired.GaussSum
+public import blessed.SptCM.Analytic.Repaired.AuxiliaryForms
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Exact level-twelve Weil-generator calculation
@@ -16,21 +24,25 @@ open scoped BigOperators
 
 /-- The component vector `c (e₁ - e₅ - e₇ + e₁₁)`, evaluated on the
 canonical representatives of `ℤ / 12ℤ`. -/
+@[expose]
 def fourComponentVector (c : ℂ) (r : Fin 12) : ℂ :=
   c * (chiTwelveResidue r : ℂ)
 
 /-- The normalized finite Fourier matrix giving the level-twelve Weil
 `S`-generator, with the same inverse-root convention as the Gauss sum. -/
+@[expose]
 noncomputable def levelTwelveWeilS (x : Fin 12 → ℂ) (s : Fin 12) : ℂ :=
   (Real.sqrt 12 : ℂ)⁻¹ *
     ∑ r : Fin 12, inverseTwelfthRoot ^ ((r.val * s.val) % 12) * x r
 
 /-- The common `T` multiplier of the four supported components. -/
+@[expose]
 noncomputable def levelTwelveTMultiplier : ℂ :=
   Complex.exp (Complex.I * (Real.pi / 12 : ℂ))
 
 /-- The diagonal level-twelve Weil `T`-generator.  The exponent is the
 quadratic residue `r² mod 24`; all four supported indices have residue one. -/
+@[expose]
 noncomputable def levelTwelveWeilT (x : Fin 12 → ℂ) (r : Fin 12) : ℂ :=
   levelTwelveTMultiplier ^ ((r.val ^ 2) % 24) * x r
 
@@ -109,6 +121,7 @@ structure FourComponentInput (Form : Type*) where
   scalarSeries : HForm ℤ
 
 /-- The concrete I10 input obtained from the triangular eta--j construction. -/
+@[expose]
 noncomputable def auxiliaryFourComponentInput {Form : Type*} [SMul ℂ Form]
     (E : EtaJGeneratorBasis Form) (k : ℕ) (a : ℤ) :
     FourComponentInput Form where
@@ -118,6 +131,7 @@ noncomputable def auxiliaryFourComponentInput {Form : Type*} [SMul ℂ Form]
 /-- The combined scalar/finite `S` equation.  The left side applies the
 analytic slash action to the scalar form; the right side applies the exact
 level-twelve Weil matrix to its fixed finite component. -/
+@[expose]
 def HasFourComponentWeilS {Form : Type*} [SMul ℂ Form]
     (E : EtaJGeneratorBasis Form) (F : FourComponentInput Form) : Prop :=
   (E.slashS F.scalarForm, fourComponentVector 1) =
@@ -125,6 +139,7 @@ def HasFourComponentWeilS {Form : Type*} [SMul ℂ Form]
 
 /-- The combined scalar/finite `T` equation, with the common multiplier
 `e(1/24)` shown on the opposite tensor factor on the two sides. -/
+@[expose]
 def HasFourComponentWeilT {Form : Type*} [SMul ℂ Form]
     (E : EtaJGeneratorBasis Form) (F : FourComponentInput Form) : Prop :=
   (E.slashT F.scalarForm,
@@ -135,6 +150,7 @@ def HasFourComponentWeilT {Form : Type*} [SMul ℂ Form]
 /-- Exact level-twelve Weil-generator law for a separated four-component
 input.  Both equalities simultaneously contain the scalar eta--j law and the
 finite matrix calculation. -/
+@[expose]
 def HasFourComponentWeilGeneratorLaw {Form : Type*} [SMul ℂ Form]
     (E : EtaJGeneratorBasis Form) (F : FourComponentInput Form) : Prop :=
   HasFourComponentWeilS E F ∧ HasFourComponentWeilT E F

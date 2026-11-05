@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.ClassPolynomials
-import blessed.SptCM.Literature.RolenLiterature
+module
+
+public import blessed.SptCM.CM.ClassPolynomials
+public import blessed.SptCM.Literature.RolenLiterature
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # I22: ordinary class number and the four level-six orientations
@@ -25,10 +33,12 @@ open RolenLiterature
 
 /-- The ordinary ideal-class number of the concrete order
 `ℤ[(1 + √(-n))/2]`. -/
+@[expose]
 def ordinaryIdealClassNumber (n : ℕ) [IsDomain (NegativeQuadraticOrder n)] : ℕ :=
   Nat.card (ClassGroup (NegativeQuadraticOrder n))
 
 /-- The exact I22 conclusion. -/
+@[expose]
 def ClassCountSpec (n : ℕ) : Prop :=
   ∃ domain : IsDomain (NegativeQuadraticOrder n),
     negativeClassNumber n = @ordinaryIdealClassNumber n domain ∧

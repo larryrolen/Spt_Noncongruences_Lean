@@ -1,16 +1,27 @@
-import blessed.SptCM.CM.ActualClassPolynomials
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import blessed.SptCM.CM.ActualClassPolynomials
+public import Mathlib.RingTheory.Localization.FractionRing
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 namespace SptCM.CM.Repaired
 noncomputable section
 
+@[expose]
 def awaySixToRat : SptCM.AwaySix →+* ℚ :=
   Localization.awayLift (Int.castRingHom ℚ) 6 (by norm_num)
 
+@[expose]
 instance awaySixDomain : IsDomain SptCM.AwaySix :=
   Localization.Away.isDomain (by norm_num)
 
 /-- The canonical `ℤ[1/6]`-algebra structure on every rational algebra. -/
+@[expose]
 instance awaySixAlgebra (L : Type*) [CommRing L] [Algebra ℚ L] :
     Algebra SptCM.AwaySix L :=
   ((algebraMap ℚ L).comp awaySixToRat).toAlgebra
@@ -28,6 +39,7 @@ lemma awaySixToRat_injective : Function.Injective awaySixToRat := by
     subst y
     rfl
 
+@[expose]
 instance awaySixRatFractionRing : IsFractionRing SptCM.AwaySix ℚ := by
   apply IsLocalization'.mk
   refine { map_units := ?_, surj := ?_, exists_of_eq := ?_ }
@@ -60,6 +72,7 @@ instance awaySixRatFractionRing : IsFractionRing SptCM.AwaySix ℚ := by
 
 
 /-- The canonical maps `ℤ[1/6] → ℚ → L` form a scalar tower. -/
+@[expose]
 instance awaySixRatScalarTower (L : Type*) [CommRing L] [Algebra ℚ L] :
     IsScalarTower SptCM.AwaySix ℚ L := by
   apply IsScalarTower.of_algebraMap_eq'

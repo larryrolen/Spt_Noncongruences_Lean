@@ -1,8 +1,16 @@
-import blessed.SptCM.Literature.RolenLiterature
-import blessed.SptCM.Analytic.DualityPairing
-import blessed.SptCM.Analytic.Repaired.StokesConstantTerm
-import blessed.SptCM.Analytic.Repaired.VectorFourierData
-import Mathlib.Algebra.Polynomial.Eval.Defs
+module
+
+public import blessed.SptCM.Literature.RolenLiterature
+public import blessed.SptCM.Analytic.DualityPairing
+public import blessed.SptCM.Analytic.Repaired.StokesConstantTerm
+public import blessed.SptCM.Analytic.Repaired.VectorFourierData
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Repaired pairing and Borcherds specialization
@@ -24,6 +32,7 @@ open Polynomial
 conjunct is the combined scalar/finite Weil-generator law, while its second
 conjunct expands to the zero constant term and the complete integral principal
 part.  There is no caller-chosen predicate or application record. -/
+@[expose]
 def VectorInputSpec {Form : Type*} [SMul ℂ Form]
     (E : EtaJGeneratorBasis Form) (n : ℕ)
     (F : FourComponentInput Form) : Prop :=
@@ -100,6 +109,7 @@ theorem all_weylVectors_eq_zero
 /-- A concrete E5 model whose product-expansion predicate is the displayed
 quotient.  Choosing this model before applying E5 prevents an opaque expansion
 predicate from being postulated to equal the desired quotient afterwards. -/
+@[expose]
 def quotientBorcherdsModel
     {Input Divisor Product : Type*} [Field Product]
     (admissible : Input → Prop) (lift : Input → Product)

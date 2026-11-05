@@ -1,4 +1,12 @@
-import blessed.SptCM.Analytic.Repaired.Grid
+module
+
+public import blessed.SptCM.Analytic.Repaired.Grid
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Identification of the published grid normalization
@@ -19,6 +27,7 @@ published grid with the fixed family `G_m` used in the paper.
 The qualification predicate retains the published multiplier convention.  The
 coefficient formula makes explicit the numerator-indexed exponents, the
 character, both principal-part signs, and the coprime range. -/
+@[expose]
 def PublishedGridNormalizationAgreement
     {K : Type*} [Field K] (G : PublishedMockModularGrid K) : Prop :=
   gridForm G 1 = 0 ∧

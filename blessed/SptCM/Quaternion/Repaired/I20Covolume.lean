@@ -1,4 +1,12 @@
-import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
+module
+
+public import blessed.SptCM.Quaternion.Repaired.CommonRootSeparation
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # General Eichler-lattice arithmetic and the I20 normalization

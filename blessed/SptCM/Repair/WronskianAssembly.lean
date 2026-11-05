@@ -1,5 +1,13 @@
-import blessed.SptCM.CM.Repaired.I16Reduction
-import blessed.SptCM.Lemmas.Polynomial
+module
+
+public import blessed.SptCM.CM.Repaired.I16Reduction
+public import blessed.SptCM.Lemmas.Polynomial
+
+public section
+
+-- Use the standard additive structure already supplied by the ring instance.
+attribute [-instance] instAddCommGroupOfIsSimpleAddGroupOfIsNilpotent
+
 
 /-!
 # Wronskian assembly for the actual descended class polynomials
